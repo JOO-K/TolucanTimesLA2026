@@ -1,77 +1,84 @@
-<div class="slide-container">
-
-    <!-- Swiper -->
-    <div class="swiper gallery-top">
-        <div class="swiper-wrapper">
-
-            <div class="swiper-slide"
-                 
-                
-                style="background-image:url(./images/Frontpage_00.png)">
-                <a href="Article_01.html">
-                    <div class="work-title">
-                        <h4 style="background-color: dodgerblue;">ANNOUNCEMENT</h4>
-                        <!-- <h3>Click to Read More</h3> -->
-                        <h1>Website Makeover Almost Done!</h1>
-                        <h2>Welcome to the new Tolucan Times website. Incoming Updates!</h2>
-                    </div>
-                </a>
+<div class="slide-outer">
+    <div class="slide-container">
+        <div class="swiper gallery-top">
+            <div class="swiper-wrapper" id="swiper-slide-wrapper">
+                <!-- slides injected by script below -->
             </div>
-
-            <div class="swiper-slide"
-                style="background-image:url(./images/Frontpage_02.png)">
-                <a href="./article_01.html">
-                    <div class="work-title">
-                        <h4 class="event-food" style="background-color: #c54a2b;">ARTICLE</h4>
-                        <h3>Click to Read More</h3>
-                        <h1>Dan Carlin, A Hardcore Tolucan</h1>
-                        <h2>Written By Gino Renzulli</h2>
-                    </div>
-                </a>
-            </div>
-            <div class="swiper-slide"
-                style="background-image:url(./images/Frontpage_01.png)">
-                <a href="./article_02.html">
-                    <div class="work-title">
-                        <h4>ARTICLE</h4>
-                        <h3>Click to Read More</h3>
-                        <h1>The Honorary Mayor Is In!</h1>
-                        <h2>Written By Nico Renzulli</h2>
-                    </div>
-                </a>
-            </div>
-
-
         </div>
-        <!-- Add Arrows -->
-        <div class="swiper-button-next swiper-button-white"></div>
-        <div class="swiper-button-prev swiper-button-white"></div>
     </div>
-
+    <div class="slide-nav-btn" id="slide-prev">&#8592;</div>
+    <div class="slide-nav-btn" id="slide-next">&#8594;</div>
 </div>
 
+<script type="module">
 
-    <!-- Initialize Swiper -->
-    <script type="module">
+var DEFAULT_SLIDES = [
+    {
+        image: './images/Frontpage_00.png',
+        tag: 'ANNOUNCEMENT',
+        tagColor: '#1E90FF',
+        title: 'Website Makeover Almost Done!',
+        subtitle: 'Welcome to the new Tolucan Times website. Incoming Updates!',
+        link: './article_01.html'
+    },
+    {
+        image: './images/Frontpage_02.png',
+        tag: 'ARTICLE',
+        tagColor: '#c54a2b',
+        title: 'Dan Carlin, A Hardcore Tolucan',
+        subtitle: 'Written By Gino Renzulli',
+        link: './article_01.html'
+    },
+    {
+        image: './images/Frontpage_01.png',
+        tag: 'ARTICLE',
+        tagColor: '#1E90FF',
+        title: 'The Honorary Mayor Is In!',
+        subtitle: 'Written By Nico Renzulli',
+        link: './article_02.html'
+    }
+];
 
+function buildSlides(slides) {
+    return slides.map(function(s) {
+        return '<div class="swiper-slide" style="background-image:url(' + s.image + ')">'
+            + '<a href="' + (s.link || '#') + '">'
+            + '<div class="work-title">'
+            + '<h4 style="background-color:' + (s.tagColor || '#1E90FF') + '">' + (s.tag || '') + '</h4>'
+            + (s.subtitle ? '<h3>' + s.subtitle + '</h3>' : '')
+            + '<h1>' + (s.title || '') + '</h1>'
+            + '</div>'
+            + '</a>'
+            + '</div>';
+    }).join('');
+}
 
-        var galleryTop = new Swiper('.gallery-top', {
-            spaceBetween: 10,
-            effect: 'fade',
-            grabCursor: false,
-            allowTouchMove: false,
-            loop: true,
-            centeredSlides: true,
-            slidesPerView: 'auto',
-            autoplay: {
-                delay: 8000,
-                disableOnInteraction: false,
-            },
+function initSlider(slides) {
+    var wrapper = document.getElementById('swiper-slide-wrapper');
+    if (wrapper) wrapper.innerHTML = buildSlides(slides && slides.length ? slides : DEFAULT_SLIDES);
 
-            navigation: {
-                nextEl: '.swiper-button-next',
-                prevEl: '.swiper-button-prev',
-            },
+    new Swiper('.gallery-top', {
+        spaceBetween: 10,
+        effect: 'fade',
+        grabCursor: false,
+        allowTouchMove: true,
+        loop: true,
+        centeredSlides: true,
+        slidesPerView: 'auto',
+        autoplay: {
+            delay: 8000,
+            disableOnInteraction: false,
+        },
+        navigation: {
+            nextEl: '#slide-next',
+            prevEl: '#slide-prev',
+        },
+    });
+}
 
-        });
-    </script>
+fetch('./data/config.json?t=' + Date.now())
+    .then(function(r) { return r.json(); })
+    .then(function(cfg) { initSlider(cfg.slides && cfg.slides.length ? cfg.slides : DEFAULT_SLIDES); })
+    .catch(function() { initSlider(DEFAULT_SLIDES); });
+
+</script>

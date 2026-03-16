@@ -609,43 +609,24 @@
     letter-spacing: 1px;
 }
 
-/* ── Swan background animations ── */
+/* ── Two-column news feeds (Sports / Entertainment) below featured ── */
 
-.swan-bg {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    pointer-events: none;
-    z-index: 0;
-    overflow: hidden;
+.hp-news-feeds {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    border-left: 1px solid #ddd8ce;
+    border-right: 1px solid #ddd8ce;
+    border-bottom: 1px solid #ddd8ce;
 }
 
-.swan {
-    position: absolute;
-    left: -80px;
-    width: 55px;
-    height: auto;
-    opacity: 0;
+.hp-news-feed-col {
+    padding: 18px 16px;
+    border-right: 1px solid #ddd8ce;
 }
 
-/* Horizontal swim across the full page */
-@keyframes swanSwim {
-    0%   { transform: translateX(0)       translateY(0px);   opacity: 0;    }
-    6%   {                                                    opacity: 0.45; }
-    25%  { transform: translateX(25vw)    translateY(-9px);                 }
-    50%  { transform: translateX(50vw)    translateY(-2px);  opacity: 0.45; }
-    75%  { transform: translateX(75vw)    translateY(-11px);                }
-    94%  {                                                    opacity: 0.45; }
-    100% { transform: translateX(calc(100vw + 80px)) translateY(0px); opacity: 0; }
+.hp-news-feed-col:last-child {
+    border-right: none;
 }
-
-/* 4 swans — different vertical lanes, speeds, and staggered start times */
-.sw1 { top: 22%; animation: swanSwim 52s linear 0s  infinite; }
-.sw2 { top: 48%; animation: swanSwim 68s linear 22s infinite; }
-.sw3 { top: 65%; animation: swanSwim 44s linear 10s infinite; }
-.sw4 { top: 35%; animation: swanSwim 60s linear 38s infinite; }
 
 /* ── Responsive ── */
 
@@ -708,6 +689,21 @@
 }
 
 @media (max-width: 600px) {
+    .hp-news-feeds {
+        grid-template-columns: 1fr;
+        border-left: none;
+        border-right: none;
+    }
+
+    .hp-news-feed-col {
+        border-right: none;
+        border-bottom: 1px solid #ddd8ce;
+    }
+
+    .hp-news-feed-col:last-child {
+        border-bottom: none;
+    }
+
     .hp-explore {
         grid-template-columns: 1fr;
         border-left: none;

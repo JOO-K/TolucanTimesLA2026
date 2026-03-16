@@ -168,8 +168,8 @@
             <!-- Sidebar Feeds -->
             <div style="margin-top:36px;">
                 <div class="section-title">
-                    <span>Sidebar Feeds</span>
-                    <span style="font-family:sans-serif;font-size:11px;font-weight:400;color:#888;letter-spacing:0;text-transform:none;">Sports &amp; Entertainment headlines shown next to articles</span>
+                    <span>Sports &amp; Entertainment</span>
+                    <span style="font-family:sans-serif;font-size:11px;font-weight:400;color:#888;letter-spacing:0;text-transform:none;">Shown below the featured article</span>
                 </div>
                 <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
                     <div style="background:white;border:1px solid #ddd;padding:18px 20px;">
@@ -192,6 +192,50 @@
                     </div>
                 </div>
                 <p style="font-family:sans-serif;font-size:11px;color:#aaa;margin-top:8px;">Add headlines above then click Publish to Site.</p>
+            </div>
+
+            <!-- Carousel Slides -->
+            <div style="margin-top:36px;">
+                <div class="section-title">
+                    <span>Carousel Slides</span>
+                    <span style="font-family:sans-serif;font-size:11px;font-weight:400;color:#888;letter-spacing:0;text-transform:none;">The rotating banner at the top of the homepage</span>
+                </div>
+                <div id="carousel-items-list" style="margin-bottom:12px;background:white;border:1px solid #ddd;padding:16px 20px;min-height:48px;"></div>
+                <div style="background:white;border:1px solid #ddd;padding:18px 20px;">
+                    <div style="font-size:9px;font-family:sans-serif;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#666;margin-bottom:12px;">Add New Slide</div>
+                    <div class="form-row" style="margin-bottom:10px;">
+                        <div class="form-group" style="margin-bottom:0;">
+                            <label>Background Image URL</label>
+                            <input type="text" id="slide-image-input" placeholder="./images/Frontpage_00.png or https://…">
+                        </div>
+                        <div class="form-group" style="margin-bottom:0;">
+                            <label>Link URL <span>(where clicking goes)</span></label>
+                            <input type="text" id="slide-link-input" placeholder="./article_01.html">
+                        </div>
+                    </div>
+                    <div class="form-row" style="margin-bottom:10px;">
+                        <div class="form-group" style="margin-bottom:0;">
+                            <label>Headline</label>
+                            <input type="text" id="slide-title-input" placeholder="Slide headline text">
+                        </div>
+                        <div class="form-group" style="margin-bottom:0;">
+                            <label>Subtitle / Byline <span>(optional)</span></label>
+                            <input type="text" id="slide-subtitle-input" placeholder="e.g. Written By Name">
+                        </div>
+                    </div>
+                    <div class="form-row" style="margin-bottom:12px;">
+                        <div class="form-group" style="margin-bottom:0;">
+                            <label>Tag Label <span>(e.g. ARTICLE, ANNOUNCEMENT)</span></label>
+                            <input type="text" id="slide-tag-input" placeholder="ARTICLE">
+                        </div>
+                        <div class="form-group" style="margin-bottom:0;">
+                            <label>Tag Color <span>(hex color)</span></label>
+                            <input type="text" id="slide-tagcolor-input" placeholder="#1E90FF" value="#1E90FF">
+                        </div>
+                    </div>
+                    <button class="btn btn-secondary" onclick="addSlide()">+ Add Slide</button>
+                </div>
+                <p style="font-family:sans-serif;font-size:11px;color:#aaa;margin-top:8px;">Slides show in order. Add slides above then click Publish to Site.</p>
             </div>
 
             <!-- Ad Settings -->
@@ -311,6 +355,7 @@ let adConfigSha = null;
 let sloganLocal = '';
 let sportsItems = [];   // [{title, url}, ...]
 let entItems    = [];   // [{title, url}, ...]
+let slidesItems = [];   // [{image, tag, tagColor, title, subtitle, link}, ...]
 
 // ── Auth ────────────────────────────────────────────────────────────────────
 
@@ -757,15 +802,15 @@ function buildHomepageComp(all) {
             h+='</div>';
             var el=document.getElementById('hp-weather');if(el)el.innerHTML=h;
         }).catch(function(){var el=document.getElementById('hp-weather');if(el)el.innerHTML='<div class="weather-desc" style="color:#bbb;">Weather unavailable</div>';});
-    fetch('./data/config.json?t='+Date.now()).then(function(r){return r.json();}).then(function(cfg){
-        var ab=document.getElementById('hp-ad-box');if(!ab||!cfg.ad||!cfg.ad.image)return;
-        var img='<img src="'+cfg.ad.image+'" alt="'+(cfg.ad.alt||'Advertisement')+'" style="width:100%;display:block;">';
-        ab.innerHTML=cfg.ad.link?'<a href="'+cfg.ad.link+'" target="_blank" rel="noopener">'+img+'<\/a>':img;
-        ab.style.padding='0';ab.style.border='none';ab.style.background='none';ab.style.minHeight='auto';
-    }).catch(function(){});
     function renderFeed(items,elId){var el=document.getElementById(elId);if(!el)return;if(!items||!items.length){el.innerHTML='<span class="news-feed-loading">No items yet<\/span>';return;}var h='';items.forEach(function(item){h+='<a class="news-feed-item"'+(item.url?' href="'+item.url+'" target="_blank" rel="noopener"':'')+'>​<span class="news-feed-title">'+item.title+'<\/span><\/a>';});el.innerHTML=h;}
-    if(cfg.sports)renderFeed(cfg.sports,'hp-sports-feed');
-    if(cfg.entertainment)renderFeed(cfg.entertainment,'hp-ent-feed');
+    fetch('./data/config.json?t='+Date.now()).then(function(r){return r.json();}).then(function(cfg){
+        var ab=document.getElementById('hp-ad-box');if(ab&&cfg.ad&&cfg.ad.image){var img='<img src="'+cfg.ad.image+'" alt="'+(cfg.ad.alt||'Advertisement')+'" style="width:100%;display:block;">';ab.innerHTML=cfg.ad.link?'<a href="'+cfg.ad.link+'" target="_blank" rel="noopener">'+img+'<\/a>':img;ab.style.padding='0';ab.style.border='none';ab.style.background='none';ab.style.minHeight='auto';}
+        renderFeed(cfg.sports||[],'hp-sports-feed');
+        renderFeed(cfg.entertainment||[],'hp-ent-feed');
+    }).catch(function(){
+        renderFeed([],'hp-sports-feed');
+        renderFeed([],'hp-ent-feed');
+    });
 }());
 <\/script>`;
 
@@ -784,16 +829,20 @@ function buildHomepageComp(all) {
                 <span class="sidebar-box-label">Advertisement</span>
                 <div id="hp-ad-box" class="ad-box"><span class="ad-placeholder-label">Your Ad Here</span><span class="ad-placeholder-email">advertise@tolucantimes.com</span></div>
             </div>
-            <div class="sidebar-box">
-                <span class="sidebar-box-label">Sports</span>
-                <div id="hp-sports-feed"><div class="news-feed-loading">Loading&hellip;</div></div>
-            </div>
-            <div class="sidebar-box">
-                <span class="sidebar-box-label">Entertainment</span>
-                <div id="hp-ent-feed"><div class="news-feed-loading">Loading&hellip;</div></div>
-            </div>
         </div>
 
+    </div>
+
+    <div class="section-divider"><span>Sports &amp; Entertainment</span></div>
+    <div class="hp-news-feeds">
+        <div class="hp-news-feed-col">
+            <span class="sidebar-box-label">Sports</span>
+            <div id="hp-sports-feed"><div class="news-feed-loading">Loading&hellip;</div></div>
+        </div>
+        <div class="hp-news-feed-col">
+            <span class="sidebar-box-label">Entertainment</span>
+            <div id="hp-ent-feed"><div class="news-feed-loading">Loading&hellip;</div></div>
+        </div>
     </div>${moreSection}
 
     <div class="section-divider"><span>Explore</span></div>
@@ -832,6 +881,7 @@ async function loadAdConfig() {
             sloganLocal = cfg.slogan || '';
             sportsItems = cfg.sports        || [];
             entItems    = cfg.entertainment || [];
+            slidesItems = cfg.slides        || [];
             const imgEl = document.getElementById('ad-image-input');
             const lnkEl = document.getElementById('ad-link-input');
             const altEl = document.getElementById('ad-alt-input');
@@ -843,6 +893,7 @@ async function loadAdConfig() {
             updateAdPreview();
             renderFeedEditor('sports');
             renderFeedEditor('ent');
+            renderCarouselEditor();
         }
     } catch (e) { /* no config yet */ }
 }
@@ -939,6 +990,64 @@ function removeFeedItem(type, idx) {
     markPending();
 }
 
+// ── Carousel editor ───────────────────────────────────────────────────────────
+
+function renderCarouselEditor() {
+    const el = document.getElementById('carousel-items-list');
+    if (!el) return;
+    if (!slidesItems.length) {
+        el.innerHTML = '<p style="font-family:sans-serif;font-size:12px;color:#bbb;margin:0;">No slides yet — add one below. The homepage will fall back to the default slides.</p>';
+        return;
+    }
+    el.innerHTML = slidesItems.map((s, i) => {
+        const isFirst = i === 0, isLast = i === slidesItems.length - 1;
+        return `<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid #f0ece0;">
+            <div style="width:56px;height:40px;background:#eee;flex-shrink:0;overflow:hidden;border:1px solid #ddd;">
+                ${s.image ? `<img src="${escHtml(s.image)}" style="width:100%;height:100%;object-fit:cover;">` : ''}
+            </div>
+            <div style="flex:1;min-width:0;">
+                <div style="font-family:Georgia,serif;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${escHtml(s.title||'')}</div>
+                <div style="font-family:sans-serif;font-size:10px;color:#bbb;margin-top:2px;">${escHtml(s.tag||'')} &nbsp;·&nbsp; ${escHtml(s.link||'—')}</div>
+            </div>
+            <button class="btn btn-secondary btn-sm" onclick="moveSlide(${i},-1)" ${isFirst?'disabled':''} title="Move up">↑</button>
+            <button class="btn btn-secondary btn-sm" onclick="moveSlide(${i},1)"  ${isLast?'disabled':''} title="Move down">↓</button>
+            <button class="btn btn-danger btn-sm" onclick="removeSlide(${i})" title="Delete">✕</button>
+        </div>`;
+    }).join('');
+}
+
+function addSlide() {
+    const image    = (document.getElementById('slide-image-input').value    || '').trim();
+    const link     = (document.getElementById('slide-link-input').value     || '').trim();
+    const title    = (document.getElementById('slide-title-input').value    || '').trim();
+    const subtitle = (document.getElementById('slide-subtitle-input').value || '').trim();
+    const tag      = (document.getElementById('slide-tag-input').value      || '').trim();
+    const tagColor = (document.getElementById('slide-tagcolor-input').value || '#1E90FF').trim();
+    if (!image || !title) { alert('Image URL and Headline are required.'); return; }
+    slidesItems.push({ image, link, title, subtitle, tag, tagColor });
+    ['image','link','title','subtitle','tag'].forEach(function(id){ document.getElementById('slide-'+id+'-input').value=''; });
+    document.getElementById('slide-tagcolor-input').value = '#1E90FF';
+    renderCarouselEditor();
+    configDirty = true;
+    markPending();
+}
+
+function removeSlide(idx) {
+    slidesItems.splice(idx, 1);
+    renderCarouselEditor();
+    configDirty = true;
+    markPending();
+}
+
+function moveSlide(idx, dir) {
+    const j = idx + dir;
+    if (j < 0 || j >= slidesItems.length) return;
+    [slidesItems[idx], slidesItems[j]] = [slidesItems[j], slidesItems[idx]];
+    renderCarouselEditor();
+    configDirty = true;
+    markPending();
+}
+
 // ── Pending changes ───────────────────────────────────────────────────────────
 
 function markPending() {
@@ -1001,7 +1110,7 @@ async function publishAll() {
         if (configDirty) {
             const existing = await getFile(AD_CONFIG);
             const jr = await putFile(AD_CONFIG,
-                JSON.stringify({ ad: adConfig, slogan: sloganLocal, sports: sportsItems, entertainment: entItems }, null, 2),
+                JSON.stringify({ ad: adConfig, slogan: sloganLocal, sports: sportsItems, entertainment: entItems, slides: slidesItems }, null, 2),
                 existing ? existing.sha : null, 'Update site config');
             adConfigSha = jr.content.sha;
             configDirty = false;
