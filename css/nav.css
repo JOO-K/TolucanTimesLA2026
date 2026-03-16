@@ -4,9 +4,11 @@
 
 .nav-container {
     position: absolute;
-    top: 0px;
-    left: 0px;
-    width: 100vw;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    max-width: 1200px;
     height: 100px;
     display: flex;
     flex-direction: row;
@@ -293,9 +295,41 @@
     overflow: hidden;
 }
 
+/* ── Medium desktop: 801–1050px — shrink nav elements to fit within constrained width ── */
+@media all and (max-width: 1050px) and (min-width: 801px) {
+    .logo-container {
+        width: 170px;
+    }
+    .link-container-0 {
+        width: 140px;
+    }
+    .link-container-1 {
+        width: 110px;
+    }
+    .link-container-2,
+    .link-container-3,
+    .link-container-4 {
+        width: 82px;
+    }
+    .link-container-5 {
+        width: 78px;
+    }
+    .link-container-1 h1,
+    .link-container-2 h1,
+    .link-container-3 h1,
+    .link-container-4 h1,
+    .link-container-5 h1 {
+        font-size: 13px;
+        padding: 42px 10px 0 0;
+    }
+    .disc-container {
+        left: 155px;
+    }
+}
+
 @media all and (max-width: 800px) {
     .link-container-0{
-       width: calc(100vw - 220px);
+       width: calc(100% - 220px);
        height: 80px;
     }
 }
@@ -494,4 +528,50 @@
 
 .donate-container:hover{
     transform: rotate(360deg);
+}
+
+/* ── Weather state classes for the nav sun disc ──────────────────────────────
+   The default (sunny) state is the orange spinning disc defined above.
+   Add animations to these classes when you're ready — the JS already
+   applies them automatically based on live Toluca Lake weather.
+   ─────────────────────────────────────────────────────────────────────────── */
+
+#nav-sun.weather-sunny {
+    /* default: orange, spinning fast — no overrides needed */
+}
+
+#nav-sun.weather-cloudy {
+    background-color: #9aa0a6;
+    border-color: #777d83;
+    box-shadow: 0 0 0 5px #dde1e4 inset;
+    animation-duration: 120s; /* slow way down */
+}
+
+#nav-sun.weather-foggy {
+    background-color: #c8c5b8;
+    border-color: #a8a598;
+    box-shadow: 0 0 0 5px #e8e6df inset;
+    opacity: 0.75;
+    animation-duration: 120s;
+}
+
+#nav-sun.weather-rainy {
+    background-color: #5b82a0;
+    border-color: #4a6f8a;
+    box-shadow: 0 0 0 5px #c8dce8 inset;
+    animation-duration: 0s; /* pause — add rain animation here later */
+}
+
+#nav-sun.weather-snowy {
+    background-color: #b8d4f0;
+    border-color: #90b4e0;
+    box-shadow: 0 0 0 5px #f0f5ff inset;
+    animation-duration: 80s;
+}
+
+#nav-sun.weather-stormy {
+    background-color: #3a4a5a;
+    border-color: #2a3a4a;
+    box-shadow: 0 0 0 5px #8090a0 inset;
+    animation-duration: 0s;
 }

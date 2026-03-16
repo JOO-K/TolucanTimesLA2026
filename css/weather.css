@@ -1,5 +1,27 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;400;700&display=swap');
 
+/* Weather condition label — sits between temp number and date in the nav */
+.date-container .others {
+    position: absolute;
+    left: 250px;
+    top: 58px;
+    font-family: Manrope, sans-serif;
+    font-size: 9px;
+    font-weight: 400;
+    color: #888;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+}
+
+@media all and (max-width: 800px) {
+    .date-container .others {
+        left: auto;
+        right: 10px;
+        top: 28px;
+        font-size: 8px;
+    }
+}
+
 
 .date-container .time{
     position: absolute;

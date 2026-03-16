@@ -43,11 +43,11 @@ element {
 
 .slide-container {
     z-index: -2;
-    width: 100vw;
+    max-width: 1200px;
+    margin: 0 auto;
     height: 60vh;
     min-height: 500px;
     background-color: antiquewhite;
-    margin: 0px;
     padding: 0px;
 }
 
