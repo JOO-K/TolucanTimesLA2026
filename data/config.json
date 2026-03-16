@@ -4,5 +4,25 @@
     "link": "",
     "alt": "realty group"
   },
-  "slogan": ""
+  "slogan": "",
+  "sports": [
+    {
+      "title": "sdsd",
+      "url": "sdsd"
+    },
+    {
+      "title": "test3",
+      "url": ""
+    }
+  ],
+  "entertainment": [
+    {
+      "title": "sdsd",
+      "url": "sdsd"
+    },
+    {
+      "title": "test2",
+      "url": ""
+    }
+  ]
 }
