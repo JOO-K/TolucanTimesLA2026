@@ -627,21 +627,18 @@ function buildHomepageComp(all) {
             </a>
         </div>` : '<div class="hp-main"></div>';
 
-    const sidebarArticles = grid.map(a => `
-                <a class="sidebar-article" href="./${a.id}.html">
-                    ${a.cardImage ? `<img src="${a.cardImage}" alt="${a.title}">` : ''}
-                    <div class="sidebar-article-text">
-                        <span class="article-tag">${a.tag}</span>
-                        <p>${a.title}</p>
-                        <span class="sidebar-article-byline">By ${a.author}</span>
-                    </div>
-                </a>`).join('');
+    const gridCards = grid.map(a => `
+        <a class="article-card" href="./${a.id}.html">
+            ${a.cardImage ? `<img src="${a.cardImage}" alt="${a.title}">` : ''}
+            <span class="article-tag">${a.tag}</span>
+            <h2>${a.title}</h2>
+            <p class="byline">By ${a.author}</p>
+        </a>`).join('');
 
-    const moreStoriesBox = grid.length ? `
-            <div class="sidebar-box sidebar-box-stories">
-                <span class="sidebar-box-label">More Stories</span>
-                ${sidebarArticles}
-            </div>` : '';
+    const moreSection = grid.length ? `
+    <div class="section-divider"><span>More Stories</span></div>
+    <div class="articles-grid-3">${gridCards}
+    </div>` : '';
 
     const script = `<script>
 (function () {
@@ -678,10 +675,10 @@ function buildHomepageComp(all) {
             <div class="sidebar-box">
                 <span class="sidebar-box-label">Advertisement</span>
                 <div id="hp-ad-box" class="ad-box"><span class="ad-placeholder-label">Your Ad Here</span><span class="ad-placeholder-email">advertise@tolucantimes.com</span></div>
-            </div>${moreStoriesBox}
+            </div>
         </div>
 
-    </div>
+    </div>${moreSection}
 
     <div class="section-divider"><span>Explore</span></div>
 

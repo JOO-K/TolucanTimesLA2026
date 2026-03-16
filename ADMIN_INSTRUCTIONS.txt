@@ -1,0 +1,162 @@
+================================================================
+  TOLUCAN TIMES — ADMIN PANEL INSTRUCTIONS
+================================================================
+
+LIVE SITE:   https://joo-k.github.io/TolucanTimesLA2026/
+ADMIN PANEL: https://joo-k.github.io/TolucanTimesLA2026/admin.html
+GITHUB REPO: https://github.com/JOO-K/TolucanTimesLA2026
+
+
+================================================================
+  STEP 1 — GET A GITHUB PERSONAL ACCESS TOKEN
+================================================================
+
+You need a GitHub token every time you want to publish changes.
+The token is what lets the admin panel write to the GitHub repo.
+
+1. Go to: https://github.com/settings/tokens
+2. Click "Generate new token" → choose "Generate new token (classic)"
+3. Give it a name like "Tolucan Times Admin"
+4. Set Expiration to whatever you want (90 days, 1 year, no expiry)
+5. Under "Select scopes", check the box next to: repo
+   (this is the only scope needed)
+6. Scroll down and click "Generate token"
+7. COPY THE TOKEN — you only see it once!
+   It looks like: ghp_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+
+Store it somewhere safe (Notes app, password manager, etc).
+If you lose it, just generate a new one — old one stops working.
+
+
+================================================================
+  STEP 2 — LOG IN TO ADMIN PANEL
+================================================================
+
+1. Go to: https://joo-k.github.io/TolucanTimesLA2026/admin.html
+2. Paste your GitHub token into the token field
+3. Click "Connect"
+4. Your articles will load automatically
+
+
+================================================================
+  WRITING & PUBLISHING ARTICLES
+================================================================
+
+CREATE A NEW ARTICLE
+--------------------
+1. Click "New Article" button
+2. Fill in:
+   - Title
+   - Author name
+   - Tag (e.g. Interview, Community, Feature, Local Fun)
+   - Card Image URL — the image shown on the homepage card
+     (upload your image somewhere like imgur.com or use a URL)
+   - Excerpt — 2-3 sentence preview shown on homepage
+3. Add content blocks:
+   - "Add Text" — a paragraph of body text
+     Blank line in the text box = new paragraph
+   - "Add Image" — paste an image URL + optional caption
+4. Drag blocks to reorder them
+5. Click "Publish Article"
+   → This saves the article AND auto-updates the homepage
+   → Takes ~1 minute to go live on GitHub Pages
+
+EDIT AN EXISTING ARTICLE
+-------------------------
+1. Click the article title in the list on the left
+2. Make your changes
+3. Click "Publish Article" to save
+
+DELETE AN ARTICLE
+-----------------
+1. Click the article to open it
+2. Click "Delete Article" (red button)
+   → Also auto-updates the homepage
+
+NOTE: The most recently published article becomes the big
+      featured article on the homepage. The 3 before it
+      appear as "More Stories" below.
+
+
+================================================================
+  CHANGING THE ADVERTISEMENT
+================================================================
+
+1. Log in to admin panel
+2. Scroll to the "Advertisement" section
+3. Click "Edit Ad"
+4. Fill in:
+   - Image URL — direct link to the ad image
+   - Link URL — where clicking the ad goes (optional)
+   - Alt Text — description of the ad (for accessibility)
+5. Click "Save Ad"
+
+To remove the ad, clear the Image URL field and save.
+The placeholder "Your Ad Here" text will show instead.
+
+
+================================================================
+  ADDING/CHANGING ARTICLE IMAGES
+================================================================
+
+The site doesn't host images itself — you link to image URLs.
+
+Options for hosting images:
+  - Upload to the GitHub repo itself (images/ folder) and use:
+    ./images/your-image.png
+  - Use Imgur: https://imgur.com (free, no account needed)
+    Upload → right-click the image → "Copy image address"
+  - Use any direct image URL from the web
+
+For best results: images should be roughly 800x500px or wider,
+JPG or PNG format.
+
+
+================================================================
+  AFTER PUBLISHING — HOW LONG UNTIL IT'S LIVE?
+================================================================
+
+GitHub Pages deploys automatically after every change.
+It usually takes about 30–60 seconds.
+
+You can check deploy status at:
+https://github.com/JOO-K/TolucanTimesLA2026/actions
+
+
+================================================================
+  TROUBLESHOOTING
+================================================================
+
+"Authentication failed" or "403 error"
+  → Your token may have expired. Generate a new one (Step 1).
+
+Changes not showing up on live site
+  → Wait 1-2 minutes and hard refresh (Ctrl+Shift+R / Cmd+Shift+R)
+  → Check deploy status at the Actions link above
+
+Article content got replaced with placeholder text
+  → This happens if you create a brand new article before
+    the articles.json file exists. After first use, it's fine.
+  → To fix: re-enter the article content in the editor and republish.
+
+Admin panel shows blank / won't load articles
+  → Make sure your token has "repo" scope selected
+  → Try generating a fresh token
+
+
+================================================================
+  FILES YOU SHOULD KNOW ABOUT (for developers)
+================================================================
+
+index.html              — Homepage
+admin.html              — Admin panel (edit everything from here)
+article_01.html etc     — Auto-generated article pages (don't edit by hand)
+data/articles.json      — Article data store (auto-managed)
+data/config.json        — Ad settings (auto-managed)
+html/                   — Page component fragments
+css/                    — Stylesheets
+images/                 — Local images
+javascript/script.js    — Clock + weather in nav bar
+partloader.js           — Component loading system
+
+================================================================

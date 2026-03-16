@@ -563,7 +563,6 @@
 /* ── Swan background animations ── */
 
 .swan-bg {
-    display: none;
     position: fixed;
     top: 0;
     left: 0;
@@ -574,41 +573,30 @@
     overflow: hidden;
 }
 
-@media (min-width: 1380px) {
-    .swan-bg {
-        display: block;
-    }
-}
-
 .swan {
     position: absolute;
-    width: 72px;
+    left: -80px;
+    width: 55px;
     height: auto;
     opacity: 0;
 }
 
-@keyframes swanBob {
-    0%   { opacity: 0;    transform: translateY(0px); }
-    15%  { opacity: 0.45; }
-    35%  { transform: translateY(-12px); }
-    55%  { transform: translateY(-4px);  opacity: 0.45; }
-    75%  { transform: translateY(-16px); }
-    88%  { opacity: 0.45; }
-    100% { opacity: 0;    transform: translateY(0px); }
+/* Horizontal swim across the full page */
+@keyframes swanSwim {
+    0%   { transform: translateX(0)       translateY(0px);   opacity: 0;    }
+    6%   {                                                    opacity: 0.45; }
+    25%  { transform: translateX(25vw)    translateY(-9px);                 }
+    50%  { transform: translateX(50vw)    translateY(-2px);  opacity: 0.45; }
+    75%  { transform: translateX(75vw)    translateY(-11px);                }
+    94%  {                                                    opacity: 0.45; }
+    100% { transform: translateX(calc(100vw + 80px)) translateY(0px); opacity: 0; }
 }
 
-/* Left margin family — 5 swans */
-.s-l1 { left: 8px;  top: 35%; animation: swanBob 18s ease-in-out 0s   infinite; }
-.s-l2 { left: 20px; top: 55%; animation: swanBob 22s ease-in-out 7s   infinite; }
-.s-l3 { left: 5px;  top: 20%; animation: swanBob 26s ease-in-out 14s  infinite; }
-.s-l4 { left: 28px; top: 70%; animation: swanBob 20s ease-in-out 3s   infinite; }
-.s-l5 { left: 12px; top: 82%; animation: swanBob 24s ease-in-out 11s  infinite; }
-
-/* Right margin family — 4 swans */
-.s-r1 { right: 8px;  top: 30%; animation: swanBob 20s ease-in-out 5s  infinite; }
-.s-r2 { right: 22px; top: 50%; animation: swanBob 24s ease-in-out 12s infinite; }
-.s-r3 { right: 6px;  top: 65%; animation: swanBob 18s ease-in-out 2s  infinite; }
-.s-r4 { right: 16px; top: 15%; animation: swanBob 22s ease-in-out 9s  infinite; }
+/* 4 swans — different vertical lanes, speeds, and staggered start times */
+.sw1 { top: 22%; animation: swanSwim 52s linear 0s  infinite; }
+.sw2 { top: 48%; animation: swanSwim 68s linear 22s infinite; }
+.sw3 { top: 65%; animation: swanSwim 44s linear 10s infinite; }
+.sw4 { top: 35%; animation: swanSwim 60s linear 38s infinite; }
 
 /* ── Responsive ── */
 
