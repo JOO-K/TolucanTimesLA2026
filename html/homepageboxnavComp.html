@@ -4,12 +4,12 @@
 
     <div class="hp-layout">
         <div class="hp-main">
-            <a class="article-featured" href="./article_05.html">
-                <img src="https://static.wikia.nocookie.net/disney/images/a/ab/Donald_Duck_Disney_1.png/revision/latest/thumbnail/width/360/height/360?cb=20180828172632" alt="testing">
-                <span class="article-tag">Community</span>
-                <h2>testing</h2>
-                <p class="byline">By testing name</p>
-                <p class="excerpt">donald duck testing co</p>
+            <a class="article-featured" href="./article_04.html">
+                <img src="./images/Frontpage_00.png" alt="Local Fun: Warner Bros. Studio Tour">
+                <span class="article-tag">Local Fun</span>
+                <h2>Local Fun: Warner Bros. Studio Tour</h2>
+                <p class="byline">By Francesca Domenica</p>
+                <p class="excerpt">One of Hollywood's most iconic studios sits just down the road. We took the tour — here's everything you need to know before you go.</p>
             </a>
         </div>
 
@@ -22,35 +22,30 @@
                 <span class="sidebar-box-label">Advertisement</span>
                 <div id="hp-ad-box" class="ad-box"><span class="ad-placeholder-label">Your Ad Here</span><span class="ad-placeholder-email">advertise@tolucantimes.com</span></div>
             </div>
-
-            <!-- Sports headlines -->
             <div class="sidebar-box">
                 <span class="sidebar-box-label">Sports</span>
                 <div id="hp-sports-feed"><div class="news-feed-loading">Loading&hellip;</div></div>
             </div>
-
-            <!-- Entertainment headlines -->
             <div class="sidebar-box">
                 <span class="sidebar-box-label">Entertainment</span>
                 <div id="hp-ent-feed"><div class="news-feed-loading">Loading&hellip;</div></div>
             </div>
-
         </div>
 
     </div>
     <div class="section-divider"><span>More Stories</span></div>
     <div class="articles-grid-3">
-        <a class="article-card" href="./article_04.html">
-            <img src="./images/Frontpage_00.png" alt="Local Fun: Warner Bros. Studio Tour">
-            <span class="article-tag">Local Fun</span>
-            <h2>Local Fun: Warner Bros. Studio Tour</h2>
-            <p class="byline">By Francesca Domenica</p>
-        </a>
         <a class="article-card" href="./article_03.html">
             <img src="./images/EvanLovett.png" alt="L.A. In a Minute: Let's Get Into It">
             <span class="article-tag">Feature</span>
             <h2>L.A. In a Minute: Let's Get Into It</h2>
             <p class="byline">By Gino Renzulli</p>
+        </a>
+        <a class="article-card" href="./article_05.html">
+            <img src="https://static.wikia.nocookie.net/disney/images/a/ab/Donald_Duck_Disney_1.png/revision/latest/thumbnail/width/360/height/360?cb=20180828172632" alt="testing">
+            <span class="article-tag">Community</span>
+            <h2>testing</h2>
+            <p class="byline">By testing name</p>
         </a>
         <a class="article-card" href="./article_02.html">
             <img src="./images/Frontpage_01.png" alt="The Honorary Mayor Is In!">
@@ -99,22 +94,8 @@
         ab.innerHTML=cfg.ad.link?'<a href="'+cfg.ad.link+'" target="_blank" rel="noopener">'+img+'</a>':img;
         ab.style.padding='0';ab.style.border='none';ab.style.background='none';ab.style.minHeight='auto';
     }).catch(function(){});
-    // ── Sports & Entertainment from config.json ────────────────────────────
-    // (Items are managed in the admin panel under "Sidebar Feeds")
-    if (cfg.sports || cfg.entertainment) {
-        function renderFeed(items, elId) {
-            var el = document.getElementById(elId);
-            if (!el) return;
-            if (!items || !items.length) { el.innerHTML = '<span class="news-feed-loading">No items yet</span>'; return; }
-            var h = '';
-            items.forEach(function (item) {
-                h += '<a class="news-feed-item"' + (item.url ? ' href="' + item.url + '" target="_blank" rel="noopener"' : '') + '>'
-                   + '<span class="news-feed-title">' + item.title + '</span></a>';
-            });
-            el.innerHTML = h;
-        }
-        renderFeed(cfg.sports,         'hp-sports-feed');
-        renderFeed(cfg.entertainment,  'hp-ent-feed');
-    }
+    function renderFeed(items,elId){var el=document.getElementById(elId);if(!el)return;if(!items||!items.length){el.innerHTML='<span class="news-feed-loading">No items yet</span>';return;}var h='';items.forEach(function(item){h+='<a class="news-feed-item"'+(item.url?' href="'+item.url+'" target="_blank" rel="noopener"':'')+'>​<span class="news-feed-title">'+item.title+'</span></a>';});el.innerHTML=h;}
+    if(cfg.sports)renderFeed(cfg.sports,'hp-sports-feed');
+    if(cfg.entertainment)renderFeed(cfg.entertainment,'hp-ent-feed');
 }());
 </script>
