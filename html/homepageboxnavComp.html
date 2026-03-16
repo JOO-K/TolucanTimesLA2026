@@ -4,12 +4,12 @@
 
     <div class="hp-layout">
         <div class="hp-main">
-            <a class="article-featured" href="./article_04.html">
-                <img src="./images/Frontpage_00.png" alt="Local Fun: Warner Bros. Studio Tour">
-                <span class="article-tag">Local Fun</span>
-                <h2>Local Fun: Warner Bros. Studio Tour</h2>
-                <p class="byline">By Francesca Domenica</p>
-                <p class="excerpt">One of Hollywood's most iconic studios sits just down the road. We took the tour — here's everything you need to know before you go.</p>
+            <a class="article-featured" href="./article_03.html">
+                <img src="./images/EvanLovett.png" alt="L.A. In a Minute: Let's Get Into It">
+                <span class="article-tag">Feature</span>
+                <h2>L.A. In a Minute: Let's Get Into It</h2>
+                <p class="byline">By Gino Renzulli</p>
+                <p class="excerpt">A fast-moving look at what's happening across Los Angeles — from culture and local politics to the stories shaping our neighborhood right now.</p>
             </a>
         </div>
 
@@ -26,7 +26,6 @@
 
     </div>
 
-    <!-- Sports & Entertainment -->
     <div class="section-divider"><span>Sports &amp; Entertainment</span></div>
     <div class="hp-news-feeds">
         <div class="hp-news-feed-col">
@@ -38,14 +37,13 @@
             <div id="hp-ent-feed"><div class="news-feed-loading">Loading&hellip;</div></div>
         </div>
     </div>
-
     <div class="section-divider"><span>More Stories</span></div>
     <div class="articles-grid-3">
-        <a class="article-card" href="./article_03.html">
-            <img src="./images/EvanLovett.png" alt="L.A. In a Minute: Let's Get Into It">
-            <span class="article-tag">Feature</span>
-            <h2>L.A. In a Minute: Let's Get Into It</h2>
-            <p class="byline">By Gino Renzulli</p>
+        <a class="article-card" href="./article_04.html">
+            <img src="./images/Frontpage_00.png" alt="Local Fun: Warner Bros. Studio Tour">
+            <span class="article-tag">Local Fun</span>
+            <h2>Local Fun: Warner Bros. Studio Tour</h2>
+            <p class="byline">By Francesca Domenica</p>
         </a>
         <a class="article-card" href="./article_05.html">
             <img src="https://static.wikia.nocookie.net/disney/images/a/ab/Donald_Duck_Disney_1.png/revision/latest/thumbnail/width/360/height/360?cb=20180828172632" alt="testing">
@@ -94,9 +92,7 @@
             h+='</div>';
             var el=document.getElementById('hp-weather');if(el)el.innerHTML=h;
         }).catch(function(){var el=document.getElementById('hp-weather');if(el)el.innerHTML='<div class="weather-desc" style="color:#bbb;">Weather unavailable</div>';});
-
     function renderFeed(items,elId){var el=document.getElementById(elId);if(!el)return;if(!items||!items.length){el.innerHTML='<span class="news-feed-loading">No items yet</span>';return;}var h='';items.forEach(function(item){h+='<a class="news-feed-item"'+(item.url?' href="'+item.url+'" target="_blank" rel="noopener"':'')+'>​<span class="news-feed-title">'+item.title+'</span></a>';});el.innerHTML=h;}
-
     fetch('./data/config.json?t='+Date.now()).then(function(r){return r.json();}).then(function(cfg){
         var ab=document.getElementById('hp-ad-box');if(ab&&cfg.ad&&cfg.ad.image){var img='<img src="'+cfg.ad.image+'" alt="'+(cfg.ad.alt||'Advertisement')+'" style="width:100%;display:block;">';ab.innerHTML=cfg.ad.link?'<a href="'+cfg.ad.link+'" target="_blank" rel="noopener">'+img+'</a>':img;ab.style.padding='0';ab.style.border='none';ab.style.background='none';ab.style.minHeight='auto';}
         renderFeed(cfg.sports||[],'hp-sports-feed');
