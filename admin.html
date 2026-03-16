@@ -627,19 +627,21 @@ function buildHomepageComp(all) {
             </a>
         </div>` : '<div class="hp-main"></div>';
 
-    const gridCards = grid.map(a => `
-        <a class="article-card" href="./${a.id}.html">
-            ${a.cardImage ? `<img src="${a.cardImage}" alt="${a.title}">` : ''}
-            <span class="article-tag">${a.tag}</span>
-            <h2>${a.title}</h2>
-            <p class="byline">By ${a.author}</p>
-            <p class="excerpt">${a.excerpt}</p>
-        </a>`).join('');
+    const sidebarArticles = grid.map(a => `
+                <a class="sidebar-article" href="./${a.id}.html">
+                    ${a.cardImage ? `<img src="${a.cardImage}" alt="${a.title}">` : ''}
+                    <div class="sidebar-article-text">
+                        <span class="article-tag">${a.tag}</span>
+                        <p>${a.title}</p>
+                        <span class="sidebar-article-byline">By ${a.author}</span>
+                    </div>
+                </a>`).join('');
 
-    const moreSection = grid.length ? `
-    <div class="section-divider"><span>More Stories</span></div>
-    <div class="articles-grid-3">${gridCards}
-    </div>` : '';
+    const moreStoriesBox = grid.length ? `
+            <div class="sidebar-box sidebar-box-stories">
+                <span class="sidebar-box-label">More Stories</span>
+                ${sidebarArticles}
+            </div>` : '';
 
     const script = `<script>
 (function () {
@@ -676,16 +678,30 @@ function buildHomepageComp(all) {
             <div class="sidebar-box">
                 <span class="sidebar-box-label">Advertisement</span>
                 <div id="hp-ad-box" class="ad-box"><span class="ad-placeholder-label">Your Ad Here</span><span class="ad-placeholder-email">advertise@tolucantimes.com</span></div>
-            </div>
-            <div class="sidebar-box">
-                <span class="sidebar-box-label">Explore</span>
-                <a class="sidebar-explore-link" href="./photogallery.html"><img src="./images/TT_Swan_BacktoSchool.png" alt="Gallery"><div><strong>Photo Gallery</strong><span>Flicks of the Community</span></div></a>
-                <a class="sidebar-explore-link" href="./horoscopes.html"><img src="./images/TT_Swan_Horoscope.png" alt="Horoscopes"><div><strong>Horoscopes</strong><span>What the stars say</span></div></a>
-                <a class="sidebar-explore-link" href="./aboutus.html"><img src="./images/TT_Swan_Aboutus.png" alt="About Us"><div><strong>About Us</strong><span>Since 1937</span></div></a>
-            </div>
+            </div>${moreStoriesBox}
         </div>
 
-    </div>${moreSection}
+    </div>
+
+    <div class="section-divider"><span>Explore</span></div>
+
+    <div class="hp-explore">
+        <a class="hp-explore-cell" href="./photogallery.html">
+            <img src="./images/TT_Swan_BacktoSchool.png" alt="Photo Gallery">
+            <strong>Photo Gallery</strong>
+            <span>Flicks of the Community</span>
+        </a>
+        <a class="hp-explore-cell" href="./horoscopes.html">
+            <img src="./images/TT_Swan_Horoscope.png" alt="Horoscopes">
+            <strong>Horoscopes</strong>
+            <span>What the stars say</span>
+        </a>
+        <a class="hp-explore-cell" href="./aboutus.html">
+            <img src="./images/TT_Swan_Aboutus.png" alt="About Us">
+            <strong>About Us</strong>
+            <span>Since 1937</span>
+        </a>
+    </div>
 
 </div>
 ${script}`;
