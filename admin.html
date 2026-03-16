@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Tolucan Times — Admin</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: Georgia, serif; background: #f5f0e8; color: #1a1a1a; min-height: 100vh; }
+
+        /* ── Login ── */
+        #login-screen {
+            max-width: 420px;
+            margin: 80px auto;
+            padding: 40px;
+            background: white;
+            border: 1px solid #ddd;
+            text-align: center;
+        }
+        #login-screen h1 { font-size: 22px; margin-bottom: 6px; letter-spacing: 1px; }
+        #login-screen p { font-size: 13px; color: #666; margin-bottom: 24px; line-height: 1.6; font-family: sans-serif; }
+        #login-screen a { color: #1E90FF; }
+        #token-input { width: 100%; padding: 10px 12px; border: 1px solid #ccc; font-size: 14px; margin-bottom: 12px; font-family: monospace; }
+        #login-error { color: #c54a2b; font-size: 12px; margin-top: 10px; font-family: sans-serif; min-height: 18px; }
+
+        /* ── Admin shell ── */
+        #admin-screen { display: none; }
+        .admin-header {
+            background: #1a1a1a; color: white;
+            padding: 0 24px;
+            display: flex; align-items: center; justify-content: space-between;
+            height: 52px;
+        }
+        .admin-header h1 { font-size: 15px; letter-spacing: 2px; font-family: sans-serif; font-weight: 700; }
+        .admin-header-right { display: flex; gap: 12px; align-items: center; }
+        .admin-header-right a { color: #aaa; font-size: 12px; font-family: sans-serif; text-decoration: none; }
+        .admin-header-right a:hover { color: white; }
+
+        .admin-body { max-width: 860px; margin: 0 auto; padding: 28px 20px; }
+
+        /* ── Buttons ── */
+        .btn { padding: 8px 18px; font-size: 13px; cursor: pointer; border: none; font-family: Georgia, serif; transition: opacity .15s; }
+        .btn:hover { opacity: .85; }
+        .btn-primary  { background: #1E90FF; color: white; }
+        .btn-secondary{ background: #eee; color: #333; border: 1px solid #ccc; }
+        .btn-danger   { background: #c54a2b; color: white; }
+        .btn-success  { background: #2a8a2a; color: white; }
+
+        /* ── Section header ── */
+        .section-title {
+            font-size: 10px; font-family: sans-serif; font-weight: 700;
+            letter-spacing: 3px; text-transform: uppercase; color: #666;
+            margin-bottom: 16px; padding-bottom: 8px;
+            border-bottom: 2px solid #1a1a1a;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+
+        /* ── Article list ── */
+        .article-row {
+            background: white; border: 1px solid #ddd;
+            padding: 14px 18px; margin-bottom: 8px;
+            display: flex; align-items: center; justify-content: space-between; gap: 12px;
+        }
+        .article-row-left { flex: 1; min-width: 0; }
+        .article-row-tag { font-size: 9px; font-family: sans-serif; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: #1E90FF; margin-bottom: 4px; }
+        .article-row-title { font-size: 16px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .article-row-meta { font-size: 11px; font-family: sans-serif; color: #888; margin-top: 3px; }
+        .article-row-actions { display: flex; gap: 8px; flex-shrink: 0; }
+
+        /* ── Editor ── */
+        #article-editor { display: none; background: white; border: 1px solid #ddd; padding: 30px; }
+        .editor-title { font-size: 20px; margin-bottom: 22px; padding-bottom: 14px; border-bottom: 1px dashed #ccc; }
+        .form-group { margin-bottom: 18px; }
+        .form-group label {
+            display: block; font-size: 10px; font-family: sans-serif; font-weight: 700;
+            letter-spacing: 2px; text-transform: uppercase; color: #666; margin-bottom: 6px;
+        }
+        .form-group label span { font-weight: 400; text-transform: none; letter-spacing: 0; }
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%; padding: 10px 12px; border: 1px solid #ccc;
+            font-size: 14px; font-family: Georgia, serif;
+        }
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus { outline: 2px solid #1E90FF; border-color: #1E90FF; }
+        .form-group textarea { resize: vertical; }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+        .editor-actions { display: flex; gap: 10px; margin-top: 24px; padding-top: 20px; border-top: 1px dashed #ccc; flex-wrap: wrap; }
+        #delete-btn { margin-left: auto; }
+
+        /* ── Status ── */
+        #status-msg {
+            display: none; padding: 12px 18px; margin-bottom: 18px;
+            font-family: sans-serif; font-size: 13px; border-radius: 2px;
+        }
+        #status-msg.success { background: #e8f5e8; border: 1px solid #2a8a2a; color: #1a5a1a; }
+        #status-msg.error   { background: #fde8e4; border: 1px solid #c54a2b; color: #7a2010; }
+        #status-msg.loading { background: #e8f0ff; border: 1px solid #1E90FF; color: #0a3080; }
+
+        @media (max-width: 600px) {
+            .form-row { grid-template-columns: 1fr; }
+            #delete-btn { margin-left: 0; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ── LOGIN ──────────────────────────────────────────────────────── -->
+<div id="login-screen">
+    <h1>THE TOLUCAN TIMES</h1>
+    <p>
+        Admin Panel<br><br>
+        Create a <a href="https://github.com/settings/tokens/new?scopes=repo&description=TolucanTimesAdmin" target="_blank">GitHub Personal Access Token</a>
+        with <strong>repo</strong> scope and paste it below.
+    </p>
+    <input type="password" id="token-input" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx">
+    <button class="btn btn-primary" style="width:100%; padding:11px;" onclick="login()">Sign In</button>
+    <div id="login-error"></div>
+</div>
+
+<!-- ── ADMIN ──────────────────────────────────────────────────────── -->
+<div id="admin-screen">
+    <div class="admin-header">
+        <h1>TOLUCAN TIMES — ADMIN</h1>
+        <div class="admin-header-right">
+            <a href="./index.html" target="_blank">View Site ↗</a>
+            <button class="btn btn-secondary" style="font-size:12px; padding:6px 14px;" onclick="logout()">Sign Out</button>
+        </div>
+    </div>
+
+    <div class="admin-body">
+        <div id="status-msg"></div>
+
+        <!-- Article list -->
+        <div id="list-view">
+            <div class="section-title">
+                <span>Articles</span>
+                <button class="btn btn-primary" onclick="showEditor(-1)">+ New Article</button>
+            </div>
+            <div id="article-list">
+                <p style="font-family:sans-serif;font-size:13px;color:#888;">Loading...</p>
+            </div>
+        </div>
+
+        <!-- Editor -->
+        <div id="article-editor">
+            <div class="editor-title" id="editor-heading">New Article</div>
+            <form id="article-form" onsubmit="saveArticle(event)">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Headline</label>
+                        <input type="text" name="title" required placeholder="Article title">
+                    </div>
+                    <div class="form-group">
+                        <label>Author</label>
+                        <input type="text" name="author" required placeholder="Full name">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Category Tag</label>
+                        <select name="tag">
+                            <option>Interview</option>
+                            <option>Community</option>
+                            <option>Feature</option>
+                            <option>Local Fun</option>
+                            <option>Announcement</option>
+                            <option>Events</option>
+                            <option>Arts &amp; Culture</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Image <span>(URL or ./images/filename.png)</span></label>
+                        <input type="text" name="image" placeholder="./images/photo.png">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Homepage Excerpt <span>(2–3 sentences shown on the front page card)</span></label>
+                    <textarea name="excerpt" rows="3" required placeholder="Short preview shown on the homepage..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Article Body <span>(leave a blank line between paragraphs)</span></label>
+                    <textarea name="body" rows="22" required placeholder="Write the full article here...
+
+Start a new paragraph by leaving a blank line.
+
+Third paragraph continues here..."></textarea>
+                </div>
+                <div class="editor-actions">
+                    <button type="submit" class="btn btn-success">Save &amp; Publish</button>
+                    <button type="button" class="btn btn-secondary" onclick="cancelEdit()">Cancel</button>
+                    <button type="button" class="btn btn-danger" id="delete-btn" onclick="deleteArticle()">Delete Article</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+const REPO     = 'JOO-K/TolucanTimesLA2026';
+const API      = 'https://api.github.com/repos/' + REPO + '/contents/';
+const DATA     = 'data/articles.json';
+
+let token       = '';
+let articles    = [];
+let dataSha     = null;
+let editingIdx  = -1;
+
+// ── Auth ─────────────────────────────────────────────────────────────────────
+
+async function login() {
+    const val = document.getElementById('token-input').value.trim();
+    if (!val) return;
+    token = val;
+    document.getElementById('login-error').textContent = '';
+    showStatus('Verifying token…', 'loading');
+    try {
+        const res = await fetch('https://api.github.com/repos/' + REPO, { headers: headers() });
+        if (!res.ok) throw new Error('Token invalid or repo not accessible (make sure it has repo scope).');
+        localStorage.setItem('ttt_token', token);
+        openAdmin();
+    } catch (e) {
+        token = '';
+        clearStatus();
+        document.getElementById('login-error').textContent = e.message;
+    }
+}
+
+function logout() {
+    localStorage.removeItem('ttt_token');
+    token = '';
+    articles = []; dataSha = null;
+    document.getElementById('admin-screen').style.display = 'none';
+    document.getElementById('login-screen').style.display = 'block';
+    document.getElementById('token-input').value = '';
+    clearStatus();
+}
+
+async function openAdmin() {
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('admin-screen').style.display = 'block';
+    await loadArticles();
+}
+
+// ── GitHub API helpers ────────────────────────────────────────────────────────
+
+function headers() {
+    return {
+        'Authorization': 'token ' + token,
+        'Accept': 'application/vnd.github.v3+json',
+        'Content-Type': 'application/json'
+    };
+}
+
+async function getFile(path) {
+    const res = await fetch(API + path, { headers: headers() });
+    if (res.status === 404) return null;
+    if (!res.ok) throw new Error('Could not read ' + path);
+    const data = await res.json();
+    // decode base64 (GitHub adds newlines in base64 — strip them first)
+    data.decoded = decodeURIComponent(escape(atob(data.content.replace(/\n/g, ''))));
+    return data;
+}
+
+async function putFile(path, content, sha, message) {
+    const body = { message, content: btoa(unescape(encodeURIComponent(content))) };
+    if (sha) body.sha = sha;
+    const res = await fetch(API + path, { method: 'PUT', headers: headers(), body: JSON.stringify(body) });
+    if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.message || 'Failed to write ' + path);
+    }
+    return res.json();
+}
+
+async function deleteFile(path, sha, message) {
+    const res = await fetch(API + path, {
+        method: 'DELETE', headers: headers(),
+        body: JSON.stringify({ message, sha })
+    });
+    if (!res.ok) throw new Error('Failed to delete ' + path);
+}
+
+// ── Data ─────────────────────────────────────────────────────────────────────
+
+async function loadArticles() {
+    showStatus('Loading articles…', 'loading');
+    try {
+        const file = await getFile(DATA);
+        if (file) {
+            articles = JSON.parse(file.decoded);
+            dataSha  = file.sha;
+        } else {
+            articles = seedArticles();
+            dataSha  = null;
+        }
+        renderList();
+        clearStatus();
+    } catch (e) {
+        showStatus('Error loading articles: ' + e.message, 'error');
+    }
+}
+
+function seedArticles() {
+    return [
+        { id:'article_01', title:'Dan Carlin, A Hardcore Tolucan',       author:'Gino Renzulli',    tag:'Interview', image:'./images/Frontpage_02.png', excerpt:'Dan Carlin, creator of Hardcore History, grew up right here in Toluca Lake — and he had a lot to say about the neighborhood he still calls his foundational place.',                       body:'Dan Carlin is a name that will be familiar to many of you as the creator of one of the most widely listened to podcasts in America, Hardcore History.' },
+        { id:'article_02', title:'The Honorary Mayor Is In!',             author:'Nico Renzulli',    tag:'Community', image:'./images/Frontpage_01.png', excerpt:'Meet the honorary mayor of Toluca Lake and learn about the beloved local tradition that has brought our community together for decades.',                                               body:'The honorary mayor tradition in Toluca Lake is one of the community\'s most cherished institutions.' },
+        { id:'article_03', title:'L.A. In a Minute: Let\'s Get Into It', author:'Gino Renzulli',    tag:'Feature',   image:'./images/EvanLovett.png',    excerpt:'A fast-moving look at what\'s happening across Los Angeles — from culture and local politics to the stories shaping our neighborhood right now.',                                       body:'Los Angeles is always moving, always changing.' },
+        { id:'article_04', title:'Local Fun: Warner Bros. Studio Tour',  author:'Francesca Domenica',tag:'Local Fun', image:'./images/Frontpage_00.png', excerpt:'One of Hollywood\'s most iconic studios sits just down the road. We took the tour — here\'s everything you need to know before you go.',                                                   body:'The Warner Bros. Studio Tour is one of the best things to do in the valley.' }
+    ];
+}
+
+// ── List ─────────────────────────────────────────────────────────────────────
+
+function renderList() {
+    const el = document.getElementById('article-list');
+    if (!articles.length) {
+        el.innerHTML = '<p style="font-family:sans-serif;font-size:13px;color:#888;">No articles yet. Click "+ New Article" to get started.</p>';
+        return;
+    }
+    el.innerHTML = [...articles].reverse().map((a, ri) => {
+        const i = articles.length - 1 - ri;
+        return `<div class="article-row">
+            <div class="article-row-left">
+                <div class="article-row-tag">${a.tag}</div>
+                <div class="article-row-title">${a.title}</div>
+                <div class="article-row-meta">By ${a.author} &nbsp;·&nbsp; ${a.id}.html</div>
+            </div>
+            <div class="article-row-actions">
+                <a href="./${a.id}.html" target="_blank" class="btn btn-secondary" style="text-decoration:none;line-height:1.4">View ↗</a>
+                <button class="btn btn-primary" onclick="showEditor(${i})">Edit</button>
+            </div>
+        </div>`;
+    }).join('');
+}
+
+// ── Editor ───────────────────────────────────────────────────────────────────
+
+function showEditor(index) {
+    editingIdx = index;
+    const form = document.getElementById('article-form');
+    form.reset();
+
+    if (index === -1) {
+        document.getElementById('editor-heading').textContent = 'New Article';
+        document.getElementById('delete-btn').style.display = 'none';
+    } else {
+        const a = articles[index];
+        document.getElementById('editor-heading').textContent = 'Editing: ' + a.title;
+        form.title.value   = a.title;
+        form.author.value  = a.author;
+        form.tag.value     = a.tag;
+        form.image.value   = a.image  || '';
+        form.excerpt.value = a.excerpt || '';
+        form.body.value    = (a.body || '').replace(/<br><br>/g, '\n\n').replace(/<br>/g, '\n');
+        document.getElementById('delete-btn').style.display = 'inline-block';
+    }
+
+    document.getElementById('list-view').style.display     = 'none';
+    document.getElementById('article-editor').style.display = 'block';
+    window.scrollTo(0, 0);
+    clearStatus();
+}
+
+function cancelEdit() {
+    document.getElementById('article-editor').style.display = 'none';
+    document.getElementById('list-view').style.display      = 'block';
+    clearStatus();
+}
+
+// ── Save ─────────────────────────────────────────────────────────────────────
+
+async function saveArticle(e) {
+    e.preventDefault();
+    const form = document.getElementById('article-form');
+    const data = {
+        title:  form.title.value.trim(),
+        author: form.author.value.trim(),
+        tag:    form.tag.value,
+        image:  form.image.value.trim(),
+        excerpt:form.excerpt.value.trim(),
+        body:   form.body.value.trim()
+    };
+
+    if (editingIdx === -1) {
+        const nums = articles.map(a => parseInt(a.id.replace('article_', '')) || 0);
+        const next = (nums.length ? Math.max(...nums) : 0) + 1;
+        data.id = 'article_' + String(next).padStart(2, '0');
+    } else {
+        data.id = articles[editingIdx].id;
+    }
+
+    showStatus('Publishing…', 'loading');
+    try {
+        // 1. Write article HTML
+        const html     = buildArticleHTML(data);
+        const existing = await getFile(data.id + '.html');
+        await putFile(data.id + '.html', html, existing ? existing.sha : null,
+            (editingIdx === -1 ? 'Add' : 'Update') + ' article: ' + data.title);
+
+        // 2. Update in-memory list
+        if (editingIdx === -1) articles.push(data);
+        else articles[editingIdx] = data;
+
+        // 3. Write articles.json
+        const jsonResult = await putFile(DATA, JSON.stringify(articles, null, 2), dataSha, 'Update articles.json');
+        dataSha = jsonResult.content.sha;
+
+        // 4. Regenerate homepage component
+        const hpFile = await getFile('html/homepageboxnavComp.html');
+        await putFile('html/homepageboxnavComp.html', buildHomepageComp(articles), hpFile ? hpFile.sha : null, 'Refresh homepage articles');
+
+        renderList();
+        cancelEdit();
+        showStatus('Published! Changes will be live on GitHub Pages in about 1 minute.', 'success');
+    } catch (err) {
+        showStatus('Error: ' + err.message, 'error');
+    }
+}
+
+// ── Delete ───────────────────────────────────────────────────────────────────
+
+async function deleteArticle() {
+    if (editingIdx === -1) return;
+    const a = articles[editingIdx];
+    if (!confirm('Delete "' + a.title + '"?\n\nThis cannot be undone.')) return;
+
+    showStatus('Deleting…', 'loading');
+    try {
+        const file = await getFile(a.id + '.html');
+        if (file) await deleteFile(a.id + '.html', file.sha, 'Delete article: ' + a.title);
+
+        articles.splice(editingIdx, 1);
+
+        const jsonResult = await putFile(DATA, JSON.stringify(articles, null, 2), dataSha, 'Update articles.json');
+        dataSha = jsonResult.content.sha;
+
+        const hpFile = await getFile('html/homepageboxnavComp.html');
+        await putFile('html/homepageboxnavComp.html', buildHomepageComp(articles), hpFile ? hpFile.sha : null, 'Refresh homepage after delete');
+
+        renderList();
+        cancelEdit();
+        showStatus('Article deleted.', 'success');
+    } catch (err) {
+        showStatus('Error: ' + err.message, 'error');
+    }
+}
+
+// ── HTML builders ────────────────────────────────────────────────────────────
+
+function buildArticleHTML(a) {
+    const bodyHTML = a.body
+        .split(/\n\n+/)
+        .map(p => p.replace(/\n/g, '<br>'))
+        .join('<br><br>');
+
+    return `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>${a.title} — The Tolucan Times</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <link type="text/css" rel="stylesheet" href="./css/style.css">
+    <link type="text/css" rel="stylesheet" href="./css/nav.css">
+    <link type="text/css" rel="stylesheet" href="./css/weather.css">
+    <link type="text/css" rel="stylesheet" href="./css/footer.css">
+    <link type="text/css" rel="stylesheet" href="./css/article.css">
+    <link rel="icon" type="image/png" href="./images/TTT_Favicon.png">
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.4.1/dist/jquery.min.js"><\/script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Syne+Mono&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div id="nav-ph"></div>
+    <div class="article-container">
+        <div class="headline-container">
+            <h1>${a.title}</h1>
+        </div>
+        <div class="subheadline-container">
+            <h2>Written By &nbsp;&nbsp; ${a.author}</h2>
+        </div>${a.image ? `
+        <div class="article-subimage"><img src="${a.image}" alt="${a.title}"></div>` : ''}
+        <div class="paragraph-container">
+            <p>${bodyHTML}</p>
+        </div>
+    </div>
+    <div id="footer-ph"></div>
+    <script type="text/javascript" src="./partloader.js"><\/script>
+</body>
+</html>`;
+}
+
+function buildHomepageComp(all) {
+    // Show the 4 most recent articles
+    const featured = all.slice(-4).reverse();
+    const cards = featured.map(a => `
+        <a class="article-card" href="./${a.id}.html">
+            ${a.image ? `<img src="${a.image}" alt="${a.title}">` : ''}
+            <span class="article-tag">${a.tag}</span>
+            <h2>${a.title}</h2>
+            <p class="byline">By ${a.author}</p>
+            <p class="excerpt">${a.excerpt}</p>
+        </a>`).join('');
+
+    return `<div class="news-wrapper">
+
+    <!-- Latest Stories -->
+    <div class="section-divider"><span>Latest Stories</span></div>
+
+    <div class="articles-grid">${cards}
+    </div>
+
+    <!-- Explore -->
+    <div class="section-divider"><span>Explore</span></div>
+
+    <div class="hp-dense-bottom">
+
+        <a class="hp-dense-cell" href="./photogallery.html">
+            <h3>Photo Gallery</h3>
+            <h4>Flicks of the Community</h4>
+            <img src="./images/TT_Swan_BacktoSchool.png" alt="Gallery">
+        </a>
+
+        <a class="hp-dense-cell" href="./horoscopes.html">
+            <h3>Horoscopes</h3>
+            <h4>What the stars say</h4>
+            <img src="./images/TT_Swan_Horoscope.png" alt="Horoscopes">
+        </a>
+
+        <a class="hp-dense-cell" href="./aboutus.html">
+            <h3>About Us</h3>
+            <h4>Since 1937</h4>
+            <img src="./images/TT_Swan_Aboutus.png" alt="About Us">
+        </a>
+
+    </div>
+
+</div>`;
+}
+
+// ── Status ───────────────────────────────────────────────────────────────────
+
+function showStatus(msg, type) {
+    const el = document.getElementById('status-msg');
+    el.textContent = msg;
+    el.className = type;
+    el.style.display = 'block';
+}
+function clearStatus() {
+    document.getElementById('status-msg').style.display = 'none';
+}
+
+// ── Init ─────────────────────────────────────────────────────────────────────
+
+(function init() {
+    const saved = localStorage.getItem('ttt_token');
+    if (saved) { token = saved; openAdmin(); }
+})();
+</script>
+
+</body>
+</html>
