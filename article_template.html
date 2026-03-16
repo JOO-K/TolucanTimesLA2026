@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!--
+===========================================
+  HOW TO ADD A NEW ARTICLE
+===========================================
+
+1. Copy this file and rename it: article_05.html, article_06.html, etc.
+
+2. Fill in the article content below (search for "EDIT:" comments).
+
+3. Add a preview card in html/homepageboxnavComp.html
+   by copying one of the existing <a class="article-card"> blocks
+   and updating the href, img src, tag, title, byline, and excerpt.
+
+4. To add it to the hero slideshow, open html/slideComp.html
+   and copy an existing <div class="swiper-slide"> block,
+   update the background-image, href, tag, title, and author.
+
+5. Put any article images in the /images/ folder and reference
+   them as ./images/your-image.jpg
+
+===========================================
+-->
+
+<head>
+    <title>The Tolucan Times</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <link type="text/css" rel="stylesheet" href="./css/style.css">
+    <link type="text/css" rel="stylesheet" href="./css/nav.css">
+    <link type="text/css" rel="stylesheet" href="./css/weather.css">
+    <link type="text/css" rel="stylesheet" href="./css/footer.css">
+    <link type="text/css" rel="stylesheet" href="./css/article.css">
+
+    <link rel="icon" type="image/png" href="./images/TTT_Favicon.png">
+
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.4.1/dist/jquery.min.js"></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Syne+Mono&display=swap" rel="stylesheet">
+
+</head>
+
+<body>
+
+    <div id="nav-ph"></div>
+
+    <div class="article-container">
+
+        <!-- EDIT: Article headline -->
+        <div class="headline-container">
+            <h1>Your Article Headline Goes Here</h1>
+        </div>
+
+        <!-- EDIT: Author name -->
+        <div class="subheadline-container">
+            <h2>Written By &nbsp;&nbsp; Author Name</h2>
+        </div>
+
+        <!-- EDIT: Main article image. Put image in /images/ folder.
+             Remove this block entirely if there is no image. -->
+        <div class="article-subimage">
+            <img src="./images/Frontpage_00.png" alt="Article image">
+        </div>
+
+        <!-- EDIT: Article body text. Use <br><br> for paragraph breaks. -->
+        <div class="paragraph-container">
+            <p>
+                Write your article text here. To start a new paragraph, use two line breaks like this.
+                <br><br>
+                Second paragraph goes here. Keep writing naturally — the styles will handle the formatting.
+                <br><br>
+                Third paragraph, and so on...
+            </p>
+        </div>
+
+    </div>
+
+    <div id="footer-ph"></div>
+
+    <script type="text/javascript" src="./partloader.js"></script>
+
+</body>
+
+</html>

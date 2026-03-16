@@ -1,0 +1,185 @@
+/* Dense newspaper-style homepage layout */
+
+.news-wrapper {
+    background-color: #faf8f3;
+    width: 100%;
+    padding-bottom: 30px;
+}
+
+/* Section divider headers — newspaper section labels */
+.section-divider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 6px 2vw;
+    background: #f0ece0;
+    border-top: 3px solid #1a1a1a;
+    border-bottom: 1px solid #1a1a1a;
+}
+
+.section-divider span {
+    font-family: Manrope, sans-serif;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: #1a1a1a;
+    white-space: nowrap;
+}
+
+.section-divider::before,
+.section-divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: #1a1a1a;
+}
+
+/* 4-column article preview grid */
+.articles-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    width: 96vw;
+    margin: 0 2vw;
+    border-bottom: 1px dashed #1a1a1a;
+    border-left: 1px dashed #1a1a1a;
+}
+
+.article-card {
+    padding: 16px 14px;
+    border-right: 1px dashed #1a1a1a;
+    text-decoration: none;
+    color: inherit;
+    display: block;
+    background: #faf8f3;
+    transition: background 0.15s;
+}
+
+.article-card:hover {
+    background: #f0ece0;
+}
+
+.article-card img {
+    width: 100%;
+    height: 130px;
+    object-fit: cover;
+    display: block;
+    margin-bottom: 10px;
+    border: 1px solid #ddd;
+}
+
+.article-tag {
+    font-family: Manrope, sans-serif;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: #1E90FF;
+    display: block;
+    margin-bottom: 5px;
+}
+
+.article-card h2 {
+    font-family: Fraunces, serif;
+    font-size: 15px;
+    font-weight: 400;
+    line-height: 1.35;
+    margin: 0 0 5px 0;
+    color: #1a1a1a;
+}
+
+.article-card .byline {
+    font-family: Manrope, sans-serif;
+    font-size: 9px;
+    color: #888;
+    margin: 0 0 8px 0;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.article-card .excerpt {
+    font-family: Manrope, sans-serif;
+    font-size: 11px;
+    line-height: 1.55;
+    color: #444;
+    margin: 0;
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+/* Bottom explore row */
+.hp-dense-bottom {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    width: 96vw;
+    margin: 0 2vw;
+    border-bottom: 1px dashed #1a1a1a;
+    border-left: 1px dashed #1a1a1a;
+}
+
+.hp-dense-cell {
+    padding: 18px 14px;
+    border-right: 1px dashed #1a1a1a;
+    text-decoration: none;
+    color: inherit;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    background: #faf8f3;
+    transition: background 0.15s;
+}
+
+.hp-dense-cell:hover {
+    background: #f0ece0;
+}
+
+.hp-dense-cell h3 {
+    font-family: Fraunces, serif;
+    font-size: 20px;
+    font-weight: 400;
+    margin: 0 0 4px 0;
+    color: #1a1a1a;
+}
+
+.hp-dense-cell h4 {
+    font-family: Manrope, sans-serif;
+    font-size: 10px;
+    color: #888;
+    font-weight: 400;
+    margin: 0;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+}
+
+.hp-dense-cell img {
+    height: 70px;
+    width: auto;
+    margin-top: 12px;
+    object-fit: contain;
+}
+
+/* Responsive */
+@media (max-width: 800px) {
+    .articles-grid {
+        grid-template-columns: 1fr 1fr;
+        width: 100vw;
+        margin: 0;
+        border-left: none;
+    }
+    .article-card:nth-child(2n) {
+        border-right: none;
+    }
+    .hp-dense-bottom {
+        grid-template-columns: 1fr;
+        width: 100vw;
+        margin: 0;
+        border-left: none;
+    }
+    .hp-dense-cell {
+        border-right: none;
+        border-bottom: 1px dashed #1a1a1a;
+    }
+}

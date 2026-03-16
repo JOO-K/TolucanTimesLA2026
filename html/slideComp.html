@@ -1,0 +1,77 @@
+<div class="slide-container">
+
+    <!-- Swiper -->
+    <div class="swiper gallery-top">
+        <div class="swiper-wrapper">
+
+            <div class="swiper-slide"
+                 
+                
+                style="background-image:url(./images/Frontpage_00.png)">
+                <a href="Article_01.html">
+                    <div class="work-title">
+                        <h4 style="background-color: dodgerblue;">ANNOUNCEMENT</h4>
+                        <!-- <h3>Click to Read More</h3> -->
+                        <h1>Website Makeover Almost Done!</h1>
+                        <h2>Welcome to the new Tolucan Times website. Incoming Updates!</h2>
+                    </div>
+                </a>
+            </div>
+
+            <div class="swiper-slide"
+                style="background-image:url(./images/Frontpage_02.png)">
+                <a href="./article_01.html">
+                    <div class="work-title">
+                        <h4 class="event-food" style="background-color: #c54a2b;">ARTICLE</h4>
+                        <h3>Click to Read More</h3>
+                        <h1>Dan Carlin, A Hardcore Tolucan</h1>
+                        <h2>Written By Gino Renzulli</h2>
+                    </div>
+                </a>
+            </div>
+            <div class="swiper-slide"
+                style="background-image:url(./images/Frontpage_01.png)">
+                <a href="./article_02.html">
+                    <div class="work-title">
+                        <h4>ARTICLE</h4>
+                        <h3>Click to Read More</h3>
+                        <h1>The Honorary Mayor Is In!</h1>
+                        <h2>Written By Nico Renzulli</h2>
+                    </div>
+                </a>
+            </div>
+
+
+        </div>
+        <!-- Add Arrows -->
+        <div class="swiper-button-next swiper-button-white"></div>
+        <div class="swiper-button-prev swiper-button-white"></div>
+    </div>
+
+</div>
+
+
+    <!-- Initialize Swiper -->
+    <script type="module">
+
+
+        var galleryTop = new Swiper('.gallery-top', {
+            spaceBetween: 10,
+            effect: 'fade',
+            grabCursor: false,
+            allowTouchMove: false,
+            loop: true,
+            centeredSlides: true,
+            slidesPerView: 'auto',
+            autoplay: {
+                delay: 8000,
+                disableOnInteraction: false,
+            },
+
+            navigation: {
+                nextEl: '.swiper-button-next',
+                prevEl: '.swiper-button-prev',
+            },
+
+        });
+    </script>

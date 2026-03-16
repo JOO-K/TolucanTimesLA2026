@@ -1,0 +1,196 @@
+
+
+.article-image{
+    position: absolute;
+    top: 70px;
+    width: 100%;
+    height: 300px;
+    background-color: antiquewhite;
+    z-index: -1;
+    padding: 0px;
+    margin: 0px;
+}
+
+.article-image img{
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.article-container{
+    width: 700px;
+    background-color: ;
+    margin: auto;
+    left: 0;
+    right: 0;
+    padding: 20px;
+    padding-top: 200px;
+    padding-bottom: 400px;
+  
+}
+
+@media all and (max-width: 800px) {
+    .article-container{
+        width: 100vw;
+        box-sizing: border-box;
+        padding-top: 150px;
+    }
+}
+
+.headline-container{
+    width: 1000px;
+    transform: translateX(-150px);
+    text-align: center;
+}
+
+@media all and (max-width: 800px) {
+    .headline-container{
+        width: 90vw;
+        transform: none;
+        box-sizing: border-box;
+    }
+}
+
+.headline-container h1{
+    font-family: Fraunces;
+    font-weight: 600;
+    font-size: 55px;
+    letter-spacing: -2.25px;
+    animation: 1s headlineload;
+}
+
+@media all and (max-width: 800px) {
+    .headline-container h1{
+        font-size: 30px;
+        letter-spacing: -.5px;
+        margin-bottom: 50px;
+    }
+}
+
+@keyframes headlineload{
+    
+    0%{
+        font-weight: 300;
+    }
+    
+    100%{
+        font-weight: 600;
+    }
+    
+}
+
+.subheadline-container{
+    text-align: center;
+    margin-bottom: -30px;
+}
+
+.subheadline-container h2{
+    margin-top: -10px;
+    font-family: Manrope;
+    font-size: 14px;
+    font-weight: 400;
+}
+
+.paragraph-container p{
+    margin-top: 70px;
+    font-family: Bookish;
+    font-size: 20px;
+    line-height: 33px;
+    font-weight: 900;
+    text-justify: pretty;
+}
+
+@media all and (max-width: 800px) {
+    .paragraph-container p{
+        letter-spacing: -.1px;
+    }
+}
+
+
+.next-previous-container{
+    width: 290px;
+    float: right;
+}
+
+.next-previous-container a{
+    text-decoration: none;
+}
+
+.next-previous-container h2{
+    margin-top: 150px;
+    font-family: Bookish;
+    font-size: 40px;
+    font-weight: 900;
+    text-align: right;
+    color: dodgerblue;
+    border-bottom: 1px dashed dodgerblue;
+}
+
+.next-previous-container h3{
+    margin-top: -20px;
+    font-family: Bookish;
+    font-size: 15px;
+    line-height: 25px;
+    font-weight: 900;
+    text-align: right;
+    color: dodgerblue;
+}
+
+.next-previous-container a:hover h3{
+    text-decoration: underline;
+}
+
+.footer-container{
+    background-color: black;
+    width: 100%;
+    height: 200px;
+    display: flex;
+    flex-direction: row;
+    color: white;
+
+}
+
+.article-icon-right{
+    position: fixed;
+    
+    bottom: 50px;
+    right: 20px;
+
+    width: 50px;
+    height: 50px;
+}
+
+.article-icon-right img{
+    object-fit: cover;
+    width: 100%;
+    height: 100%;
+}
+.obituary-container{
+    
+}
+
+.obituary-container h2{ 
+    color: white;
+    z-index: 10000;
+    font-size: 200px;
+}
+
+.obituary-container a{ 
+    color: white;
+    text-decoration: none;
+}
+
+.obituary-container h1{
+    line-height: 10px;
+}
+
+.article-subimage{
+    width: 100%;
+    margin-top: 50px;
+}
+
+.article-subimage img{
+    object-fit: contain;
+    width: 100%;
+    height: 100%;
+}

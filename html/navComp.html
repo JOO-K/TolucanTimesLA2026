@@ -1,0 +1,167 @@
+<div class="nav-container">
+    <div class="color-container">
+        <span></span>
+        <img id="mobilenav"
+            src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b2/Hamburger_icon.svg/1024px-Hamburger_icon.svg.png">
+    </div>
+
+
+    <div class="mobilenavbox" id="mobilenavbox">
+
+        <a href="./aboutus.html">
+            <div class="mobile-about-box"><img
+                    src="https://icons.veryicon.com/png/o/miscellaneous/jt2/question-mark-circle.png"></div>
+        </a>
+
+        <a href="https://www.instagram.com/thetolucantimesla/" target="_blank">
+            <div class="mobile-social-box"><img src="https://cdn-icons-png.flaticon.com/256/145/145805.png"></div>
+        </a>
+
+        <a href="https://ko-fi.com/thetolucantimes">
+            <div class="mobile-donate-box"><img src="./images/icons/Donate_Icon.png"></div>
+        </a>
+
+        <img src="./images/TT_Swan_BacktoSchool.png">
+
+        <a href="./publicationshome.html">
+            <div style="background-color: #de8c35; width: 180px;" class="mobile-sub-box">Prints & Publications</div>
+        </a>
+        <a href="./ourfriends.html">
+            <div style="background-color: #dd6d2c; width: 155px;" class="mobile-sub-box">Our Friends</div>
+        </a>
+        <a href="./aboutus.html">
+            <div style="background-color: #c54a2b; width: 134px;" class="mobile-sub-box">About Us</div>
+        </a>
+        <a href="./comingsoon.html">
+            <div style="background-color:  brown;  width: 119px;" class="mobile-sub-box">Merch & Shop</div>
+        </a>
+        <a href="./contactus.html">
+            <div style="background-color: dodgerblue; width: 110px;" class="mobile-sub-box">Contact Us</div>
+        </a>
+
+
+        <div class="marquee">
+            <h1>New Issue October Issue Released!  </h1>
+        </div>
+    </div>
+
+    <a href="./index.html">
+        <div class="logo-container">
+            <img src="./images/TTT_Logo.png">
+            <h1>Established 1937</h1>
+        </div>
+    </a>
+
+    <div class="link-container-0">
+
+        <div class="disc-container">
+            <h1></h1>
+        </div>
+
+        <div class="container">
+            <div class="current-info">
+
+                <div class="date-container">
+
+                    <div class="date" id="date">
+                        Have A Good Day!
+                    </div>
+                    <div class="time" id="time">
+                        <span id="am-pm"></span>
+                    </div>
+
+
+                    <div class="others" id="current-weather-items">
+
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="today" id="current-temp">
+                <div class="other">
+
+                    <div class="temp"></div>
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+
+    <a href="./publicationshome.html">
+        <div class="link-container-1">
+            <h1>Prints &<br>Publications</h1>
+        </div>
+    </a>
+
+    <a href="./ourfriends.html">
+        <div class="link-container-2">
+            <h1>Our<br>Friends</h1>
+        </div>
+    </a>
+
+    <a href="./aboutus.html">
+        <div class="link-container-3">
+            <h1>About<br>Us</h1>
+        </div>
+    </a>
+
+    <a href="./comingsoon.html">
+        <div class="link-container-4">
+            <h1>Merch<br>Shop</h1>
+        </div>
+    </a>
+
+    <a href="./contactus.html">
+        <div class="link-container-5">
+            <h1>Contact Us</h1>
+        </div>
+    </a>
+
+    <a href="https://ko-fi.com/thetolucantimes">
+        <div class="donate-container">
+            <img src="./images/icons/Donate_Icon.png">
+            <!-- <h1>Support by Donating</h1> -->
+        </div>
+    </a>
+
+</div>
+
+<!-- Mobile Nav Button -->
+<script>
+    $("#mobilenav").click(function () {
+        $("#mobilenavbox").toggle();
+    });
+</script>
+
+
+<!-- Marquee Initiate -->
+<script>
+
+    function Marquee(selector, speed) {
+        const parentSelector = document.querySelector(selector);
+        const clone = parentSelector.innerHTML;
+        const firstElement = parentSelector.children[0];
+        let i = 0;
+        console.log(firstElement);
+        parentSelector.insertAdjacentHTML('beforeend', clone);
+        parentSelector.insertAdjacentHTML('beforeend', clone);
+        parentSelector.insertAdjacentHTML('beforeend', clone);
+        parentSelector.insertAdjacentHTML('beforeend', clone);
+
+        setInterval(function () {
+            firstElement.style.marginLeft = `-${i}px`;
+            if (i > firstElement.clientWidth) {
+                i = 0;
+            }
+            i = i + speed;
+        }, 0);
+    }
+
+    //after window is completed load
+    //1 class selector for marquee
+    //2 marquee speed 0.2
+    window.addEventListener('load', Marquee('.marquee', 0.15))
+
+</script>

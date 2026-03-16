@@ -1,0 +1,70 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;400;700&display=swap');
+
+
+.date-container .time{
+    position: absolute;
+
+    left: 355px;
+    top: 76px;
+
+    font-family: Manrope;
+    font-weight: 900;
+    font-size: 10px;
+}
+
+@media all and (max-width: 800px) {
+    .date-container .time{
+       left: auto;
+       right: 10px;
+       top: 60px;
+       font-size: 10px;
+       font-weight: 300;
+    }
+}
+
+
+.date-container .date{
+    position: absolute;
+
+    left: 250px;
+    top: 76px;
+
+    font-family: Manrope;
+    font-weight: 900;
+    font-size: 10px;
+}
+
+@media all and (max-width: 800px) {
+    .date-container .date{
+       left: auto;
+       right: 10px;
+       top: 45px;
+       font-size: 10px;
+       font-weight: 300;
+    }
+}
+
+.today .temp{
+    position: absolute;
+
+    left: 334px;
+    top: 10px;
+
+    font-family: Bookish;
+    font-weight: 900;
+    font-size: 30px;
+
+    
+}
+
+@media all and (max-width: 800px) {
+    .today .temp{
+       left: auto;
+       right: 10px;
+       top: 10px;
+       font-size: 18px;
+       font-weight: 300;
+    }
+}
+
+

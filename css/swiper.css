@@ -1,0 +1,138 @@
+
+/* SWIPER JS CSS */
+
+.swiper {
+    z-index: -5;
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.swiper-slide {
+    background-size: cover;
+    background-position: center;
+    text-align: center;
+}
+
+.gallery-top {
+    height: 100%;
+    width: 100%;
+    border: none;
+}
+
+
+.gallery-thumbs {
+    position: absolute;
+    right: 0px;
+    bottom: 0px;
+    ;
+    height: 15%;
+    width: 500px;
+    box-sizing: border-box;
+    padding: 10px 0;
+}
+
+.gallery-thumbs .swiper-slide {
+    width: 25%;
+    height: 100%;
+    opacity: 0.5;
+}
+
+.gallery-thumbs .swiper-slide-thumb-active {
+    opacity: 1;
+}
+
+.swiper-button-prev{
+    background-color: white;
+    padding: 10px 10px;
+    margin-left: -10px;
+    border-radius: 0px 20px 20px 0px;
+    filter: drop-shadow(0px 0px 3px black);
+}
+
+.swiper-button-next{
+    background-color: white;
+    padding: 10px;
+    margin-right: -10px;
+    border-radius: 20px 0px 0px 20px;
+    filter: drop-shadow(0px 0px 3px black);
+}
+
+
+
+/* SWIPER CSS END */
+
+.work-title{
+    max-width: 70%;
+    text-align: right;
+    position: absolute;
+    right: 60px;
+    bottom: 20px;
+}
+
+.swiper-slide a{
+    text-decoration: none;
+}
+
+.work-title h1{
+    font-family: bookish;
+    font-size: 36px;
+    font-weight: 300;
+    color: white;
+    background-color: black;
+    padding: 20px 25px 20px 30px;
+    border-radius: 0px 3px 3px 3px;
+}
+
+.work-title h2{
+    font-family: Manrope;
+    font-size: 18px;
+    font-weight: 100;
+    color: white;
+    background-color: black;
+    padding: 20px;
+    border-radius: 3px;
+    margin-top: -50px;
+}
+
+.work-title h3{
+    position: absolute;
+    right: 0px;
+    top: -50px;
+    width: 128px;
+    font-family: Manrope;
+    font-size: 15px;
+    font-weight: 300;
+    color: white;
+    background-color: black;
+    padding: 12px 10px;
+    text-decoration: underline;
+    border-radius: 3px;
+}
+
+@media all and (max-width: 800px) {
+    .work-title H3{
+       width: auto;
+       font-size: 10px;
+       top: -35px;
+    }
+}
+
+.work-title h4{
+    position: absolute;
+    left: 0px;
+    top: -18px;
+    width: 140px;
+    font-family: manrope;
+    font-size: 12px;
+    font-weight: 900;
+    color: white;
+    background-color: darkgoldenrod;
+    padding: 5px 10px;
+    border-radius: 3px 3px 0px 0px;
+    text-align: center;
+}
+
+.event-food{
+    background-color: green;
+}
