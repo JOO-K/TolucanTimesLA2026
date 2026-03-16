@@ -22,6 +22,19 @@
                 <span class="sidebar-box-label">Advertisement</span>
                 <div id="hp-ad-box" class="ad-box"><span class="ad-placeholder-label">Your Ad Here</span><span class="ad-placeholder-email">advertise@tolucantimes.com</span></div>
             </div>
+
+            <!-- Sports headlines -->
+            <div class="sidebar-box">
+                <span class="sidebar-box-label">Sports</span>
+                <div id="hp-sports-feed"><div class="news-feed-loading">Loading&hellip;</div></div>
+            </div>
+
+            <!-- Entertainment headlines -->
+            <div class="sidebar-box">
+                <span class="sidebar-box-label">Entertainment</span>
+                <div id="hp-ent-feed"><div class="news-feed-loading">Loading&hellip;</div></div>
+            </div>
+
         </div>
 
     </div>
@@ -86,5 +99,8 @@
         ab.innerHTML=cfg.ad.link?'<a href="'+cfg.ad.link+'" target="_blank" rel="noopener">'+img+'</a>':img;
         ab.style.padding='0';ab.style.border='none';ab.style.background='none';ab.style.minHeight='auto';
     }).catch(function(){});
+    function loadFeed(rssUrl,elId){var api='https://api.rss2json.com/v1/api.json?count=5&rss_url='+encodeURIComponent(rssUrl);fetch(api).then(function(r){return r.json();}).then(function(data){if(!data.items||!data.items.length)throw new Error('empty');var h='';data.items.slice(0,5).forEach(function(item){var d=new Date(item.pubDate),ts=isNaN(d)?'':d.toLocaleDateString('en-US',{month:'short',day:'numeric'});h+='<a class="news-feed-item" href="'+item.link+'" target="_blank" rel="noopener"><span class="news-feed-title">'+item.title+'</span>'+(ts?'<span class="news-feed-date">'+ts+'</span>':'')+'</a>';});var el=document.getElementById(elId);if(el)el.innerHTML=h;}).catch(function(){var el=document.getElementById(elId);if(el)el.innerHTML='<span class="news-feed-loading">Feed unavailable</span>';});}
+    loadFeed('https://feeds.apnews.com/rss/apf-sports','hp-sports-feed');
+    loadFeed('https://feeds.apnews.com/rss/apf-entertainment','hp-ent-feed');
 }());
 </script>

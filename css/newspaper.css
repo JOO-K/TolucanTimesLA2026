@@ -438,6 +438,55 @@
     overflow: hidden;
 }
 
+/* ── News feed (Sports / Entertainment headlines) ── */
+
+.news-feed-item {
+    display: block;
+    text-decoration: none;
+    padding: 9px 0;
+    border-bottom: 1px solid #f0ece0;
+    color: inherit;
+    transition: opacity 0.15s;
+}
+
+.news-feed-item:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.news-feed-item:hover {
+    opacity: 0.7;
+}
+
+.news-feed-title {
+    display: block;
+    font-family: Fraunces, serif;
+    font-size: 13px;
+    line-height: 1.4;
+    color: #0d1b2a;
+    transition: color 0.12s;
+}
+
+.news-feed-item:hover .news-feed-title {
+    color: #1E90FF;
+}
+
+.news-feed-date {
+    display: block;
+    font-family: Manrope, sans-serif;
+    font-size: 9px;
+    color: #bbb;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-top: 3px;
+}
+
+.news-feed-loading {
+    font-family: Manrope, sans-serif;
+    font-size: 11px;
+    color: #bbb;
+}
+
 /* ── Sidebar compact article list (More Stories) ── */
 
 .sidebar-box-stories {
