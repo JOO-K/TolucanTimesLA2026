@@ -165,6 +165,35 @@
                 </div>
             </div>
 
+            <!-- Sidebar Feeds -->
+            <div style="margin-top:36px;">
+                <div class="section-title">
+                    <span>Sidebar Feeds</span>
+                    <span style="font-family:sans-serif;font-size:11px;font-weight:400;color:#888;letter-spacing:0;text-transform:none;">Sports &amp; Entertainment headlines shown next to articles</span>
+                </div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+                    <div style="background:white;border:1px solid #ddd;padding:18px 20px;">
+                        <div style="font-size:9px;font-family:sans-serif;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#1E90FF;margin-bottom:10px;border-left:3px solid #1E90FF;padding-left:7px;">Sports</div>
+                        <div id="sports-items-list" style="margin-bottom:10px;"></div>
+                        <div style="display:flex;gap:6px;">
+                            <input type="text" id="sports-title-input" placeholder="Headline" style="flex:2;padding:7px 9px;border:1px solid #ccc;font-size:13px;font-family:Georgia,serif;">
+                            <input type="text" id="sports-url-input" placeholder="Link URL (optional)" style="flex:2;padding:7px 9px;border:1px solid #ccc;font-size:12px;font-family:sans-serif;">
+                            <button class="btn btn-secondary btn-sm" onclick="addFeedItem('sports')" style="white-space:nowrap;">+ Add</button>
+                        </div>
+                    </div>
+                    <div style="background:white;border:1px solid #ddd;padding:18px 20px;">
+                        <div style="font-size:9px;font-family:sans-serif;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#1E90FF;margin-bottom:10px;border-left:3px solid #1E90FF;padding-left:7px;">Entertainment</div>
+                        <div id="ent-items-list" style="margin-bottom:10px;"></div>
+                        <div style="display:flex;gap:6px;">
+                            <input type="text" id="ent-title-input" placeholder="Headline" style="flex:2;padding:7px 9px;border:1px solid #ccc;font-size:13px;font-family:Georgia,serif;">
+                            <input type="text" id="ent-url-input" placeholder="Link URL (optional)" style="flex:2;padding:7px 9px;border:1px solid #ccc;font-size:12px;font-family:sans-serif;">
+                            <button class="btn btn-secondary btn-sm" onclick="addFeedItem('ent')" style="white-space:nowrap;">+ Add</button>
+                        </div>
+                    </div>
+                </div>
+                <p style="font-family:sans-serif;font-size:11px;color:#aaa;margin-top:8px;">Add headlines above then click Publish to Site.</p>
+            </div>
+
             <!-- Ad Settings -->
             <div style="margin-top:36px;">
                 <div class="section-title">
@@ -280,6 +309,8 @@ let dragSrcDisplayIdx = null;
 let adConfig    = { image: '', link: '', alt: 'Advertisement' };
 let adConfigSha = null;
 let sloganLocal = '';
+let sportsItems = [];   // [{title, url}, ...]
+let entItems    = [];   // [{title, url}, ...]
 
 // ── Auth ────────────────────────────────────────────────────────────────────
 
@@ -732,9 +763,9 @@ function buildHomepageComp(all) {
         ab.innerHTML=cfg.ad.link?'<a href="'+cfg.ad.link+'" target="_blank" rel="noopener">'+img+'<\/a>':img;
         ab.style.padding='0';ab.style.border='none';ab.style.background='none';ab.style.minHeight='auto';
     }).catch(function(){});
-    function loadFeed(rssUrl,elId){var api='https://api.rss2json.com/v1/api.json?count=5&rss_url='+encodeURIComponent(rssUrl);fetch(api).then(function(r){return r.json();}).then(function(data){if(!data.items||!data.items.length)throw new Error('empty');var h='';data.items.slice(0,5).forEach(function(item){var d=new Date(item.pubDate),ts=isNaN(d)?'':d.toLocaleDateString('en-US',{month:'short',day:'numeric'});h+='<a class="news-feed-item" href="'+item.link+'" target="_blank" rel="noopener"><span class="news-feed-title">'+item.title+'<\/span>'+(ts?'<span class="news-feed-date">'+ts+'<\/span>':'')+'<\/a>';});var el=document.getElementById(elId);if(el)el.innerHTML=h;}).catch(function(){var el=document.getElementById(elId);if(el)el.innerHTML='<span class="news-feed-loading">Feed unavailable<\/span>';});}
-    loadFeed('https://feeds.apnews.com/rss/apf-sports','hp-sports-feed');
-    loadFeed('https://feeds.apnews.com/rss/apf-entertainment','hp-ent-feed');
+    function renderFeed(items,elId){var el=document.getElementById(elId);if(!el)return;if(!items||!items.length){el.innerHTML='<span class="news-feed-loading">No items yet<\/span>';return;}var h='';items.forEach(function(item){h+='<a class="news-feed-item"'+(item.url?' href="'+item.url+'" target="_blank" rel="noopener"':'')+'>​<span class="news-feed-title">'+item.title+'<\/span><\/a>';});el.innerHTML=h;}
+    if(cfg.sports)renderFeed(cfg.sports,'hp-sports-feed');
+    if(cfg.entertainment)renderFeed(cfg.entertainment,'hp-ent-feed');
 }());
 <\/script>`;
 
@@ -799,6 +830,8 @@ async function loadAdConfig() {
             adConfig    = cfg.ad || { image: '', link: '', alt: 'Advertisement' };
             adConfigSha = file.sha;
             sloganLocal = cfg.slogan || '';
+            sportsItems = cfg.sports        || [];
+            entItems    = cfg.entertainment || [];
             const imgEl = document.getElementById('ad-image-input');
             const lnkEl = document.getElementById('ad-link-input');
             const altEl = document.getElementById('ad-alt-input');
@@ -808,6 +841,8 @@ async function loadAdConfig() {
             if (altEl) altEl.value = adConfig.alt   || '';
             if (slgEl) slgEl.value = sloganLocal;
             updateAdPreview();
+            renderFeedEditor('sports');
+            renderFeedEditor('ent');
         }
     } catch (e) { /* no config yet */ }
 }
@@ -860,6 +895,48 @@ function clearSlogan() {
     saveSloganLocal();
     const st = document.getElementById('slogan-status');
     if (st) st.textContent = 'Slogan cleared — publish to go live.';
+}
+
+// ── Sidebar feed editor ───────────────────────────────────────────────────────
+
+function renderFeedEditor(type) {
+    const items = type === 'sports' ? sportsItems : entItems;
+    const elId  = type === 'sports' ? 'sports-items-list' : 'ent-items-list';
+    const el    = document.getElementById(elId);
+    if (!el) return;
+    if (!items.length) {
+        el.innerHTML = '<p style="font-family:sans-serif;font-size:12px;color:#bbb;margin-bottom:6px;">No items yet.</p>';
+        return;
+    }
+    el.innerHTML = items.map((item, i) => `
+        <div style="display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid #f0ece0;">
+            <span style="flex:1;font-family:Georgia,serif;font-size:13px;">${escHtml(item.title)}</span>
+            <span style="font-family:sans-serif;font-size:11px;color:#bbb;max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${escHtml(item.url||'')}">${escHtml(item.url||'—')}</span>
+            <button class="btn btn-danger btn-sm" onclick="removeFeedItem('${type}',${i})" style="padding:2px 8px;">✕</button>
+        </div>`).join('');
+}
+
+function addFeedItem(type) {
+    const titleEl = document.getElementById(type + '-title-input');
+    const urlEl   = document.getElementById(type + '-url-input');
+    const title   = (titleEl.value || '').trim();
+    if (!title) return;
+    const url = (urlEl.value || '').trim();
+    if (type === 'sports') sportsItems.push({ title, url });
+    else                   entItems.push({ title, url });
+    titleEl.value = '';
+    urlEl.value   = '';
+    renderFeedEditor(type);
+    configDirty = true;
+    markPending();
+}
+
+function removeFeedItem(type, idx) {
+    if (type === 'sports') sportsItems.splice(idx, 1);
+    else                   entItems.splice(idx, 1);
+    renderFeedEditor(type);
+    configDirty = true;
+    markPending();
 }
 
 // ── Pending changes ───────────────────────────────────────────────────────────
@@ -924,7 +1001,7 @@ async function publishAll() {
         if (configDirty) {
             const existing = await getFile(AD_CONFIG);
             const jr = await putFile(AD_CONFIG,
-                JSON.stringify({ ad: adConfig, slogan: sloganLocal }, null, 2),
+                JSON.stringify({ ad: adConfig, slogan: sloganLocal, sports: sportsItems, entertainment: entItems }, null, 2),
                 existing ? existing.sha : null, 'Update site config');
             adConfigSha = jr.content.sha;
             configDirty = false;

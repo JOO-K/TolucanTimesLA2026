@@ -99,8 +99,22 @@
         ab.innerHTML=cfg.ad.link?'<a href="'+cfg.ad.link+'" target="_blank" rel="noopener">'+img+'</a>':img;
         ab.style.padding='0';ab.style.border='none';ab.style.background='none';ab.style.minHeight='auto';
     }).catch(function(){});
-    function loadFeed(rssUrl,elId){var api='https://api.rss2json.com/v1/api.json?count=5&rss_url='+encodeURIComponent(rssUrl);fetch(api).then(function(r){return r.json();}).then(function(data){if(!data.items||!data.items.length)throw new Error('empty');var h='';data.items.slice(0,5).forEach(function(item){var d=new Date(item.pubDate),ts=isNaN(d)?'':d.toLocaleDateString('en-US',{month:'short',day:'numeric'});h+='<a class="news-feed-item" href="'+item.link+'" target="_blank" rel="noopener"><span class="news-feed-title">'+item.title+'</span>'+(ts?'<span class="news-feed-date">'+ts+'</span>':'')+'</a>';});var el=document.getElementById(elId);if(el)el.innerHTML=h;}).catch(function(){var el=document.getElementById(elId);if(el)el.innerHTML='<span class="news-feed-loading">Feed unavailable</span>';});}
-    loadFeed('https://feeds.apnews.com/rss/apf-sports','hp-sports-feed');
-    loadFeed('https://feeds.apnews.com/rss/apf-entertainment','hp-ent-feed');
+    // ── Sports & Entertainment from config.json ────────────────────────────
+    // (Items are managed in the admin panel under "Sidebar Feeds")
+    if (cfg.sports || cfg.entertainment) {
+        function renderFeed(items, elId) {
+            var el = document.getElementById(elId);
+            if (!el) return;
+            if (!items || !items.length) { el.innerHTML = '<span class="news-feed-loading">No items yet</span>'; return; }
+            var h = '';
+            items.forEach(function (item) {
+                h += '<a class="news-feed-item"' + (item.url ? ' href="' + item.url + '" target="_blank" rel="noopener"' : '') + '>'
+                   + '<span class="news-feed-title">' + item.title + '</span></a>';
+            });
+            el.innerHTML = h;
+        }
+        renderFeed(cfg.sports,         'hp-sports-feed');
+        renderFeed(cfg.entertainment,  'hp-ent-feed');
+    }
 }());
 </script>
