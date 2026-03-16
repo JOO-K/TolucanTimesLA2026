@@ -87,6 +87,25 @@
             .form-row { grid-template-columns: 1fr; }
             #delete-btn { margin-left: 0; }
         }
+
+        /* ── Publish bar ── */
+        #publish-bar { display: none; position: fixed; bottom: 0; left: 0; right: 0; background: #1a1a1a; color: white; padding: 14px 24px; align-items: center; justify-content: space-between; z-index: 100; box-shadow: 0 -3px 12px rgba(0,0,0,0.3); }
+        #publish-bar span { font-family: sans-serif; font-size: 13px; color: #ccc; }
+        #publish-bar strong { color: #f0a030; }
+        .admin-body { padding-bottom: 80px; }
+
+        /* ── Article list sections ── */
+        .list-section-title { font-size: 9px; font-family: sans-serif; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; color: #777; margin: 28px 0 8px; border-bottom: 1px solid #ddd; padding-bottom: 6px; }
+        .article-row.archived { opacity: 0.5; background: #fafafa; }
+        .article-row.drag-over { border-color: #1E90FF !important; background: #eef5ff !important; }
+        .drag-handle { cursor: grab; font-size: 18px; color: #ccc; padding: 0 8px; flex-shrink: 0; user-select: none; }
+        .drag-handle:hover { color: #888; }
+        .featured-badge { font-size: 8px; background: #de8c35; color: white; padding: 2px 7px; margin-left: 8px; font-family: sans-serif; letter-spacing: 1px; text-transform: uppercase; vertical-align: middle; }
+
+        /* ── Bigger text blocks ── */
+        .block-body textarea { min-height: 240px; font-size: 15px; line-height: 1.75; }
+        .form-group textarea { min-height: 80px; }
+        #article-editor { max-width: 860px; }
     </style>
 </head>
 <body>
@@ -125,6 +144,25 @@
             </div>
             <div id="article-list">
                 <p style="font-family:sans-serif;font-size:13px;color:#888;">Loading…</p>
+            </div>
+
+            <!-- Slogan -->
+            <div style="margin-top:36px;">
+                <div class="section-title">
+                    <span>Nav Slogan</span>
+                    <span style="font-family:sans-serif;font-size:11px;font-weight:400;color:#888;letter-spacing:0;text-transform:none;">Replaces the date in the nav bar</span>
+                </div>
+                <div style="background:white;border:1px solid #ddd;padding:20px 24px;">
+                    <div class="form-group" style="margin-bottom:12px;">
+                        <label>Slogan Text <span>(leave blank to show the date normally)</span></label>
+                        <input type="text" id="slogan-input" placeholder="e.g. Happy 4th of July! 🎆" style="font-size:15px;">
+                    </div>
+                    <div style="display:flex;gap:12px;align-items:center;">
+                        <button class="btn btn-secondary" onclick="saveSloganLocal()">Update Slogan</button>
+                        <button class="btn btn-danger btn-sm" onclick="clearSlogan()">Clear</button>
+                        <span id="slogan-status" style="font-family:sans-serif;font-size:12px;color:#888;"></span>
+                    </div>
+                </div>
             </div>
 
             <!-- Ad Settings -->
@@ -222,12 +260,26 @@
 const REPO  = 'JOO-K/TolucanTimesLA2026';
 const API   = 'https://api.github.com/repos/' + REPO + '/contents/';
 const DATA  = 'data/articles.json';
+const AD_CONFIG = 'data/config.json';
 
 let token      = '';
 let articles   = [];
 let dataSha    = null;
 let editingIdx = -1;
 let blocks     = []; // working copy of blocks for current edit
+
+// ── Pending changes tracking ──────────────────────────────────────────────────
+let dirtyArticleIds  = new Set();   // article IDs whose HTML needs rewriting
+let deletedArticles  = [];          // {id, sha} items to delete on publish
+let articlesJsonDirty = false;
+let homepageDirty    = false;
+let configDirty      = false;
+let dragSrcDisplayIdx = null;
+
+// ── Config (ad + slogan) ──────────────────────────────────────────────────────
+let adConfig    = { image: '', link: '', alt: 'Advertisement' };
+let adConfigSha = null;
+let sloganLocal = '';
 
 // ── Auth ────────────────────────────────────────────────────────────────────
 
@@ -265,7 +317,7 @@ async function openAdmin() {
     document.getElementById('login-screen').style.display = 'none';
     document.getElementById('admin-screen').style.display = 'block';
     await loadArticles();
-    loadAdConfig();
+    await loadAdConfig();
 }
 
 // ── GitHub helpers ───────────────────────────────────────────────────────────
@@ -372,24 +424,63 @@ function seedArticles() {
 
 function renderList() {
     const el = document.getElementById('article-list');
-    if (!articles.length) {
-        el.innerHTML = '<p style="font-family:sans-serif;font-size:13px;color:#888;">No articles yet. Click "+ New Article" to get started.</p>';
-        return;
+
+    const active   = articles.map((a, i) => ({a, i})).filter(x => !x.a.archived);
+    const archived = articles.map((a, i) => ({a, i})).filter(x =>  x.a.archived);
+
+    // Display active in reverse (last = featured shows at top)
+    const activeDisplay = [...active].reverse();
+
+    let html = '<div class="list-section-title">Front Page Articles <span style="font-weight:400;color:#bbb;text-transform:none;letter-spacing:0;font-size:11px;">— drag to reorder · top = featured</span></div>';
+
+    if (!activeDisplay.length) {
+        html += '<p style="font-family:sans-serif;font-size:13px;color:#888;margin-bottom:16px;">No front page articles. Create one or restore from archive.</p>';
+    } else {
+        activeDisplay.forEach(({a, i}, displayIdx) => {
+            const isFeatured = displayIdx === 0;
+            const badge = isFeatured ? '<span class="featured-badge">Featured</span>' : '';
+            const dirty  = dirtyArticleIds.has(a.id) ? ' <span style="color:#de8c35;font-size:10px;font-family:sans-serif;">●</span>' : '';
+            html += `<div class="article-row" draggable="true"
+                ondragstart="dragStart(event,${displayIdx})"
+                ondragover="dragOver(event)"
+                ondrop="dropArticle(event,${displayIdx})"
+                ondragleave="dragLeave(event)">
+                <span class="drag-handle" title="Drag to reorder">⠿</span>
+                <div class="article-row-left">
+                    <div class="article-row-tag">${a.tag}</div>
+                    <div class="article-row-title">${a.title}${badge}${dirty}</div>
+                    <div class="article-row-meta">By ${a.author} &nbsp;·&nbsp; ${a.id}.html</div>
+                </div>
+                <div class="article-row-actions">
+                    <a href="./${a.id}.html" target="_blank" class="btn btn-secondary btn-sm" style="text-decoration:none;line-height:1.6">View ↗</a>
+                    <button class="btn btn-primary btn-sm" onclick="showEditor(${i})">Edit</button>
+                    <button class="btn btn-secondary btn-sm" onclick="toggleArchive(${i})" style="color:#999;" title="Remove from front page">Archive</button>
+                </div>
+            </div>`;
+        });
     }
-    el.innerHTML = [...articles].reverse().map((a, ri) => {
-        const i = articles.length - 1 - ri;
-        return `<div class="article-row">
-            <div class="article-row-left">
-                <div class="article-row-tag">${a.tag}</div>
-                <div class="article-row-title">${a.title}</div>
-                <div class="article-row-meta">By ${a.author} &nbsp;·&nbsp; ${a.id}.html</div>
-            </div>
-            <div class="article-row-actions">
-                <a href="./${a.id}.html" target="_blank" class="btn btn-secondary btn-sm" style="text-decoration:none;line-height:1.6">View ↗</a>
-                <button class="btn btn-primary btn-sm" onclick="showEditor(${i})">Edit</button>
-            </div>
-        </div>`;
-    }).join('');
+
+    html += '<div class="list-section-title" style="margin-top:32px;">Archive <span style="font-weight:400;color:#bbb;text-transform:none;letter-spacing:0;font-size:11px;">— not shown on front page</span></div>';
+    if (!archived.length) {
+        html += '<p style="font-family:sans-serif;font-size:13px;color:#bbb;margin-bottom:8px;">No archived articles.</p>';
+    } else {
+        archived.forEach(({a, i}) => {
+            html += `<div class="article-row archived">
+                <div class="article-row-left">
+                    <div class="article-row-tag">${a.tag}</div>
+                    <div class="article-row-title">${a.title}</div>
+                    <div class="article-row-meta">By ${a.author} &nbsp;·&nbsp; ${a.id}.html</div>
+                </div>
+                <div class="article-row-actions">
+                    <a href="./${a.id}.html" target="_blank" class="btn btn-secondary btn-sm" style="text-decoration:none;line-height:1.6">View ↗</a>
+                    <button class="btn btn-primary btn-sm" onclick="showEditor(${i})">Edit</button>
+                    <button class="btn btn-success btn-sm" onclick="toggleArchive(${i})">Restore to Front Page</button>
+                </div>
+            </div>`;
+        });
+    }
+
+    el.innerHTML = html;
 }
 
 // ── Blocks ──────────────────────────────────────────────────────────────────
@@ -513,37 +604,25 @@ async function saveArticle(e) {
         blocks:    blocks.filter(b => b.type === 'image' ? b.src.trim() : b.content.trim())
     };
 
-    if (!data.blocks.length) { showStatus('Add at least one content block before publishing.', 'error'); return; }
+    if (!data.blocks.length) { showStatus('Add at least one content block before saving.', 'error'); return; }
 
     if (editingIdx === -1) {
         const nums = articles.map(a => parseInt(a.id.replace('article_','')) || 0);
         data.id = 'article_' + String((nums.length ? Math.max(...nums) : 0) + 1).padStart(2,'0');
+        articles.push(data);
     } else {
         data.id = articles[editingIdx].id;
+        if (articles[editingIdx].archived) data.archived = true;
+        articles[editingIdx] = data;
     }
 
-    showStatus('Publishing…', 'loading');
-    try {
-        const html      = buildArticleHTML(data);
-        const existing  = await getFile(data.id + '.html');
-        await putFile(data.id + '.html', html, existing ? existing.sha : null,
-            (editingIdx === -1 ? 'Add' : 'Update') + ' article: ' + data.title);
-
-        if (editingIdx === -1) articles.push(data);
-        else articles[editingIdx] = data;
-
-        const jr = await putFile(DATA, JSON.stringify(articles, null, 2), dataSha, 'Update articles.json');
-        dataSha = jr.content.sha;
-
-        const hpFile = await getFile('html/homepageboxnavComp.html');
-        await putFile('html/homepageboxnavComp.html', buildHomepageComp(articles), hpFile ? hpFile.sha : null, 'Refresh homepage');
-
-        renderList();
-        cancelEdit();
-        showStatus('Published! Changes go live on GitHub Pages in about 1 minute.', 'success');
-    } catch (err) {
-        showStatus('Error: ' + err.message, 'error');
-    }
+    dirtyArticleIds.add(data.id);
+    articlesJsonDirty = true;
+    homepageDirty     = true;
+    markPending();
+    renderList();
+    cancelEdit();
+    showStatus('Changes saved locally — click "Publish to Site" when ready to go live.', 'success');
 }
 
 // ── Delete ──────────────────────────────────────────────────────────────────
@@ -551,22 +630,16 @@ async function saveArticle(e) {
 async function deleteArticle() {
     if (editingIdx === -1) return;
     const a = articles[editingIdx];
-    if (!confirm('Delete "' + a.title + '"?\n\nThis cannot be undone.')) return;
-    showStatus('Deleting…', 'loading');
-    try {
-        const file = await getFile(a.id + '.html');
-        if (file) await deleteFile(a.id + '.html', file.sha, 'Delete article: ' + a.title);
-        articles.splice(editingIdx, 1);
-        const jr = await putFile(DATA, JSON.stringify(articles, null, 2), dataSha, 'Update articles.json');
-        dataSha = jr.content.sha;
-        const hpFile = await getFile('html/homepageboxnavComp.html');
-        await putFile('html/homepageboxnavComp.html', buildHomepageComp(articles), hpFile ? hpFile.sha : null, 'Refresh homepage after delete');
-        renderList();
-        cancelEdit();
-        showStatus('Article deleted.', 'success');
-    } catch (err) {
-        showStatus('Error: ' + err.message, 'error');
-    }
+    if (!confirm('Delete "' + a.title + '"?\n\nThis will remove it from the site when you publish.')) return;
+
+    deletedArticles.push({ id: a.id });
+    articles.splice(editingIdx, 1);
+    articlesJsonDirty = true;
+    homepageDirty     = true;
+    markPending();
+    renderList();
+    cancelEdit();
+    showStatus('Article removed — click "Publish to Site" to make it live.', 'success');
 }
 
 // ── HTML builders ────────────────────────────────────────────────────────────
@@ -613,8 +686,9 @@ ${bodyHTML}
 }
 
 function buildHomepageComp(all) {
-    const featured = all.length ? all[all.length - 1] : null;
-    const grid     = all.length > 1 ? all.slice(-4, -1).reverse() : [];
+    const active   = all.filter(a => !a.archived);
+    const featured = active.length ? active[active.length - 1] : null;
+    const grid     = active.length > 1 ? active.slice(-4, -1).reverse() : [];
 
     const featuredHtml = featured ? `
         <div class="hp-main">
@@ -706,10 +780,6 @@ ${script}`;
 
 // ── Ad Settings ───────────────────────────────────────────────────────────────
 
-let adConfig    = { image: '', link: '', alt: 'Advertisement' };
-let adConfigSha = null;
-const AD_CONFIG = 'data/config.json';
-
 async function loadAdConfig() {
     try {
         const file = await getFile(AD_CONFIG);
@@ -717,15 +787,18 @@ async function loadAdConfig() {
             const cfg   = JSON.parse(file.decoded);
             adConfig    = cfg.ad || { image: '', link: '', alt: 'Advertisement' };
             adConfigSha = file.sha;
+            sloganLocal = cfg.slogan || '';
             const imgEl = document.getElementById('ad-image-input');
             const lnkEl = document.getElementById('ad-link-input');
             const altEl = document.getElementById('ad-alt-input');
+            const slgEl = document.getElementById('slogan-input');
             if (imgEl) imgEl.value = adConfig.image || '';
             if (lnkEl) lnkEl.value = adConfig.link  || '';
             if (altEl) altEl.value = adConfig.alt   || '';
+            if (slgEl) slgEl.value = sloganLocal;
             updateAdPreview();
         }
-    } catch (e) { /* no config yet — that's fine */ }
+    } catch (e) { /* no config yet */ }
 }
 
 function toggleAdForm() {
@@ -742,30 +815,176 @@ function updateAdPreview() {
         : '';
 }
 
-async function saveAdSettings() {
+function saveAdSettings() {
     adConfig = {
         image : (document.getElementById('ad-image-input').value || '').trim(),
         link  : (document.getElementById('ad-link-input').value  || '').trim(),
         alt   : (document.getElementById('ad-alt-input').value   || 'Advertisement').trim()
     };
-    showStatus('Saving ad settings…', 'loading');
-    try {
-        const existing = await getFile(AD_CONFIG);
-        const jr = await putFile(AD_CONFIG, JSON.stringify({ ad: adConfig }, null, 2),
-            existing ? existing.sha : null, 'Update ad settings');
-        adConfigSha = jr.content.sha;
-        showStatus('Ad saved! Live on site in ~1 minute.', 'success');
-        updateAdPreview();
-    } catch (e) {
-        showStatus('Error: ' + e.message, 'error');
-    }
+    configDirty = true;
+    markPending();
+    updateAdPreview();
+    showStatus('Ad settings updated locally — click "Publish to Site" to go live.', 'success');
 }
 
-async function clearAd() {
+function clearAd() {
     if (!confirm('Remove the current advertisement?')) return;
     document.getElementById('ad-image-input').value = '';
     document.getElementById('ad-link-input').value  = '';
-    await saveAdSettings();
+    saveAdSettings();
+}
+
+// ── Slogan ───────────────────────────────────────────────────────────────────
+
+function saveSloganLocal() {
+    sloganLocal = (document.getElementById('slogan-input').value || '').trim();
+    configDirty = true;
+    markPending();
+    const st = document.getElementById('slogan-status');
+    if (st) st.textContent = 'Saved locally — publish to go live.';
+}
+
+function clearSlogan() {
+    document.getElementById('slogan-input').value = '';
+    saveSloganLocal();
+    const st = document.getElementById('slogan-status');
+    if (st) st.textContent = 'Slogan cleared — publish to go live.';
+}
+
+// ── Pending changes ───────────────────────────────────────────────────────────
+
+function markPending() {
+    const count = dirtyArticleIds.size + deletedArticles.length +
+                  (articlesJsonDirty ? 1 : 0) +
+                  (homepageDirty ? 1 : 0) +
+                  (configDirty ? 1 : 0);
+    const bar = document.getElementById('publish-bar');
+    const cntEl = document.getElementById('pending-count');
+    if (bar)  bar.style.display   = count > 0 ? 'flex' : 'none';
+    if (cntEl) cntEl.textContent  = count;
+}
+
+// ── Publish all to GitHub ─────────────────────────────────────────────────────
+
+async function publishAll() {
+    const count = dirtyArticleIds.size + deletedArticles.length +
+                  (articlesJsonDirty ? 1 : 0) +
+                  (homepageDirty ? 1 : 0) +
+                  (configDirty ? 1 : 0);
+    if (count === 0) { showStatus('Nothing to publish.', 'error'); return; }
+    if (!confirm('Publish ' + count + ' change(s) to the live site?\n\nChanges go live on GitHub Pages in ~1 minute.')) return;
+
+    showStatus('Publishing to GitHub…', 'loading');
+    try {
+        // 1. Delete articles marked for deletion
+        for (const d of deletedArticles) {
+            const f = await getFile(d.id + '.html');
+            if (f) await deleteFile(d.id + '.html', f.sha, 'Delete article: ' + d.id);
+        }
+        deletedArticles = [];
+
+        // 2. Write dirty article HTML files
+        for (const id of dirtyArticleIds) {
+            const a = articles.find(x => x.id === id);
+            if (!a) continue;
+            const html     = buildArticleHTML(a);
+            const existing = await getFile(id + '.html');
+            await putFile(id + '.html', html, existing ? existing.sha : null,
+                (existing ? 'Update' : 'Add') + ' article: ' + a.title);
+        }
+        dirtyArticleIds.clear();
+
+        // 3. Write articles.json
+        if (articlesJsonDirty) {
+            const jr = await putFile(DATA, JSON.stringify(articles, null, 2), dataSha, 'Update articles.json');
+            dataSha = jr.content.sha;
+            articlesJsonDirty = false;
+        }
+
+        // 4. Write homepageboxnavComp.html
+        if (homepageDirty) {
+            const hpFile = await getFile('html/homepageboxnavComp.html');
+            await putFile('html/homepageboxnavComp.html', buildHomepageComp(articles),
+                hpFile ? hpFile.sha : null, 'Refresh homepage');
+            homepageDirty = false;
+        }
+
+        // 5. Write config.json (ad + slogan)
+        if (configDirty) {
+            const existing = await getFile(AD_CONFIG);
+            const jr = await putFile(AD_CONFIG,
+                JSON.stringify({ ad: adConfig, slogan: sloganLocal }, null, 2),
+                existing ? existing.sha : null, 'Update site config');
+            adConfigSha = jr.content.sha;
+            configDirty = false;
+        }
+
+        markPending();
+        renderList();
+        showStatus('Published! Changes go live on GitHub Pages in about 1 minute.', 'success');
+    } catch (err) {
+        showStatus('Publish error: ' + err.message, 'error');
+    }
+}
+
+// ── Drag & drop article reordering ───────────────────────────────────────────
+
+function dragStart(evt, displayIdx) {
+    dragSrcDisplayIdx = displayIdx;
+    evt.dataTransfer.effectAllowed = 'move';
+}
+
+function dragOver(evt) {
+    evt.preventDefault();
+    evt.currentTarget.classList.add('drag-over');
+    evt.dataTransfer.dropEffect = 'move';
+}
+
+function dragLeave(evt) {
+    evt.currentTarget.classList.remove('drag-over');
+}
+
+function dropArticle(evt, targetDisplayIdx) {
+    evt.preventDefault();
+    evt.currentTarget.classList.remove('drag-over');
+    if (dragSrcDisplayIdx === null || dragSrcDisplayIdx === targetDisplayIdx) {
+        dragSrcDisplayIdx = null; return;
+    }
+
+    // Get non-archived articles in display order (reversed array order, featured first)
+    const activeDisplay = articles
+        .map((a, i) => ({a, i}))
+        .filter(x => !x.a.archived)
+        .reverse();
+
+    // Reorder in display space
+    const [moved] = activeDisplay.splice(dragSrcDisplayIdx, 1);
+    activeDisplay.splice(targetDisplayIdx, 0, moved);
+
+    // Reverse back to array order and replace non-archived entries
+    const newOrder = activeDisplay.reverse();
+    let queue = [...newOrder];
+    for (let i = 0; i < articles.length; i++) {
+        if (!articles[i].archived) {
+            articles[i] = queue.shift().a;
+        }
+    }
+
+    dragSrcDisplayIdx = null;
+    articlesJsonDirty = true;
+    homepageDirty     = true;
+    markPending();
+    renderList();
+}
+
+// ── Toggle archive ────────────────────────────────────────────────────────────
+
+function toggleArchive(arrayIdx) {
+    articles[arrayIdx].archived = !articles[arrayIdx].archived;
+    articlesJsonDirty = true;
+    homepageDirty     = true;
+    markPending();
+    renderList();
 }
 
 // ── Status ───────────────────────────────────────────────────────────────────
@@ -783,5 +1002,11 @@ function clearStatus() { document.getElementById('status-msg').style.display = '
     if (saved) { token = saved; openAdmin(); }
 })();
 </script>
+
+<!-- ── PUBLISH BAR ── -->
+<div id="publish-bar">
+    <span>You have <strong id="pending-count">0</strong> unpublished change(s) — not yet live on the site.</span>
+    <button class="btn btn-success" onclick="publishAll()" style="font-size:13px;padding:9px 22px;letter-spacing:0.5px;">Publish to Site ↑</button>
+</div>
 </body>
 </html>

@@ -16,7 +16,7 @@ setInterval(function () {
     if (timeEl) {
         timeEl.innerHTML = (h12 < 10 ? '0' + h12 : h12) + ':' + (min < 10 ? '0' + min : min) + ' <span id="am-pm">' + ampm + '</span>';
     }
-    if (dateEl) {
+    if (dateEl && !window._navSlogan) {
         dateEl.textContent = days[t.getDay()] + ', ' + t.getDate() + ' ' + months[t.getMonth()];
     }
 }, 1000);

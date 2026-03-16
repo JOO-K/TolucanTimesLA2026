@@ -131,6 +131,22 @@
 <!-- Clock + Weather -->
 <script src="./javascript/script.js"></script>
 
+<!-- Slogan loader — overrides date display when a custom slogan is set -->
+<script>
+(function () {
+    fetch('./data/config.json?t=' + Date.now())
+        .then(function (r) { return r.json(); })
+        .then(function (cfg) {
+            if (cfg.slogan && cfg.slogan.trim()) {
+                window._navSlogan = cfg.slogan.trim();
+                var el = document.getElementById('date');
+                if (el) el.textContent = window._navSlogan;
+            }
+        })
+        .catch(function () {});
+}());
+</script>
+
 <!-- Mobile Nav Button -->
 <script>
     $("#mobilenav").click(function () {
