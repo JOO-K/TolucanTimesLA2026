@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: Georgia, serif; background: #f5f0e8; color: #1a1a1a; min-height: 100vh; }
+        body { font-family: Georgia, serif; background: #f5f0e8; color: #1a1a1a; overflow: hidden; }
 
         /* ── Login ── */
         #login-screen { max-width: 420px; margin: 80px auto; padding: 40px; background: white; border: 1px solid #ddd; text-align: center; }
@@ -17,51 +17,74 @@
         #login-error { color: #c54a2b; font-size: 12px; margin-top: 10px; font-family: sans-serif; min-height: 18px; line-height: 1.5; }
 
         /* ── Shell ── */
-        #admin-screen { display: none; }
-        .admin-header { background: #1a1a1a; color: white; padding: 0 24px; display: flex; align-items: center; justify-content: space-between; height: 52px; }
+        #admin-screen { height: 100vh; flex-direction: column; display: none; }
+        .admin-header { background: #1a1a1a; color: white; padding: 0 24px; display: flex; align-items: center; justify-content: space-between; height: 52px; flex-shrink: 0; }
         .admin-header h1 { font-size: 14px; letter-spacing: 2px; font-family: sans-serif; font-weight: 700; }
         .admin-header-right { display: flex; gap: 14px; align-items: center; }
         .admin-header-right a { color: #aaa; font-size: 12px; font-family: sans-serif; text-decoration: none; }
         .admin-header-right a:hover { color: white; }
-        .admin-body { max-width: 880px; margin: 0 auto; padding: 28px 20px; }
+
+        /* ── Two-column layout ── */
+        .admin-cols { display: flex; flex: 1; overflow: hidden; }
+        .admin-left  { width: 44%; border-right: 2px solid #ddd; overflow-y: auto; padding: 22px 20px 100px; }
+        .admin-right { width: 56%; overflow-y: auto; padding: 22px 20px 100px; background: #faf8f3; }
 
         /* ── Buttons ── */
         .btn { padding: 8px 18px; font-size: 13px; cursor: pointer; border: none; font-family: Georgia, serif; }
         .btn:hover { filter: brightness(0.9); }
         .btn:active { filter: brightness(0.8); }
-        .btn-primary  { background: #1E90FF; color: white; }
-        .btn-secondary{ background: #eee; color: #333; border: 1px solid #ccc; }
-        .btn-danger   { background: #c54a2b; color: white; }
-        .btn-success  { background: #2a8a2a; color: white; }
+        .btn-primary   { background: #1E90FF; color: white; }
+        .btn-secondary { background: #eee; color: #333; border: 1px solid #ccc; }
+        .btn-danger    { background: #c54a2b; color: white; }
+        .btn-success   { background: #2a8a2a; color: white; }
         .btn-sm { padding: 4px 10px; font-size: 12px; }
 
         /* ── Section header ── */
         .section-title { font-size: 10px; font-family: sans-serif; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; color: #666; margin-bottom: 16px; padding-bottom: 8px; border-bottom: 2px solid #1a1a1a; display: flex; justify-content: space-between; align-items: center; }
 
+        /* ── Right panel sections ── */
+        .right-section { margin-bottom: 32px; }
+        .right-inner { background: white; border: 1px solid #ddd; padding: 20px 24px; }
+
         /* ── Article list ── */
-        .article-row { background: white; border: 1px solid #ddd; padding: 14px 18px; margin-bottom: 8px; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+        .article-row { background: white; border: 1px solid #ddd; padding: 10px 14px; margin-bottom: 7px; display: flex; align-items: center; gap: 10px; }
         .article-row-left { flex: 1; min-width: 0; }
-        .article-row-tag { font-size: 9px; font-family: sans-serif; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: #1E90FF; margin-bottom: 4px; }
-        .article-row-title { font-size: 16px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .article-row-meta { font-size: 11px; font-family: sans-serif; color: #888; margin-top: 3px; }
-        .article-row-actions { display: flex; gap: 8px; flex-shrink: 0; }
+        .article-row-tag { font-size: 9px; font-family: sans-serif; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: #1E90FF; margin-bottom: 3px; }
+        .article-row-title { font-size: 15px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .article-row-meta { font-size: 11px; font-family: sans-serif; color: #888; margin-top: 2px; }
+        .article-row-actions { display: flex; gap: 6px; flex-shrink: 0; }
+        .article-row.archived { opacity: 0.5; background: #fafafa; }
+        .article-row.drag-over { border-color: #1E90FF !important; background: #eef5ff !important; }
+        .drag-handle { cursor: grab; font-size: 18px; color: #ccc; padding: 0 4px; flex-shrink: 0; user-select: none; }
+        .drag-handle:hover { color: #888; }
+        .featured-badge { font-size: 8px; background: #de8c35; color: white; padding: 2px 6px; margin-left: 6px; font-family: sans-serif; letter-spacing: 1px; text-transform: uppercase; vertical-align: middle; border-radius: 2px; }
+        .dirty-dot { color: #de8c35; font-size: 10px; font-family: sans-serif; }
+
+        /* ── List section labels ── */
+        .list-section-title { font-size: 9px; font-family: sans-serif; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; color: #777; margin: 24px 0 8px; border-bottom: 1px solid #ddd; padding-bottom: 6px; }
 
         /* ── Editor ── */
-        #article-editor { display: none; background: white; border: 1px solid #ddd; padding: 30px; }
-        .editor-heading { font-size: 20px; margin-bottom: 22px; padding-bottom: 14px; border-bottom: 1px dashed #ccc; }
+        #article-editor { display: none; }
+        .editor-heading { font-size: 19px; margin-bottom: 20px; padding-bottom: 13px; border-bottom: 1px dashed #ccc; }
 
-        .form-group { margin-bottom: 18px; }
+        .form-group { margin-bottom: 16px; }
         .form-group label { display: block; font-size: 10px; font-family: sans-serif; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: #666; margin-bottom: 6px; }
         .form-group label span { font-weight: 400; text-transform: none; letter-spacing: 0; }
-        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 10px 12px; border: 1px solid #ccc; font-size: 14px; font-family: Georgia, serif; }
+        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 9px 11px; border: 1px solid #ccc; font-size: 14px; font-family: Georgia, serif; }
         .form-group input:focus, .form-group select:focus, .form-group textarea:focus { outline: 2px solid #1E90FF; border-color: #1E90FF; }
         .form-group textarea { resize: vertical; }
-        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+        .form-row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
+
+        /* Card image preview */
+        #card-img-preview { display: none; max-width: 100%; max-height: 120px; object-fit: contain; border: 1px solid #ddd; margin-top: 6px; }
+
+        /* Excerpt counter */
+        #excerpt-count { float: right; font-family: sans-serif; font-size: 11px; color: #aaa; margin-top: 3px; }
 
         /* ── Blocks editor ── */
         .blocks-label { font-size: 10px; font-family: sans-serif; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: #666; margin-bottom: 10px; }
         #blocks-list { margin-bottom: 14px; }
-
         .block-item { border: 1px solid #ddd; margin-bottom: 8px; background: #fafafa; }
         .block-header { display: flex; align-items: center; gap: 8px; padding: 8px 10px; background: #f0ece0; border-bottom: 1px solid #ddd; }
         .block-type-label { font-size: 10px; font-family: sans-serif; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: #666; flex: 1; }
@@ -69,43 +92,48 @@
         .block-body { padding: 12px; }
         .block-body input, .block-body textarea { width: 100%; padding: 8px 10px; border: 1px solid #ccc; font-size: 13px; font-family: Georgia, serif; margin-bottom: 8px; }
         .block-body input:last-child, .block-body textarea:last-child { margin-bottom: 0; }
-        .block-body textarea { resize: vertical; }
+        .block-body textarea { resize: vertical; min-height: 240px; font-size: 15px; line-height: 1.75; }
         .block-body input:focus, .block-body textarea:focus { outline: 2px solid #1E90FF; border-color: #1E90FF; }
-
         .block-add-row { display: flex; gap: 8px; flex-wrap: wrap; }
-
         .editor-actions { display: flex; gap: 10px; margin-top: 24px; padding-top: 20px; border-top: 1px dashed #ccc; flex-wrap: wrap; align-items: center; }
         #delete-btn { margin-left: auto; }
+        .form-group textarea { min-height: 80px; }
 
         /* ── Status ── */
-        #status-msg { display: none; padding: 12px 18px; margin-bottom: 18px; font-family: sans-serif; font-size: 13px; line-height: 1.5; }
+        #status-msg { display: none; padding: 12px 18px; margin-bottom: 14px; font-family: sans-serif; font-size: 13px; line-height: 1.5; }
         #status-msg.success { background: #e8f5e8; border: 1px solid #2a8a2a; color: #1a5a1a; }
         #status-msg.error   { background: #fde8e4; border: 1px solid #c54a2b; color: #7a2010; }
         #status-msg.loading { background: #e8f0ff; border: 1px solid #1E90FF; color: #0a3080; }
-
-        @media (max-width: 600px) {
-            .form-row { grid-template-columns: 1fr; }
-            #delete-btn { margin-left: 0; }
-        }
 
         /* ── Publish bar ── */
         #publish-bar { display: none; position: fixed; bottom: 0; left: 0; right: 0; background: #1a1a1a; color: white; padding: 14px 24px; align-items: center; justify-content: space-between; z-index: 100; box-shadow: 0 -3px 12px rgba(0,0,0,0.3); }
         #publish-bar span { font-family: sans-serif; font-size: 13px; color: #ccc; }
         #publish-bar strong { color: #f0a030; }
-        .admin-body { padding-bottom: 80px; }
 
-        /* ── Article list sections ── */
-        .list-section-title { font-size: 9px; font-family: sans-serif; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; color: #777; margin: 28px 0 8px; border-bottom: 1px solid #ddd; padding-bottom: 6px; }
-        .article-row.archived { opacity: 0.5; background: #fafafa; }
-        .article-row.drag-over { border-color: #1E90FF !important; background: #eef5ff !important; }
-        .drag-handle { cursor: grab; font-size: 18px; color: #ccc; padding: 0 8px; flex-shrink: 0; user-select: none; }
-        .drag-handle:hover { color: #888; }
-        .featured-badge { font-size: 8px; background: #de8c35; color: white; padding: 2px 7px; margin-left: 8px; font-family: sans-serif; letter-spacing: 1px; text-transform: uppercase; vertical-align: middle; }
+        /* ── Featured slots ── */
+        .featured-slots { display: flex; flex-direction: column; gap: 7px; margin-bottom: 8px; }
+        .featured-slot { background: white; border: 2px dashed #ddd; padding: 9px 12px; display: flex; align-items: center; gap: 10px; min-height: 62px; transition: border-color 0.15s, background 0.15s; cursor: default; }
+        .featured-slot.drag-over { border-color: #1E90FF; background: #eef5ff; }
+        .featured-slot.filled { border-style: solid; border-color: #e0ddd5; }
+        .slot-num { font-size: 20px; font-family: sans-serif; font-weight: 900; color: #e0ddd5; width: 22px; flex-shrink: 0; text-align: center; }
+        .slot-num.main-slot { color: #de8c35; }
+        .slot-content { flex: 1; min-width: 0; display: flex; align-items: center; gap: 10px; }
+        .slot-empty-text { font-family: sans-serif; font-size: 12px; color: #bbb; font-style: italic; }
+        .slot-thumb { width: 54px; height: 40px; object-fit: cover; flex-shrink: 0; background: #eee; display: block; }
+        .slot-info { flex: 1; min-width: 0; }
+        .slot-tag { font-size: 8px; font-family: sans-serif; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: #1E90FF; display: block; margin-bottom: 2px; }
+        .slot-title { font-size: 12px; font-family: Georgia, serif; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; }
+        .slot-author { font-size: 10px; font-family: sans-serif; color: #999; display: block; margin-top: 2px; }
+        .slot-clear { background: none; border: none; color: #bbb; font-size: 16px; cursor: pointer; padding: 2px 4px; flex-shrink: 0; line-height: 1; }
+        .slot-clear:hover { color: #c54a2b; }
+        .slots-hint { font-family: sans-serif; font-size: 11px; color: #aaa; margin-top: 6px; }
 
-        /* ── Bigger text blocks ── */
-        .block-body textarea { min-height: 240px; font-size: 15px; line-height: 1.75; }
-        .form-group textarea { min-height: 80px; }
-        #article-editor { max-width: 860px; }
+        @media (max-width: 600px) {
+            .form-row { grid-template-columns: 1fr; }
+            #delete-btn { margin-left: 0; }
+            .admin-cols { flex-direction: column; }
+            .admin-left, .admin-right { width: 100%; }
+        }
     </style>
 </head>
 <body>
@@ -133,26 +161,122 @@
         </div>
     </div>
 
-    <div class="admin-body">
-        <div id="status-msg"></div>
+    <div class="admin-cols">
 
-        <!-- List -->
-        <div id="list-view">
-            <div class="section-title">
-                <span>Articles</span>
-                <button class="btn btn-primary" onclick="showEditor(-1)">+ New Article</button>
-            </div>
-            <div id="article-list">
-                <p style="font-family:sans-serif;font-size:13px;color:#888;">Loading…</p>
+        <!-- ── LEFT PANEL ── -->
+        <div class="admin-left">
+            <div id="status-msg"></div>
+
+            <!-- Article List -->
+            <div id="list-view">
+                <div class="section-title">
+                    <span>Articles</span>
+                    <button class="btn btn-primary btn-sm" onclick="showEditor(-1)">+ New Article</button>
+                </div>
+                <div id="article-list">
+                    <p style="font-family:sans-serif;font-size:13px;color:#888;">Loading…</p>
+                </div>
             </div>
 
-            <!-- Slogan -->
-            <div style="margin-top:36px;">
+            <!-- Article Editor -->
+            <div id="article-editor">
+                <div style="margin-bottom:16px;">
+                    <button class="btn btn-secondary btn-sm" onclick="cancelEdit()">← Back</button>
+                </div>
+                <div class="editor-heading" id="editor-heading">New Article</div>
+
+                <form id="article-form" onsubmit="saveArticle(event)">
+
+                    <!-- Meta fields row 1 -->
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Headline</label>
+                            <input type="text" name="title" required placeholder="Article title">
+                        </div>
+                        <div class="form-group">
+                            <label>Author</label>
+                            <input type="text" name="author" required placeholder="Full name">
+                        </div>
+                    </div>
+
+                    <!-- Meta fields row 2: tag + date -->
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Category Tag</label>
+                            <select name="tag">
+                                <option>Interview</option>
+                                <option>Community</option>
+                                <option>Feature</option>
+                                <option>Local Fun</option>
+                                <option>Announcement</option>
+                                <option>Events</option>
+                                <option>Arts &amp; Culture</option>
+                                <option>Opinion</option>
+                                <option>History</option>
+                                <option>Business</option>
+                                <option>Sports</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Date <span>(shown on article page)</span></label>
+                            <input type="text" name="date" placeholder="e.g. March 2025">
+                        </div>
+                    </div>
+
+                    <!-- Card Image with preview -->
+                    <div class="form-group">
+                        <label>Card Image <span>(shown on homepage preview card)</span></label>
+                        <input type="text" name="cardImage" placeholder="./images/photo.png or https://…" oninput="updateCardPreview(this.value)">
+                        <img id="card-img-preview" src="" alt="Card image preview">
+                    </div>
+
+                    <!-- Excerpt with char counter -->
+                    <div class="form-group">
+                        <label>Homepage Excerpt <span>(2–3 sentences on the front page card)</span></label>
+                        <textarea name="excerpt" rows="3" required placeholder="Short preview shown on the homepage…" oninput="updateExcerptCount(this)"></textarea>
+                        <span id="excerpt-count">0 chars</span>
+                    </div>
+
+                    <hr style="border:none;border-top:1px dashed #ccc;margin:20px 0 18px;">
+
+                    <!-- Blocks -->
+                    <div class="blocks-label">Article Content Blocks</div>
+                    <div id="blocks-list"></div>
+                    <div class="block-add-row">
+                        <button type="button" class="btn btn-secondary btn-sm" onclick="addBlock('text')">+ Add Text Block</button>
+                        <button type="button" class="btn btn-secondary btn-sm" onclick="addBlock('image')">+ Add Image Block</button>
+                    </div>
+
+                    <div class="editor-actions">
+                        <button type="submit" class="btn btn-success">Save &amp; Publish</button>
+                        <button type="button" class="btn btn-danger" id="delete-btn" onclick="deleteArticle()">Delete</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- ── RIGHT PANEL ── -->
+        <div class="admin-right">
+
+            <!-- Featured Articles -->
+            <div class="right-section">
+                <div class="section-title">
+                    <span>Featured Articles</span>
+                    <span style="font-family:sans-serif;font-size:11px;font-weight:400;color:#888;letter-spacing:0;text-transform:none;">Drag articles from left</span>
+                </div>
+                <div class="right-inner" style="padding:16px 18px;">
+                    <div class="featured-slots" id="featured-slots-list"></div>
+                    <p class="slots-hint">Slot 1 = large main feature &middot; Slots 2–5 = hover thumbnails</p>
+                </div>
+            </div>
+
+            <!-- Nav Slogan -->
+            <div class="right-section">
                 <div class="section-title">
                     <span>Nav Slogan</span>
                     <span style="font-family:sans-serif;font-size:11px;font-weight:400;color:#888;letter-spacing:0;text-transform:none;">Replaces the date in the nav bar</span>
                 </div>
-                <div style="background:white;border:1px solid #ddd;padding:20px 24px;">
+                <div class="right-inner">
                     <div class="form-group" style="margin-bottom:12px;">
                         <label>Slogan Text <span>(leave blank to show the date normally)</span></label>
                         <input type="text" id="slogan-input" placeholder="e.g. Happy 4th of July! 🎆" style="font-size:15px;">
@@ -165,86 +289,13 @@
                 </div>
             </div>
 
-            <!-- Sidebar Feeds -->
-            <div style="margin-top:36px;">
-                <div class="section-title">
-                    <span>Sports &amp; Entertainment</span>
-                    <span style="font-family:sans-serif;font-size:11px;font-weight:400;color:#888;letter-spacing:0;text-transform:none;">Shown below the featured article</span>
-                </div>
-                <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
-                    <div style="background:white;border:1px solid #ddd;padding:18px 20px;">
-                        <div style="font-size:9px;font-family:sans-serif;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#1E90FF;margin-bottom:10px;border-left:3px solid #1E90FF;padding-left:7px;">Sports</div>
-                        <div id="sports-items-list" style="margin-bottom:10px;"></div>
-                        <div style="display:flex;gap:6px;">
-                            <input type="text" id="sports-title-input" placeholder="Headline" style="flex:2;padding:7px 9px;border:1px solid #ccc;font-size:13px;font-family:Georgia,serif;">
-                            <input type="text" id="sports-url-input" placeholder="Link URL (optional)" style="flex:2;padding:7px 9px;border:1px solid #ccc;font-size:12px;font-family:sans-serif;">
-                            <button class="btn btn-secondary btn-sm" onclick="addFeedItem('sports')" style="white-space:nowrap;">+ Add</button>
-                        </div>
-                    </div>
-                    <div style="background:white;border:1px solid #ddd;padding:18px 20px;">
-                        <div style="font-size:9px;font-family:sans-serif;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#1E90FF;margin-bottom:10px;border-left:3px solid #1E90FF;padding-left:7px;">Entertainment</div>
-                        <div id="ent-items-list" style="margin-bottom:10px;"></div>
-                        <div style="display:flex;gap:6px;">
-                            <input type="text" id="ent-title-input" placeholder="Headline" style="flex:2;padding:7px 9px;border:1px solid #ccc;font-size:13px;font-family:Georgia,serif;">
-                            <input type="text" id="ent-url-input" placeholder="Link URL (optional)" style="flex:2;padding:7px 9px;border:1px solid #ccc;font-size:12px;font-family:sans-serif;">
-                            <button class="btn btn-secondary btn-sm" onclick="addFeedItem('ent')" style="white-space:nowrap;">+ Add</button>
-                        </div>
-                    </div>
-                </div>
-                <p style="font-family:sans-serif;font-size:11px;color:#aaa;margin-top:8px;">Add headlines above then click Publish to Site.</p>
-            </div>
-
-            <!-- Carousel Slides -->
-            <div style="margin-top:36px;">
-                <div class="section-title">
-                    <span>Carousel Slides</span>
-                    <span style="font-family:sans-serif;font-size:11px;font-weight:400;color:#888;letter-spacing:0;text-transform:none;">The rotating banner at the top of the homepage</span>
-                </div>
-                <div id="carousel-items-list" style="margin-bottom:12px;background:white;border:1px solid #ddd;padding:16px 20px;min-height:48px;"></div>
-                <div style="background:white;border:1px solid #ddd;padding:18px 20px;">
-                    <div style="font-size:9px;font-family:sans-serif;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#666;margin-bottom:12px;">Add New Slide</div>
-                    <div class="form-row" style="margin-bottom:10px;">
-                        <div class="form-group" style="margin-bottom:0;">
-                            <label>Background Image URL</label>
-                            <input type="text" id="slide-image-input" placeholder="./images/Frontpage_00.png or https://…">
-                        </div>
-                        <div class="form-group" style="margin-bottom:0;">
-                            <label>Link URL <span>(where clicking goes)</span></label>
-                            <input type="text" id="slide-link-input" placeholder="./article_01.html">
-                        </div>
-                    </div>
-                    <div class="form-row" style="margin-bottom:10px;">
-                        <div class="form-group" style="margin-bottom:0;">
-                            <label>Headline</label>
-                            <input type="text" id="slide-title-input" placeholder="Slide headline text">
-                        </div>
-                        <div class="form-group" style="margin-bottom:0;">
-                            <label>Subtitle / Byline <span>(optional)</span></label>
-                            <input type="text" id="slide-subtitle-input" placeholder="e.g. Written By Name">
-                        </div>
-                    </div>
-                    <div class="form-row" style="margin-bottom:12px;">
-                        <div class="form-group" style="margin-bottom:0;">
-                            <label>Tag Label <span>(e.g. ARTICLE, ANNOUNCEMENT)</span></label>
-                            <input type="text" id="slide-tag-input" placeholder="ARTICLE">
-                        </div>
-                        <div class="form-group" style="margin-bottom:0;">
-                            <label>Tag Color <span>(hex color)</span></label>
-                            <input type="text" id="slide-tagcolor-input" placeholder="#1E90FF" value="#1E90FF">
-                        </div>
-                    </div>
-                    <button class="btn btn-secondary" onclick="addSlide()">+ Add Slide</button>
-                </div>
-                <p style="font-family:sans-serif;font-size:11px;color:#aaa;margin-top:8px;">Slides show in order. Add slides above then click Publish to Site.</p>
-            </div>
-
-            <!-- Ad Settings -->
-            <div style="margin-top:36px;">
+            <!-- Advertisement -->
+            <div class="right-section">
                 <div class="section-title">
                     <span>Advertisement</span>
                     <button class="btn btn-secondary btn-sm" onclick="toggleAdForm()" style="font-size:11px;padding:5px 12px;">Edit Settings</button>
                 </div>
-                <div id="ad-form-wrap" style="display:none; background:white; border:1px solid #ddd; padding:24px;">
+                <div id="ad-form-wrap" style="display:none;" class="right-inner">
                     <div class="form-row">
                         <div class="form-group">
                             <label>Ad Image URL <span>(JPG, PNG, or https://…)</span></label>
@@ -267,97 +318,37 @@
                 </div>
             </div>
 
-        </div>
-
-        <!-- Editor -->
-        <div id="article-editor">
-            <div class="editor-heading" id="editor-heading">New Article</div>
-
-            <form id="article-form" onsubmit="saveArticle(event)">
-
-                <!-- Meta fields -->
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Headline</label>
-                        <input type="text" name="title" required placeholder="Article title">
-                    </div>
-                    <div class="form-group">
-                        <label>Author</label>
-                        <input type="text" name="author" required placeholder="Full name">
-                    </div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Category Tag</label>
-                        <select name="tag">
-                            <option>Interview</option>
-                            <option>Community</option>
-                            <option>Feature</option>
-                            <option>Local Fun</option>
-                            <option>Announcement</option>
-                            <option>Events</option>
-                            <option>Arts &amp; Culture</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Card Image <span>(shown on homepage preview card)</span></label>
-                        <input type="text" name="cardImage" placeholder="./images/photo.png or https://…">
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label>Homepage Excerpt <span>(2–3 sentences on the front page card)</span></label>
-                    <textarea name="excerpt" rows="3" required placeholder="Short preview shown on the homepage…"></textarea>
-                </div>
-
-                <hr style="border:none;border-top:1px dashed #ccc;margin:24px 0 20px;">
-
-                <!-- Blocks -->
-                <div class="blocks-label">Article Content Blocks</div>
-                <div id="blocks-list"></div>
-                <div class="block-add-row">
-                    <button type="button" class="btn btn-secondary btn-sm" onclick="addBlock('text')">+ Add Text Block</button>
-                    <button type="button" class="btn btn-secondary btn-sm" onclick="addBlock('image')">+ Add Image Block</button>
-                </div>
-
-                <div class="editor-actions">
-                    <button type="submit" class="btn btn-success">Save &amp; Publish</button>
-                    <button type="button" class="btn btn-secondary" onclick="cancelEdit()">Cancel</button>
-                    <button type="button" class="btn btn-danger" id="delete-btn" onclick="deleteArticle()">Delete Article</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
+        </div><!-- end admin-right -->
+    </div><!-- end admin-cols -->
+</div><!-- end admin-screen -->
 
 <script>
-const REPO  = 'JOO-K/TolucanTimesLA2026';
-const API   = 'https://api.github.com/repos/' + REPO + '/contents/';
-const DATA  = 'data/articles.json';
+const REPO      = 'JOO-K/TolucanTimesLA2026';
+const API       = 'https://api.github.com/repos/' + REPO + '/contents/';
+const DATA      = 'data/articles.json';
 const AD_CONFIG = 'data/config.json';
 
 let token      = '';
 let articles   = [];
 let dataSha    = null;
 let editingIdx = -1;
-let blocks     = []; // working copy of blocks for current edit
+let blocks     = [];
 
 // ── Pending changes tracking ──────────────────────────────────────────────────
-let dirtyArticleIds  = new Set();   // article IDs whose HTML needs rewriting
-let deletedArticles  = [];          // {id, sha} items to delete on publish
+let dirtyArticleIds   = new Set();
+let deletedArticles   = [];
 let articlesJsonDirty = false;
-let homepageDirty    = false;
-let configDirty      = false;
+let homepageDirty     = false;
+let configDirty       = false;
 let dragSrcDisplayIdx = null;
 
-// ── Config (ad + slogan) ──────────────────────────────────────────────────────
+// ── Config ────────────────────────────────────────────────────────────────────
 let adConfig    = { image: '', link: '', alt: 'Advertisement' };
 let adConfigSha = null;
 let sloganLocal = '';
-let sportsItems = [];   // [{title, url}, ...]
-let entItems    = [];   // [{title, url}, ...]
-let slidesItems = [];   // [{image, tag, tagColor, title, subtitle, link}, ...]
+let featuredIds = [null, null, null, null, null];
 
-// ── Auth ────────────────────────────────────────────────────────────────────
+// ── Auth ──────────────────────────────────────────────────────────────────────
 
 async function login() {
     const val = document.getElementById('token-input').value.trim();
@@ -391,12 +382,12 @@ function logout() {
 
 async function openAdmin() {
     document.getElementById('login-screen').style.display = 'none';
-    document.getElementById('admin-screen').style.display = 'block';
+    document.getElementById('admin-screen').style.display = 'flex';
     await loadArticles();
     await loadAdConfig();
 }
 
-// ── GitHub helpers ───────────────────────────────────────────────────────────
+// ── GitHub helpers ────────────────────────────────────────────────────────────
 
 function headers() {
     return { 'Authorization': 'token ' + token, 'Accept': 'application/vnd.github.v3+json', 'Content-Type': 'application/json' };
@@ -424,7 +415,7 @@ async function deleteFile(path, sha, message) {
     if (!res.ok) { const j = await res.json().catch(()=>({})); throw new Error(j.message || 'Delete failed: ' + path); }
 }
 
-// ── Data ────────────────────────────────────────────────────────────────────
+// ── Data ──────────────────────────────────────────────────────────────────────
 
 async function loadArticles() {
     showStatus('Loading articles…', 'loading');
@@ -455,7 +446,7 @@ function seedArticles() {
             excerpt: 'Dan Carlin, creator of Hardcore History, grew up right here in Toluca Lake — and he had a lot to say about the neighborhood he still calls his foundational place.',
             blocks: [
                 { type: 'image', src: 'https://www.dancarlin.com/wp-content/uploads/2024/04/yt-3-1024x576.jpg', caption: 'Dan Carlin' },
-                { type: 'text', content: 'Dan Carlin is a name that will be familiar to many of you as the creator of one of the most widely listened to podcasts in America, Hardcore History. A smaller fraction of you, if you have lived in Toluca Lake since the 1970s, may have actually known Dan or the Carlin family personally. It recently came to my attention that Carlin, a man whose work I greatly admire and whose voice I have listened to for over 100 hours, had lived in Toluca Lake and in fact grew up with some of my closest family friends.\n\nUpon learning this, I knew I had to reach out to Carlin, and thankfully, Dan could not have been more receptive. I was thrilled to receive a response, and even more excited that Carlin was eager to talk and fondly remembered our mutual friends. Carlin graciously offered his time for a lengthy and wide-ranging interview over the phone with The Tolucan Times. Carlin was phenomenally kind, open, and a model interviewee, which should come as no surprise considering he has made a living as an eloquent communicator.\n\nCarlin started his career in journalism originally working at KJH-TV, which would later become KCAL. "I got a coffee-getter, intern-runner, gofer type job at channel 9." Right on cue, Dan had a history tidbit to share about channel 9\'s history. "This is how old [KJH-TV\'s] manager was. It was an RKO General station. I think RKO General was a tire company in the Depression, and they bought a bunch of media outlets, and by the time I worked there, they were still hobbling along with something they didn\'t even know why they still owned anymore. I\'m not even sure they still sold tires at that point. And while I was there, it got bought by Disney." Dan\'s story checks out, a tire company called General Tire owned channel 9 in Los Angeles from 1951 until 1989. He continued to work there under Disney for a while. "From there I got a job – I didn\'t want one – but the guys at KABC were pushing me saying: \'You know, you\'ll die at this job if you don\'t keep moving up the ladder.\' They were encouraging me to be a reporter. And I think to just shut them up, I sent out some tapes because nobody was getting hired who were sending out tapes, so I didn\'t think it was much of a risk. I got hired in Eugene, Oregon. So I moved up here, became a TV reporter, and moved over to talk radio."\n\nCarlin\'s career in broadcast journalism clearly served as a foundation for his future career in podcasting, but I wondered too if his upbringing in Toluca Lake, a neighborhood known for its many entertainers, influenced his gravitation towards entertaining others. "It\'s funny because I often think back to Toluca Lake, and I\'ll tell my wife, who\'s from Oregon, stories about [Toluca Lake] and it\'s different now than it was then. When I think of what the parents of all of the kids that I knew did, it was two general areas of employment: Either the entertainment industry – in front of behind the camera – or aerospace." Unsurprisingly, again, Carlin was ready to teach me a bit of history that I didn\'t know, but this time about our neighborhood. "There were a ton of people that worked Lockheed, McDonnell, Douglas, you know, all of those kinds of firms. My next-door neighbor\'s dad was an Air Force colonel who worked for Lockheed, and there were a lot of those guys. That seemed to be like that because Lockheed was huge and it probably was not so huge by your time, but this was the Cold War, you know? I moved to Toluca Lake late 1960s, and it was a huge industry in the Valley."\n\nToday, I doubt many of us think of Toluca Lake as a neighborhood that caters specifically to military contractors, but I\'m sure there are still a few in our midst. Carlin\'s family belonged to the other of the two major industries at the time in the area: entertainment. His mother, Lynn Carlin, was an actress in the 70s and 80s when Dan was growing up. She has over 60 on-screen credits, including a starring role alongside Toluca Lake\'s late, great honorary sheriff (and Dan Carlin\'s first little league coach) Joe Campanella in the 1974 film Terror on the 40th Floor. Carlin has been an undeniable trailblazer in the world of podcasting having first entered the sphere in 2005, long before the podcasting boom with his show Hardcore History that now receives millions of downloads per episode. "When we started in 2005, we started the very month that Apple started supporting podcasts. So we really didn\'t think anybody knew what [podcasting] was going to be. Most of the people doing this were like nerds in their dorm rooms in college just reading stuff into a microphone or whatever. I mean, it was just so eclectic and weird and strange that I don\'t think any of us really grasp what any of this was."\n\nCarlin told me that he has always been fond of his time in Toluca Lake, where he lived for the first twelve years of his life in houses on both Navajo and Rose. "That\'s my foundational place," he said of our neighborhood and went on to share some charming stories from that time in Toluca Lake\'s history. "Did anybody ever mention the candy ladies to you?" Carlin asked me. "There were two – and I always think of them as old women but I thought about it the other day and they probably were my age – but these women were the candy ladies. If you would knock on their door and you were a child, they didn\'t even ask anything they just came to the door with a whole tureen of candy. They would come any hour, day or night and do this. And every kid, of course, in the neighborhood knew about this. It was a landmark."\n\nCarlin remarked too how the times have changed and the thought of sending one\'s kids to the mysterious candy ladies\' house would be almost unthinkable to many parents today. On the topic of the Toluca Lake that he grew up in, Carlin told me a couple of his favorite old spots. "One place that I used to go to that my dad would roll his eyes when I made him go there was called Saint George Smorgasbord. It had like a knightly theme, Knights of the Round Table kind of thing. But it was a smorgasbord, so it had every kind of food you can imagine. It would have been like an upscale version of Golden Corral or something." Another old favorite Carlin mentioned that I\'m sure many readers will recall: The Hot Dog Show, which was a Toluca Lake staple for 62 years before it closed its doors in 2011.\n\nIt was an incredible honor and pleasure to speak with Dan, and I want to leave you all with some of his words about Toluca Lake and what it has meant to him throughout his life. "It\'s so funny that just in my little town here where I live in Eugene, Oregon, it just reminds me of how I felt in Toluca Lake when I was a kid. Just because the big, wide world of Los Angeles really wasn\'t a part of my life, you know? What was a part of my life was from Riverside Drive to Lakeside Golf Course. That little square area that was my whole world, and it was nice. It was green; it was safe, and that\'s kind of how this community where I live right now is. It reminds me a little of how my mom always said I was looking to get back to Toluca Lake ever since we left."' }
+                { type: 'text', content: 'Dan Carlin is a name that will be familiar to many of you as the creator of one of the most widely listened to podcasts in America, Hardcore History.' }
             ]
         },
         {
@@ -466,8 +457,7 @@ function seedArticles() {
             cardImage: './images/Frontpage_01.png',
             excerpt: 'Meet the honorary mayor of Toluca Lake and learn about the beloved local tradition that has brought our community together for decades.',
             blocks: [
-                { type: 'text', content: 'There are always a handful of names that get thrown around when we talk about the legendary members of our community. A few of them sang songs, and some acted in those fancy Hollywood moving pictures. Yet none of them earned the prestigious title of "Honorary Mayor." That belongs to one man and one man only… Fritz Coleman.\n\nAlthough Fritz is most well known for his nearly 40-year run as the weatherman on Channel 4, his career at NBC may not have ever happened if it wasn\'t for his passion for stand-up comedy. "I came out here in 1980, to pursue a career in stand-up. In 1982, I was working [as a performer] at The Comedy Store. My friend, at the time, who worked at Channel 4, brought his boss and his boss\'s wife to see me do a show on a Friday night," Fritz explained. He continued, "I had talked on stage about doing weather in the Navy, I was in the Navy for 4 years and did armed forces radio and television. I was forced to do the weather against my will."\n\nAlthough Fritz didn\'t know much of anything about the weather, Channel 4 saw him as a perfect fit. Fritz recalled the Channel 4 boss saying "It\'s perfect because there\'s no weather in California, this will work out great." A stand-up background was more than ideal, as he pointed out. "When you\'re doing the weather, no one is helping you out… You would figure out the weather story, makeup four or five bullet points, and conversate the audience through that story." Fritz ended up working at Channel 4 until his retirement in 2020, only 2 weeks shy of his 40th anniversary at NBC.\n\nThrough all his years on air, Fritz continued to do comedy as an outlet to talk about something other than the never-ending supply of vitamin D we get here in Southern California. The Honorary Mayor explained, "I do single-topic monologues, I\'ve been doing it for about 30 years." His first show was called \'It\'s Me, Dad,\' which was about life as a divorced father. His second show, \'The Reception\' covered the topic of being divorced as well. Next came \'Tonight at 11\' which gave insight into his time on the news. The fourth installment of his single topic monologues, \'Defying Gravity,\' was a show about getting older. His current show, which Fritz titled \'Unassisted Living,\' is about getting really old.\n\n"Unassisted Living," which has been playing once a month at The El Portal Theatre, has been extended for a third time. Come October, the show will have been running for a year. For those of you who want to see it, the next performance is Sunday, July 21st at 3 pm. Seeing as how this is The Tolucan Times, I had to do my journalistic duty for our community. I had to know what it really means to be our Honorary Mayor. "I\'ve been the Honorary Mayor for 28 years. I have no political power, I can\'t even get a parking ticket fixed in this town," Fritz quipped. "But I love it. It\'s public relations for this community that I love very much."\n\nHaving been a part of the community for so long, Fritz was truly excited to have The Tolucan Times return this past year. With a lifetime of experience in news and media, he sees the importance of a local news source. He says, "There is a school of thought that news is going to become hyper-local. These papers are going to be more valuable to people\'s lives than something like the LA Times… I think this type of paper is going to be the future." Like many of us, he has a story of his first time seeing the actual Toluca Lake. "At first I thought the lake was just a legend, like the Loch Ness Monster, only rich people could get back there. Then I got a couple of friends, through my acquaintances in Toluca Lake, invited me back there. It\'s a beautiful spot, with these spectacular homes," he shared. When I asked him where in Toluca Lake he eats, he swiftly responded "Breakfast at Bob\'s Big Boy, dinner at Paty\'s." I don\'t think there is a more Toluca Lake response than that. Follow Fritz on Instagram: @RealFritzColeman.' },
-                { type: 'image', src: 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a8/Media_Path_Podcast_with_Fritz_Coleman_%2852565967701%29_%28cropped%29.jpg/1200px-Media_Path_Podcast_with_Fritz_Coleman_%2852565967701%29_%28cropped%29.jpg', caption: 'Fritz Coleman' }
+                { type: 'text', content: 'There are always a handful of names that get thrown around when we talk about the legendary members of our community.' }
             ]
         },
         {
@@ -479,7 +469,7 @@ function seedArticles() {
             excerpt: 'A fast-moving look at what\'s happening across Los Angeles — from culture and local politics to the stories shaping our neighborhood right now.',
             blocks: [
                 { type: 'image', src: './images/EvanLovett.png', caption: 'Evan Lovett' },
-                { type: 'text', content: 'Evan Lovett is a proud son of Los Angeles. Born and raised in the San Fernando Valley, Lovett has become something of a pop historian who studies the city he\'s spent his life in.\n\nIn the cluttered world of online media and "content," Lovett has carved out a niche for himself as an informative and accessible voice sharing the rich history of Los Angeles.\n\nLovett\'s series is called L.A. in a Minute, and if you use Instagram or TikTok, there is a good chance you have seen his videos. The concept is simple: Lovett is going to teach you something about Los Angeles in roughly a minute. He opens most reports with his sign-on: "What is up? This is your LA in a minute..." followed by a brief explanation of the video\'s topic and often bookended with the phrase "Let\'s get into it." Then, Evan unloads one of his many nuggets of history.\n\nSince starting the series in 2020, Lovett has become a sensation. With hundreds of thousands of followers across multiple platforms, Evan has been formally honored by the City of Los Angeles and made numerous appearances on local news and radio stations. If you love history or the city of Los Angeles I highly recommend following Lovett. I was thrilled when I finally got the chance to speak to Evan about his well-earned fame and success.\n\nGino Renzulli: What was your career background before starting L.A. in a Minute?\n\nEvan Lovett: I am a journalist at heart. I was the Sports Editor for the Daily Bruin at UCLA and was fortunate enough to land a gig for the L.A. Times coming out of school. That said, there was not enough upside for a young 21-year-old covering sports in Orange County (and returning back to DTLA to file stories) and I entered the private sector, first in PR before landing in online advertising for a company called The Vendare Group. I was fortunate to land in that space - it was really the beginning of the modern internet - and had a career lasting 20+ years.\n\nGR: Did you always love history?\n\nEL: Great question. I did not like history class in school, but I was always interested in historical footnotes, tidbits, and trivia. As a youngster, I was obsessed with sports and could rattle off baseball stats going back to Wee Willie Keeler and Ty Cobb, and through the days of Don Mattingly and Kirby Puckett. My parents also instilled in me a love of L.A., and they would take me around the Venice boardwalk, Griffith Park, South Los Angeles, and Boyle Heights and regale me with their personal histories, which unlocked a greater appreciation for the history of the city as well.\n\nGR: How has your perception of LA changed since starting the show and researching the city?\n\nEL: Oh my gosh. I\'ve always loved Los Angeles and luckily I had a great appreciation of its diversity and rich culture growing up in the San Fernando Valley. In my homeroom in junior high, I had an Egyptian classmate, a Kenyan classmate, Armenian, Korean, Jewish — and even then I knew that this was special. It was so fun going to my friends\' homes and trying their family\'s foods and just seeing things that were different. With that as a foundation, my appreciation of Los Angeles is always viewed through the prism of the richness of culture here in L.A. — despite the fact that people have always said, "L.A. has no history in culture." Well, the truth is, you just need to look for it.\n\nGR: What\'s one piece of LA history every Angeleno should know about?\n\nEL: The Pobladores that founded El Pueblo de Nuestra Señora la Reina de los Ángeles on September 4, 1781, was a reflection of the city today; 44 families, including Mexicans, Spaniards, Indigenous people, Africans, and Filipinos.\n\nGR: Was there anyone doing content like this that inspired you?\n\nEL: I am inspired by the people of L.A. every day. I owe a debt of gratitude to Huell Howser, Art Laboe, Vin Scully, and Jonathan Gold, as their approach to the \'regular\' people, spots, and neighborhoods of Los Angeles were so authentic, deep-rooted, and genuine, that subconsciously I see reflections of their work in what I try to accomplish each day.\n\nGR: How long would you say one video takes to complete from inception to the end of editing?\n\nEL: From research to script to rewriting to driving to filming to editing... about eight hours per video. It\'s definitely a labor of love. My friend compares each video to "doing a term paper" and that sounds about right.\n\nGR: Are you recognized on the streets often?\n\nEL: Honestly, now I am recognized on a daily basis. It\'s really neat to know that I\'m able to make an impact in this city. It\'s not about me. It\'s about uncovering the pride that people have in their neighborhood and culture, and my ability to shine a positive light on this city really resonates.\n\nGR: Finally, what does the future hold for LA in a Minute?\n\nEL: I would like to publish my book, 100 Stories of L.A. In a Minute, and also have the opportunity to turn L.A. in a Minute into a full-length show on a streaming service or a local network. In the meantime, the goal is to continue growing while shining a positive light on all of Los Angeles!' }
+                { type: 'text', content: 'Evan Lovett is a proud son of Los Angeles.' }
             ]
         },
         {
@@ -490,13 +480,13 @@ function seedArticles() {
             cardImage: './images/Frontpage_00.png',
             excerpt: 'One of Hollywood\'s most iconic studios sits just down the road. We took the tour — here\'s everything you need to know before you go.',
             blocks: [
-                { type: 'text', content: 'It\'s rare for Angelenos to venture to local tourist spots. Whether it\'s the avoid-at-all-costs Hollywood Boulevard or something more accessible and enjoyable like The Getty Museum, we tend to only visit these locales when family is in town or there\'s a spark of adventure on a day off.\n\nWhile it might feel silly engaging in your own town\'s tourism, there\'s one particular outing that is well worth your time and it\'s just a light breeze away from Toluca Lake! The Warner Brothers Studio Tour offered daily on their Burbank lot, is an immersive, entertaining, and welcoming experience.\n\nMany of you reading this might be members of the entertainment industry thinking, "Oh, Tolucan Times Writer, I\'ve worked on that lot before, I don\'t need a tour!" Fair enough, but what you may not know is that this tour offers a charming, educational look back at Hollywood history allowing visitors to take a leisurely stroll down cinema\'s memory lane. Giving not only a look at sets and props, The WB Tour, led by a thoroughly knowledgeable guide, provides an enthusiastic lesson in cinematic history that not only enlivens the magic of filmmaking but inspires a craving for both creating and consuming film and television.\n\nIn the span of two hours, you are taken in small groups on a comfortable tour cart, rolling past massive soundstages, learning where great films like "Casablanca" (1942), "My Fair Lady" (1964), and beloved series "Friends" and "ER" were filmed, feeling an immediate sense of history on this hallowed ground.\n\nOne major portion of the studio lot, a city square and small neighborhood, most notably featured in "Gilmore Girls," transports you from Burbank straight to the fictional town of Stars Hollow, Connecticut. By allowing tour goers to exit the cart and walk around, enter the houses, take photos in the gazebo, you\'re swept up in the illusion of this all encompassing set. The rolling Valley hills slip away feeling as though you\'re in an idyllic New England small town.\n\nFor those not so interested in that particular TV-fare, or perhaps for those who haven\'t been on this tour since their massive update in 2021, a number of interactive exhibits are included in your excursion, namely a large space dedicated to the DC Comics Universe and the Harry Potter franchise.\n\nLast but certainly not least are a pair of dazzling gift shops, one for the Friends fanatics (which includes a free photo-op in the real "Central Perk" set) and the other a WB wide store chock-full of exclusive merchandise.\n\nAs for this writer\'s personal experience of the tour, I can say I had nothing short of a blast! On a sunny day back in May I, along with a friend and fellow TV enthusiast, enjoyed walking the streets of Stars Hollow. We peered around recognizable homes, the cafe from "La La Land" (2017), traveled down "New York Street" up to the "Friends" fountain, walked the halls of a meticulously decorated high school set currently being used for the series "All-American," finishing up at an exhibit where we gazed at Old Hollywood wardrobe, iconic props, screenplays, and coveted award statuettes.\n\nThere is so much Hollywood history surrounding us here in Toluca Lake, whether it\'s the quiet notes of the past alongside our adored tinseltown streets or something as forward and dynamic as this Warner Brothers Tour, what a privilege to be able to be so immersed in it all!' }
+                { type: 'text', content: 'It\'s rare for Angelenos to venture to local tourist spots.' }
             ]
         }
     ];
 }
 
-// ── List ────────────────────────────────────────────────────────────────────
+// ── List ──────────────────────────────────────────────────────────────────────
 
 function renderList() {
     const el = document.getElementById('article-list');
@@ -513,53 +503,128 @@ function renderList() {
         html += '<p style="font-family:sans-serif;font-size:13px;color:#888;margin-bottom:16px;">No front page articles. Create one or restore from archive.</p>';
     } else {
         activeDisplay.forEach(({a, i}, displayIdx) => {
-            const isFeatured = displayIdx === 0;
-            const badge = isFeatured ? '<span class="featured-badge">Featured</span>' : '';
-            const dirty  = dirtyArticleIds.has(a.id) ? ' <span style="color:#de8c35;font-size:10px;font-family:sans-serif;">●</span>' : '';
+            const inFeatured = featuredIds.indexOf(a.id) !== -1;
+            const starBadge  = inFeatured ? ' <span style="color:#de8c35;font-size:13px;" title="In featured slots">★</span>' : '';
+            const dirty      = dirtyArticleIds.has(a.id) ? ' <span class="dirty-dot">●</span>' : '';
             html += `<div class="article-row" draggable="true"
-                ondragstart="dragStart(event,${displayIdx})"
+                ondragstart="dragStart(event,${displayIdx},'${a.id}')"
                 ondragover="dragOver(event)"
                 ondrop="dropArticle(event,${displayIdx})"
                 ondragleave="dragLeave(event)">
                 <span class="drag-handle" title="Drag to reorder">⠿</span>
                 <div class="article-row-left">
-                    <div class="article-row-tag">${a.tag}</div>
-                    <div class="article-row-title">${a.title}${badge}${dirty}</div>
-                    <div class="article-row-meta">By ${a.author} &nbsp;·&nbsp; ${a.id}.html</div>
+                    <div class="article-row-tag">${escHtml(a.tag)}</div>
+                    <div class="article-row-title">${escHtml(a.title)}${starBadge}${dirty}</div>
+                    <div class="article-row-meta">By ${escHtml(a.author)} &nbsp;·&nbsp; ${a.id}.html</div>
                 </div>
                 <div class="article-row-actions">
-                    <a href="./${a.id}.html" target="_blank" class="btn btn-secondary btn-sm" style="text-decoration:none;line-height:1.6">View ↗</a>
                     <button class="btn btn-primary btn-sm" onclick="showEditor(${i})">Edit</button>
-                    <button class="btn btn-secondary btn-sm" onclick="toggleArchive(${i})" style="color:#999;" title="Remove from front page">Archive</button>
+                    <button class="btn btn-secondary btn-sm" onclick="toggleArchive(${i})" style="color:#999;" title="Archive article">↓</button>
                 </div>
             </div>`;
         });
     }
 
-    html += '<div class="list-section-title" style="margin-top:32px;">Archive <span style="font-weight:400;color:#bbb;text-transform:none;letter-spacing:0;font-size:11px;">— not shown on front page</span></div>';
+    html += '<div class="list-section-title" style="margin-top:28px;">Archive <span style="font-weight:400;color:#bbb;text-transform:none;letter-spacing:0;font-size:11px;">— not shown on front page</span></div>';
     if (!archived.length) {
         html += '<p style="font-family:sans-serif;font-size:13px;color:#bbb;margin-bottom:8px;">No archived articles.</p>';
     } else {
         archived.forEach(({a, i}) => {
             html += `<div class="article-row archived">
                 <div class="article-row-left">
-                    <div class="article-row-tag">${a.tag}</div>
-                    <div class="article-row-title">${a.title}</div>
-                    <div class="article-row-meta">By ${a.author} &nbsp;·&nbsp; ${a.id}.html</div>
+                    <div class="article-row-tag">${escHtml(a.tag)}</div>
+                    <div class="article-row-title">${escHtml(a.title)}</div>
+                    <div class="article-row-meta">By ${escHtml(a.author)} &nbsp;·&nbsp; ${a.id}.html</div>
                 </div>
                 <div class="article-row-actions">
-                    <a href="./${a.id}.html" target="_blank" class="btn btn-secondary btn-sm" style="text-decoration:none;line-height:1.6">View ↗</a>
                     <button class="btn btn-primary btn-sm" onclick="showEditor(${i})">Edit</button>
-                    <button class="btn btn-success btn-sm" onclick="toggleArchive(${i})">Restore to Front Page</button>
+                    <button class="btn btn-success btn-sm" onclick="toggleArchive(${i})">Restore</button>
                 </div>
             </div>`;
         });
     }
 
     el.innerHTML = html;
+    renderFeaturedSlots();
 }
 
-// ── Blocks ──────────────────────────────────────────────────────────────────
+// ── Featured slots ────────────────────────────────────────────────────────────
+
+function renderFeaturedSlots() {
+    const el = document.getElementById('featured-slots-list');
+    if (!el) return;
+    while (featuredIds.length < 5) featuredIds.push(null);
+
+    const slotLabels = ['Main Feature', 'Thumb 2', 'Thumb 3', 'Thumb 4', 'Thumb 5'];
+    let html = '';
+    for (let idx = 0; idx < 5; idx++) {
+        const id = featuredIds[idx];
+        const a  = id ? articles.find(x => x.id === id && !x.archived) : null;
+        const isMain = idx === 0;
+
+        if (a) {
+            const thumbHtml = a.cardImage
+                ? `<img class="slot-thumb" src="${escHtml(a.cardImage)}" alt="${escHtml(a.title)}">`
+                : `<div class="slot-thumb"></div>`;
+            html += `<div class="featured-slot filled"
+                ondragover="dragOverSlot(event)"
+                ondragleave="dragLeaveSlot(event)"
+                ondrop="dropToSlot(event,${idx})">
+                <span class="slot-num${isMain ? ' main-slot' : ''}">${idx + 1}</span>
+                <div class="slot-content">
+                    ${thumbHtml}
+                    <div class="slot-info">
+                        <span class="slot-tag">${escHtml(a.tag)}</span>
+                        <span class="slot-title">${escHtml(a.title)}</span>
+                        <span class="slot-author">By ${escHtml(a.author)}</span>
+                    </div>
+                </div>
+                <button class="slot-clear" onclick="clearSlot(${idx})" title="Remove from slot">&times;</button>
+            </div>`;
+        } else {
+            const emptyLabel = isMain ? 'Main Feature — drag an article here' : slotLabels[idx] + ' — drag an article here';
+            html += `<div class="featured-slot"
+                ondragover="dragOverSlot(event)"
+                ondragleave="dragLeaveSlot(event)"
+                ondrop="dropToSlot(event,${idx})">
+                <span class="slot-num${isMain ? ' main-slot' : ''}">${idx + 1}</span>
+                <div class="slot-content">
+                    <span class="slot-empty-text">${emptyLabel}</span>
+                </div>
+            </div>`;
+        }
+    }
+    el.innerHTML = html;
+}
+
+function dragOverSlot(evt) {
+    evt.preventDefault();
+    evt.currentTarget.classList.add('drag-over');
+}
+
+function dragLeaveSlot(evt) {
+    evt.currentTarget.classList.remove('drag-over');
+}
+
+function dropToSlot(evt, slotIdx) {
+    evt.preventDefault();
+    evt.currentTarget.classList.remove('drag-over');
+    const id = evt.dataTransfer.getData('articleId');
+    if (!id) return;
+    while (featuredIds.length < 5) featuredIds.push(null);
+    for (let i = 0; i < 5; i++) { if (featuredIds[i] === id) featuredIds[i] = null; }
+    featuredIds[slotIdx] = id;
+    configDirty = true; homepageDirty = true;
+    markPending(); renderFeaturedSlots(); renderList();
+}
+
+function clearSlot(slotIdx) {
+    featuredIds[slotIdx] = null;
+    configDirty = true; homepageDirty = true;
+    markPending(); renderFeaturedSlots(); renderList();
+}
+
+// ── Blocks ────────────────────────────────────────────────────────────────────
 
 function renderBlocks() {
     const el = document.getElementById('blocks-list');
@@ -592,6 +657,7 @@ function renderBlocks() {
                 </div>
                 <div class="block-body">
                     <input type="text" placeholder="Image URL or path — e.g. ./images/photo.png or https://…" value="${escHtml(b.src||'')}" oninput="blocks[${i}].src=this.value">
+                    <input type="text" placeholder="Alt text (for accessibility)" value="${escHtml(b.alt||'')}" oninput="blocks[${i}].alt=this.value">
                     <input type="text" placeholder="Caption (optional)" value="${escHtml(b.caption||'')}" oninput="blocks[${i}].caption=this.value">
                 </div>
             </div>`;
@@ -600,9 +666,8 @@ function renderBlocks() {
 }
 
 function addBlock(type) {
-    blocks.push(type === 'text' ? { type:'text', content:'' } : { type:'image', src:'', caption:'' });
+    blocks.push(type === 'text' ? { type:'text', content:'' } : { type:'image', src:'', alt:'', caption:'' });
     renderBlocks();
-    // scroll new block into view
     const items = document.querySelectorAll('.block-item');
     if (items.length) items[items.length-1].scrollIntoView({ behavior:'smooth', block:'nearest' });
 }
@@ -620,43 +685,70 @@ function moveBlock(i, dir) {
 }
 
 function escHtml(s) {
-    return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    if (!s) return '';
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
-// ── Editor ──────────────────────────────────────────────────────────────────
+// ── Card image preview + excerpt counter ─────────────────────────────────────
+
+function updateCardPreview(url) {
+    const img = document.getElementById('card-img-preview');
+    if (!img) return;
+    if (url && url.trim()) {
+        img.src = url.trim();
+        img.style.display = 'block';
+        img.onerror = function() { img.style.display = 'none'; };
+    } else {
+        img.style.display = 'none';
+    }
+}
+
+function updateExcerptCount(el) {
+    const cnt = document.getElementById('excerpt-count');
+    if (cnt) cnt.textContent = el.value.length + ' chars';
+}
+
+// ── Editor ────────────────────────────────────────────────────────────────────
 
 function showEditor(index) {
     editingIdx = index;
     const form = document.getElementById('article-form');
     form.reset();
 
+    // Reset card preview and excerpt count
+    const previewImg = document.getElementById('card-img-preview');
+    if (previewImg) previewImg.style.display = 'none';
+    const cnt = document.getElementById('excerpt-count');
+    if (cnt) cnt.textContent = '0 chars';
+
     if (index === -1) {
         document.getElementById('editor-heading').textContent = 'New Article';
         document.getElementById('delete-btn').style.display = 'none';
-        blocks = [{ type:'text', content:'' }]; // start with one empty text block
+        blocks = [{ type:'text', content:'' }];
     } else {
         const a = articles[index];
         document.getElementById('editor-heading').textContent = 'Editing: ' + a.title;
         form.title.value     = a.title;
         form.author.value    = a.author;
         form.tag.value       = a.tag;
+        form.date.value      = a.date || '';
         form.cardImage.value = a.cardImage || '';
         form.excerpt.value   = a.excerpt   || '';
-        // Support old "body" string format or new blocks array
         if (a.blocks && a.blocks.length) {
-            blocks = JSON.parse(JSON.stringify(a.blocks)); // deep copy
+            blocks = JSON.parse(JSON.stringify(a.blocks));
         } else if (a.body) {
             blocks = [{ type:'text', content: a.body.replace(/<br><br>/g,'\n\n').replace(/<br>/g,'\n') }];
         } else {
             blocks = [{ type:'text', content:'' }];
         }
         document.getElementById('delete-btn').style.display = 'inline-block';
+        if (a.cardImage) updateCardPreview(a.cardImage);
+        if (a.excerpt) updateExcerptCount(form.excerpt);
     }
 
     renderBlocks();
     document.getElementById('list-view').style.display      = 'none';
     document.getElementById('article-editor').style.display = 'block';
-    window.scrollTo(0, 0);
     clearStatus();
 }
 
@@ -666,7 +758,7 @@ function cancelEdit() {
     clearStatus();
 }
 
-// ── Save ────────────────────────────────────────────────────────────────────
+// ── Save ──────────────────────────────────────────────────────────────────────
 
 async function saveArticle(e) {
     e.preventDefault();
@@ -675,6 +767,7 @@ async function saveArticle(e) {
         title:     form.title.value.trim(),
         author:    form.author.value.trim(),
         tag:       form.tag.value,
+        date:      form.date.value.trim(),
         cardImage: form.cardImage.value.trim(),
         excerpt:   form.excerpt.value.trim(),
         blocks:    blocks.filter(b => b.type === 'image' ? b.src.trim() : b.content.trim())
@@ -701,12 +794,16 @@ async function saveArticle(e) {
     showStatus('Changes saved locally — click "Publish to Site" when ready to go live.', 'success');
 }
 
-// ── Delete ──────────────────────────────────────────────────────────────────
+// ── Delete ────────────────────────────────────────────────────────────────────
 
 async function deleteArticle() {
     if (editingIdx === -1) return;
     const a = articles[editingIdx];
     if (!confirm('Delete "' + a.title + '"?\n\nThis will remove it from the site when you publish.')) return;
+
+    // Remove from featured slots
+    featuredIds = featuredIds.map(id => id === a.id ? null : id);
+    configDirty = true;
 
     deletedArticles.push({ id: a.id });
     articles.splice(editingIdx, 1);
@@ -718,7 +815,7 @@ async function deleteArticle() {
     showStatus('Article removed — click "Publish to Site" to make it live.', 'success');
 }
 
-// ── HTML builders ────────────────────────────────────────────────────────────
+// ── HTML builders ─────────────────────────────────────────────────────────────
 
 function buildArticleHTML(a) {
     const bodyHTML = a.blocks.map(b => {
@@ -726,15 +823,20 @@ function buildArticleHTML(a) {
             const html = b.content.trim().split(/\n\n+/).map(p => p.replace(/\n/g,'<br>')).join('<br><br>');
             return `        <div class="paragraph-container"><p>${html}</p></div>`;
         } else {
-            const cap = b.caption ? `\n        <p class="article-img-caption">${b.caption}</p>` : '';
-            return `        <div class="article-img-block">\n            <img src="${b.src}" alt="${b.caption || a.title}">${cap}\n        </div>`;
+            const altText = escHtml(b.alt || b.caption || a.title);
+            const cap = b.caption ? `\n        <p class="article-img-caption">${escHtml(b.caption)}</p>` : '';
+            return `        <div class="article-img-block">\n            <img src="${escHtml(b.src)}" alt="${altText}">${cap}\n        </div>`;
         }
     }).join('\n');
+
+    const dateLine = a.date
+        ? `        <div style="font-family:sans-serif;font-size:12px;color:#999;padding:4px 0 12px;letter-spacing:0.5px;">${escHtml(a.date)}</div>`
+        : '';
 
     return `<!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>${a.title} — The Tolucan Times</title>
+    <title>${escHtml(a.title)} — The Tolucan Times</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
     <link type="text/css" rel="stylesheet" href="./css/style.css">
@@ -751,8 +853,9 @@ function buildArticleHTML(a) {
 <body>
     <div id="nav-ph"></div>
     <div class="article-container">
-        <div class="headline-container"><h1>${a.title}</h1></div>
-        <div class="subheadline-container"><h2>Written By &nbsp;&nbsp; ${a.author}</h2></div>
+        <div class="headline-container"><h1>${escHtml(a.title)}</h1></div>
+        <div class="subheadline-container"><h2>Written By &nbsp;&nbsp; ${escHtml(a.author)}</h2></div>
+${dateLine}
 ${bodyHTML}
     </div>
     <div id="footer-ph"></div>
@@ -762,36 +865,132 @@ ${bodyHTML}
 }
 
 function buildHomepageComp(all) {
-    const active   = all.filter(a => !a.archived);
-    const featured = active.length ? active[active.length - 1] : null;
-    const grid     = active.length > 1 ? active.slice(-4, -1).reverse() : [];
+    const active = all.filter(a => !a.archived);
 
-    const featuredHtml = featured ? `
-        <div class="hp-main">
-            <a class="article-featured" href="./${featured.id}.html">
-                ${featured.cardImage ? `<img src="${featured.cardImage}" alt="${featured.title}">` : ''}
-                <span class="article-tag">${featured.tag}</span>
-                <h2>${featured.title}</h2>
-                <p class="byline">By ${featured.author}</p>
-                <p class="excerpt">${featured.excerpt}</p>
-            </a>
-        </div>` : '<div class="hp-main"></div>';
+    // Resolve featured list from featuredIds, fill remaining from most-recent active
+    const featuredList = [];
+    const usedIds = new Set();
+    for (let i = 0; i < 5; i++) {
+        const id = featuredIds[i];
+        if (id) {
+            const found = active.find(x => x.id === id);
+            if (found && !usedIds.has(found.id)) {
+                featuredList.push(found);
+                usedIds.add(found.id);
+                continue;
+            }
+        }
+        featuredList.push(null);
+    }
+    // Fill nulls with most-recent articles not already used
+    const remaining = [...active].reverse().filter(a => !usedIds.has(a.id));
+    let ri = 0;
+    for (let i = 0; i < 5; i++) {
+        if (!featuredList[i]) {
+            if (ri < remaining.length) {
+                featuredList[i] = remaining[ri++];
+                usedIds.add(featuredList[i].id);
+            }
+        }
+    }
+    // Compact to non-null
+    const featured5 = featuredList.filter(Boolean).slice(0, 5);
 
-    const gridCards = grid.map(a => `
+    // Articles outside the featured 5 for "More Stories"
+    const moreArticles = active.filter(a => !usedIds.has(a.id));
+
+    const ycStyles = `<style>
+.yc-carousel { display:flex; background:white; border:1px solid #ddd; margin-bottom:24px; min-height:380px; }
+.yc-main { flex:1; position:relative; overflow:hidden; }
+.yc-main-link { display:block; width:100%; height:100%; }
+.yc-main img { width:100%; height:100%; object-fit:cover; display:block; }
+.yc-main-overlay { position:absolute; bottom:0; left:0; right:0; padding:50px 22px 22px; background:linear-gradient(transparent,rgba(0,0,0,0.82)); color:white; pointer-events:none; }
+.yc-main-tag { font-size:9px; font-family:sans-serif; font-weight:700; letter-spacing:3px; text-transform:uppercase; color:#f0a030; display:block; margin-bottom:8px; }
+.yc-main-title { font-family:Georgia,serif; font-size:clamp(16px,2.2vw,26px); font-weight:700; line-height:1.25; margin-bottom:7px; }
+.yc-main-byline { font-size:11px; font-family:sans-serif; color:rgba(255,255,255,0.7); margin-bottom:6px; }
+.yc-main-excerpt { font-size:13px; font-family:Georgia,serif; color:rgba(255,255,255,0.85); line-height:1.5; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+.yc-thumbs { width:260px; flex-shrink:0; border-left:1px solid #ddd; display:flex; flex-direction:column; }
+.yc-thumb { flex:1; display:flex; align-items:center; gap:10px; padding:10px 12px; cursor:pointer; border-bottom:1px solid #eee; transition:background 0.15s; border-left:3px solid transparent; }
+.yc-thumb:last-child { border-bottom:none; }
+.yc-thumb:hover, .yc-thumb.active { background:#f5f0e8; border-left-color:#1E90FF; }
+.yc-thumb img { width:60px; height:44px; object-fit:cover; flex-shrink:0; }
+.yc-thumb-placeholder { width:60px; height:44px; background:#eee; flex-shrink:0; }
+.yc-thumb-tag { font-size:8px; font-family:sans-serif; font-weight:700; letter-spacing:2px; text-transform:uppercase; color:#1E90FF; display:block; margin-bottom:3px; }
+.yc-thumb-text strong { font-size:12px; font-family:Georgia,serif; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; line-height:1.3; }
+.yc-thumb-by { font-size:10px; font-family:sans-serif; color:#999; display:block; margin-top:3px; }
+@media(max-width:640px){.yc-carousel{flex-direction:column;}.yc-thumbs{width:100%;border-left:none;border-top:1px solid #ddd;flex-direction:row;overflow-x:auto;min-height:auto;}.yc-thumb{min-width:150px;border-bottom:none;border-left:none;border-top:3px solid transparent;}.yc-thumb:hover,.yc-thumb.active{border-left-color:transparent;border-top-color:#1E90FF;}}
+</style>`;
+
+    const first = featured5[0] || null;
+    const mainImgSrc   = first && first.cardImage ? escHtml(first.cardImage) : '';
+    const mainTitle    = first ? escHtml(first.title)  : '';
+    const mainTag      = first ? escHtml(first.tag)    : '';
+    const mainAuthor   = first ? escHtml(first.author) : '';
+    const mainExcerpt  = first ? escHtml(first.excerpt || '') : '';
+    const mainHref     = first ? escHtml('./' + first.id + '.html') : '#';
+
+    const thumbsHtml = featured5.map((a, idx) => {
+        const thumbImg = a && a.cardImage
+            ? `<img src="${escHtml(a.cardImage)}" alt="${escHtml(a.title)}">`
+            : `<div class="yc-thumb-placeholder"></div>`;
+        const activeClass = idx === 0 ? ' active' : '';
+        return `                    <div class="yc-thumb${activeClass}" data-idx="${idx}">
+                        ${thumbImg}
+                        <div class="yc-thumb-text">
+                            <span class="yc-thumb-tag">${escHtml(a ? a.tag : '')}</span>
+                            <strong>${escHtml(a ? a.title : '')}</strong>
+                            <span class="yc-thumb-by">By ${escHtml(a ? a.author : '')}</span>
+                        </div>
+                    </div>`;
+    }).join('\n');
+
+    // More Stories grid (articles outside featured 5)
+    const moreCards = moreArticles.slice(0, 6).map(a => `
         <a class="article-card" href="./${a.id}.html">
-            ${a.cardImage ? `<img src="${a.cardImage}" alt="${a.title}">` : ''}
-            <span class="article-tag">${a.tag}</span>
-            <h2>${a.title}</h2>
-            <p class="byline">By ${a.author}</p>
+            ${a.cardImage ? `<img src="${escHtml(a.cardImage)}" alt="${escHtml(a.title)}">` : ''}
+            <span class="article-tag">${escHtml(a.tag)}</span>
+            <h2>${escHtml(a.title)}</h2>
+            <p class="byline">By ${escHtml(a.author)}</p>
         </a>`).join('');
 
-    const moreSection = grid.length ? `
+    const moreSection = moreCards ? `
     <div class="section-divider"><span>More Stories</span></div>
-    <div class="articles-grid-3">${gridCards}
+    <div class="articles-grid-3">${moreCards}
     </div>` : '';
 
+    // JSON data for carousel switcher
+    const carouselData = JSON.stringify(featured5.map(a => ({
+        href:   a ? ('./' + a.id + '.html') : '#',
+        img:    a ? (a.cardImage || '') : '',
+        tag:    a ? (a.tag || '') : '',
+        title:  a ? (a.title || '') : '',
+        byline: a ? ('By ' + (a.author || '')) : '',
+        excerpt: a ? (a.excerpt || '') : ''
+    })));
+
     const script = `<script>
-(function () {
+(function() {
+    var data = ${carouselData};
+    var active = 0;
+    function switchTo(idx) {
+        if (idx === active) return;
+        var d = data[idx];
+        if (!d) return;
+        var lnk = document.getElementById('yc-main-link'); if(lnk) lnk.href = d.href;
+        var mi = document.getElementById('yc-main-img'); if(mi){mi.src=d.img;mi.alt=d.title;}
+        var mt = document.getElementById('yc-main-tag'); if(mt) mt.textContent = d.tag;
+        var mh = document.getElementById('yc-main-title'); if(mh) mh.textContent = d.title;
+        var mb = document.getElementById('yc-main-byline'); if(mb) mb.textContent = d.byline;
+        var me = document.getElementById('yc-main-excerpt'); if(me) me.textContent = d.excerpt;
+        document.querySelectorAll('.yc-thumb').forEach(function(el,i){ el.classList.toggle('active', i===idx); });
+        active = idx;
+    }
+    document.querySelectorAll('.yc-thumb').forEach(function(el, i) {
+        el.addEventListener('mouseenter', function(){ switchTo(i); });
+        el.addEventListener('click', function(){ if(data[i]) window.location.href = data[i].href; });
+    });
+
+    // Weather
     var DN = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
     function wd(c){if(c===0)return'Clear';if(c<=3)return'Partly Cloudy';if(c<=48)return'Foggy';if(c<=57)return'Drizzle';if(c<=67)return'Rain';if(c<=77)return'Snow';if(c<=82)return'Showers';return'Thunderstorm';}
     fetch('https://api.open-meteo.com/v1/forecast?latitude=34.1567&longitude=-118.3513&current=temperature_2m,weathercode,windspeed_10m&daily=temperature_2m_max,temperature_2m_min,weathercode&temperature_unit=fahrenheit&timezone=America%2FLos_Angeles&forecast_days=7')
@@ -802,24 +1001,38 @@ function buildHomepageComp(all) {
             h+='</div>';
             var el=document.getElementById('hp-weather');if(el)el.innerHTML=h;
         }).catch(function(){var el=document.getElementById('hp-weather');if(el)el.innerHTML='<div class="weather-desc" style="color:#bbb;">Weather unavailable</div>';});
-    function renderFeed(items,elId){var el=document.getElementById(elId);if(!el)return;if(!items||!items.length){el.innerHTML='<span class="news-feed-loading">No items yet<\/span>';return;}var h='';items.forEach(function(item){h+='<a class="news-feed-item"'+(item.url?' href="'+item.url+'" target="_blank" rel="noopener"':'')+'>​<span class="news-feed-title">'+item.title+'<\/span><\/a>';});el.innerHTML=h;}
+
+    // Ad
     fetch('./data/config.json?t='+Date.now()).then(function(r){return r.json();}).then(function(cfg){
         var ab=document.getElementById('hp-ad-box');if(ab&&cfg.ad&&cfg.ad.image){var img='<img src="'+cfg.ad.image+'" alt="'+(cfg.ad.alt||'Advertisement')+'" style="width:100%;display:block;">';ab.innerHTML=cfg.ad.link?'<a href="'+cfg.ad.link+'" target="_blank" rel="noopener">'+img+'<\/a>':img;ab.style.padding='0';ab.style.border='none';ab.style.background='none';ab.style.minHeight='auto';}
-        renderFeed(cfg.sports||[],'hp-sports-feed');
-        renderFeed(cfg.entertainment||[],'hp-ent-feed');
-    }).catch(function(){
-        renderFeed([],'hp-sports-feed');
-        renderFeed([],'hp-ent-feed');
-    });
+    }).catch(function(){});
 }());
 <\/script>`;
 
-    return `<div class="news-wrapper">
+    return `${ycStyles}
+<div class="news-wrapper">
 
     <div class="section-divider"><span>Latest Stories</span></div>
 
-    <div class="hp-layout">${featuredHtml}
-
+    <div class="hp-layout">
+        <div class="hp-main" style="padding:0;">
+            <div class="yc-carousel">
+                <div class="yc-main">
+                    <a class="yc-main-link" id="yc-main-link" href="${mainHref}">
+                        <img id="yc-main-img" src="${mainImgSrc}" alt="${mainTitle}">
+                        <div class="yc-main-overlay">
+                            <span class="yc-main-tag" id="yc-main-tag">${mainTag}</span>
+                            <div class="yc-main-title" id="yc-main-title">${mainTitle}</div>
+                            <div class="yc-main-byline" id="yc-main-byline">By ${mainAuthor}</div>
+                            <div class="yc-main-excerpt" id="yc-main-excerpt">${mainExcerpt}</div>
+                        </div>
+                    </a>
+                </div>
+                <div class="yc-thumbs">
+${thumbsHtml}
+                </div>
+            </div>
+        </div>
         <div class="hp-sidebar">
             <div class="sidebar-box">
                 <span class="sidebar-box-label">Weather &middot; Toluca Lake</span>
@@ -829,19 +1042,6 @@ function buildHomepageComp(all) {
                 <span class="sidebar-box-label">Advertisement</span>
                 <div id="hp-ad-box" class="ad-box"><span class="ad-placeholder-label">Your Ad Here</span><span class="ad-placeholder-email">advertise@tolucantimes.com</span></div>
             </div>
-        </div>
-
-    </div>
-
-    <div class="section-divider"><span>Sports &amp; Entertainment</span></div>
-    <div class="hp-news-feeds">
-        <div class="hp-news-feed-col">
-            <span class="sidebar-box-label">Sports</span>
-            <div id="hp-sports-feed"><div class="news-feed-loading">Loading&hellip;</div></div>
-        </div>
-        <div class="hp-news-feed-col">
-            <span class="sidebar-box-label">Entertainment</span>
-            <div id="hp-ent-feed"><div class="news-feed-loading">Loading&hellip;</div></div>
         </div>
     </div>${moreSection}
 
@@ -879,9 +1079,8 @@ async function loadAdConfig() {
             adConfig    = cfg.ad || { image: '', link: '', alt: 'Advertisement' };
             adConfigSha = file.sha;
             sloganLocal = cfg.slogan || '';
-            sportsItems = cfg.sports        || [];
-            entItems    = cfg.entertainment || [];
-            slidesItems = cfg.slides        || [];
+            featuredIds = (cfg.featuredIds || []).slice(0, 5);
+            while (featuredIds.length < 5) featuredIds.push(null);
             const imgEl = document.getElementById('ad-image-input');
             const lnkEl = document.getElementById('ad-link-input');
             const altEl = document.getElementById('ad-alt-input');
@@ -891,9 +1090,7 @@ async function loadAdConfig() {
             if (altEl) altEl.value = adConfig.alt   || '';
             if (slgEl) slgEl.value = sloganLocal;
             updateAdPreview();
-            renderFeedEditor('sports');
-            renderFeedEditor('ent');
-            renderCarouselEditor();
+            renderFeaturedSlots();
         }
     } catch (e) { /* no config yet */ }
 }
@@ -931,7 +1128,7 @@ function clearAd() {
     saveAdSettings();
 }
 
-// ── Slogan ───────────────────────────────────────────────────────────────────
+// ── Slogan ────────────────────────────────────────────────────────────────────
 
 function saveSloganLocal() {
     sloganLocal = (document.getElementById('slogan-input').value || '').trim();
@@ -948,106 +1145,6 @@ function clearSlogan() {
     if (st) st.textContent = 'Slogan cleared — publish to go live.';
 }
 
-// ── Sidebar feed editor ───────────────────────────────────────────────────────
-
-function renderFeedEditor(type) {
-    const items = type === 'sports' ? sportsItems : entItems;
-    const elId  = type === 'sports' ? 'sports-items-list' : 'ent-items-list';
-    const el    = document.getElementById(elId);
-    if (!el) return;
-    if (!items.length) {
-        el.innerHTML = '<p style="font-family:sans-serif;font-size:12px;color:#bbb;margin-bottom:6px;">No items yet.</p>';
-        return;
-    }
-    el.innerHTML = items.map((item, i) => `
-        <div style="display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid #f0ece0;">
-            <span style="flex:1;font-family:Georgia,serif;font-size:13px;">${escHtml(item.title)}</span>
-            <span style="font-family:sans-serif;font-size:11px;color:#bbb;max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${escHtml(item.url||'')}">${escHtml(item.url||'—')}</span>
-            <button class="btn btn-danger btn-sm" onclick="removeFeedItem('${type}',${i})" style="padding:2px 8px;">✕</button>
-        </div>`).join('');
-}
-
-function addFeedItem(type) {
-    const titleEl = document.getElementById(type + '-title-input');
-    const urlEl   = document.getElementById(type + '-url-input');
-    const title   = (titleEl.value || '').trim();
-    if (!title) return;
-    const url = (urlEl.value || '').trim();
-    if (type === 'sports') sportsItems.push({ title, url });
-    else                   entItems.push({ title, url });
-    titleEl.value = '';
-    urlEl.value   = '';
-    renderFeedEditor(type);
-    configDirty = true;
-    markPending();
-}
-
-function removeFeedItem(type, idx) {
-    if (type === 'sports') sportsItems.splice(idx, 1);
-    else                   entItems.splice(idx, 1);
-    renderFeedEditor(type);
-    configDirty = true;
-    markPending();
-}
-
-// ── Carousel editor ───────────────────────────────────────────────────────────
-
-function renderCarouselEditor() {
-    const el = document.getElementById('carousel-items-list');
-    if (!el) return;
-    if (!slidesItems.length) {
-        el.innerHTML = '<p style="font-family:sans-serif;font-size:12px;color:#bbb;margin:0;">No slides yet — add one below. The homepage will fall back to the default slides.</p>';
-        return;
-    }
-    el.innerHTML = slidesItems.map((s, i) => {
-        const isFirst = i === 0, isLast = i === slidesItems.length - 1;
-        return `<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid #f0ece0;">
-            <div style="width:56px;height:40px;background:#eee;flex-shrink:0;overflow:hidden;border:1px solid #ddd;">
-                ${s.image ? `<img src="${escHtml(s.image)}" style="width:100%;height:100%;object-fit:cover;">` : ''}
-            </div>
-            <div style="flex:1;min-width:0;">
-                <div style="font-family:Georgia,serif;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${escHtml(s.title||'')}</div>
-                <div style="font-family:sans-serif;font-size:10px;color:#bbb;margin-top:2px;">${escHtml(s.tag||'')} &nbsp;·&nbsp; ${escHtml(s.link||'—')}</div>
-            </div>
-            <button class="btn btn-secondary btn-sm" onclick="moveSlide(${i},-1)" ${isFirst?'disabled':''} title="Move up">↑</button>
-            <button class="btn btn-secondary btn-sm" onclick="moveSlide(${i},1)"  ${isLast?'disabled':''} title="Move down">↓</button>
-            <button class="btn btn-danger btn-sm" onclick="removeSlide(${i})" title="Delete">✕</button>
-        </div>`;
-    }).join('');
-}
-
-function addSlide() {
-    const image    = (document.getElementById('slide-image-input').value    || '').trim();
-    const link     = (document.getElementById('slide-link-input').value     || '').trim();
-    const title    = (document.getElementById('slide-title-input').value    || '').trim();
-    const subtitle = (document.getElementById('slide-subtitle-input').value || '').trim();
-    const tag      = (document.getElementById('slide-tag-input').value      || '').trim();
-    const tagColor = (document.getElementById('slide-tagcolor-input').value || '#1E90FF').trim();
-    if (!image || !title) { alert('Image URL and Headline are required.'); return; }
-    slidesItems.push({ image, link, title, subtitle, tag, tagColor });
-    ['image','link','title','subtitle','tag'].forEach(function(id){ document.getElementById('slide-'+id+'-input').value=''; });
-    document.getElementById('slide-tagcolor-input').value = '#1E90FF';
-    renderCarouselEditor();
-    configDirty = true;
-    markPending();
-}
-
-function removeSlide(idx) {
-    slidesItems.splice(idx, 1);
-    renderCarouselEditor();
-    configDirty = true;
-    markPending();
-}
-
-function moveSlide(idx, dir) {
-    const j = idx + dir;
-    if (j < 0 || j >= slidesItems.length) return;
-    [slidesItems[idx], slidesItems[j]] = [slidesItems[j], slidesItems[idx]];
-    renderCarouselEditor();
-    configDirty = true;
-    markPending();
-}
-
 // ── Pending changes ───────────────────────────────────────────────────────────
 
 function markPending() {
@@ -1055,9 +1152,9 @@ function markPending() {
                   (articlesJsonDirty ? 1 : 0) +
                   (homepageDirty ? 1 : 0) +
                   (configDirty ? 1 : 0);
-    const bar = document.getElementById('publish-bar');
+    const bar   = document.getElementById('publish-bar');
     const cntEl = document.getElementById('pending-count');
-    if (bar)  bar.style.display   = count > 0 ? 'flex' : 'none';
+    if (bar)   bar.style.display  = count > 0 ? 'flex' : 'none';
     if (cntEl) cntEl.textContent  = count;
 }
 
@@ -1106,11 +1203,11 @@ async function publishAll() {
             homepageDirty = false;
         }
 
-        // 5. Write config.json (ad + slogan)
+        // 5. Write config.json (ad + slogan + featuredIds)
         if (configDirty) {
             const existing = await getFile(AD_CONFIG);
             const jr = await putFile(AD_CONFIG,
-                JSON.stringify({ ad: adConfig, slogan: sloganLocal, sports: sportsItems, entertainment: entItems, slides: slidesItems }, null, 2),
+                JSON.stringify({ ad: adConfig, slogan: sloganLocal, featuredIds: featuredIds.filter(Boolean) }, null, 2),
                 existing ? existing.sha : null, 'Update site config');
             adConfigSha = jr.content.sha;
             configDirty = false;
@@ -1126,9 +1223,10 @@ async function publishAll() {
 
 // ── Drag & drop article reordering ───────────────────────────────────────────
 
-function dragStart(evt, displayIdx) {
+function dragStart(evt, displayIdx, articleId) {
     dragSrcDisplayIdx = displayIdx;
     evt.dataTransfer.effectAllowed = 'move';
+    evt.dataTransfer.setData('articleId', articleId);
 }
 
 function dragOver(evt) {
@@ -1148,17 +1246,14 @@ function dropArticle(evt, targetDisplayIdx) {
         dragSrcDisplayIdx = null; return;
     }
 
-    // Get non-archived articles in display order (reversed array order, featured first)
     const activeDisplay = articles
         .map((a, i) => ({a, i}))
         .filter(x => !x.a.archived)
         .reverse();
 
-    // Reorder in display space
     const [moved] = activeDisplay.splice(dragSrcDisplayIdx, 1);
     activeDisplay.splice(targetDisplayIdx, 0, moved);
 
-    // Reverse back to array order and replace non-archived entries
     const newOrder = activeDisplay.reverse();
     let queue = [...newOrder];
     for (let i = 0; i < articles.length; i++) {
@@ -1184,7 +1279,7 @@ function toggleArchive(arrayIdx) {
     renderList();
 }
 
-// ── Status ───────────────────────────────────────────────────────────────────
+// ── Status ────────────────────────────────────────────────────────────────────
 
 function showStatus(msg, type) {
     const el = document.getElementById('status-msg');
@@ -1192,7 +1287,7 @@ function showStatus(msg, type) {
 }
 function clearStatus() { document.getElementById('status-msg').style.display = 'none'; }
 
-// ── Init ─────────────────────────────────────────────────────────────────────
+// ── Init ──────────────────────────────────────────────────────────────────────
 
 (function init() {
     const saved = localStorage.getItem('ttt_token');
