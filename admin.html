@@ -538,7 +538,7 @@ function renderList() {
         const issueArticles = active.filter(a => a.issue === issueName);
         const collapsed = collapsedIssues[issueName];
         html += `<div class="issue-folder">
-            <div class="issue-folder-header" onclick="toggleIssueCollapse('${escHtml(issueName)}')">
+            <div class="issue-folder-header" onclick="toggleIssueCollapse('${escHtml(issueName)}')" ondragover="dragOverFolder(event)" ondragleave="dragLeaveFolder(event)" ondrop="dropToIssue(event,'${escHtml(issueName)}')">
                 <span class="issue-toggle">${collapsed ? '▶' : '▼'}</span>
                 <span class="issue-name">${escHtml(issueName)}</span>
                 <span class="issue-count">${issueArticles.length} article${issueArticles.length !== 1 ? 's' : ''}</span>
@@ -1385,6 +1385,33 @@ function deleteIssue(evt, name) {
 
 function toggleIssueCollapse(name) {
     collapsedIssues[name] = !collapsedIssues[name];
+    renderList();
+}
+
+function dragOverFolder(evt) {
+    evt.preventDefault();
+    evt.currentTarget.style.background = '#eef5ff';
+    evt.currentTarget.style.borderColor = '#1E90FF';
+}
+function dragLeaveFolder(evt) {
+    evt.currentTarget.style.background = '';
+    evt.currentTarget.style.borderColor = '';
+}
+function dropToIssue(evt, issueName) {
+    evt.preventDefault();
+    evt.stopPropagation();
+    evt.currentTarget.style.background = '';
+    evt.currentTarget.style.borderColor = '';
+    const id = evt.dataTransfer.getData('articleId');
+    if (!id) return;
+    const a = articles.find(x => x.id === id);
+    if (!a) return;
+    a.issue = issueName;
+    dirtyArticleIds.add(id);
+    articlesJsonDirty = true;
+    markPending();
+    // Auto-expand the target issue
+    collapsedIssues[issueName] = false;
     renderList();
 }
 
