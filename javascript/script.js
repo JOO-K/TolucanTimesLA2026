@@ -28,7 +28,7 @@ setInterval(function () {
         .then(function (r) { return r.json(); })
         .then(function (d) {
             var temp      = Math.round(d.current.temperature_2m);
-            var code      = (d.current.weather_code || d.current.weathercode);
+            var code      = (d.current.weather_code != null ? d.current.weather_code : d.current.weathercode);
             var desc      = getWeatherDesc(code);
             var stateClass = getWeatherClass(code);
 
