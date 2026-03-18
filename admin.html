@@ -1049,10 +1049,10 @@ function buildHomepageComp(all) {
 
     const thumbsHtml = featured5.map((a, idx) => {
         const thumbImg = a && a.cardImage
-            ? `<img src="${escHtml(a.cardImage)}" alt="${escHtml(a.title)}">`
+            ? `<img src="${escHtml(a.cardImage)}" alt="${escHtml(a.title || '')}">`
             : `<div class="yc-thumb-placeholder"></div>`;
         const activeClass = idx === 0 ? ' active' : '';
-        return `                    <div class="yc-thumb${activeClass}" data-idx="${idx}">
+        return `                    <div class="yc-thumb${activeClass}" data-href="${escHtml(a ? ('./' + a.id + '.html') : '#')}" data-img="${escHtml(a ? (a.cardImage || '') : '')}" data-tag="${escHtml(a ? (a.tag || '') : '')}" data-title="${escHtml(a ? (a.title || '') : '')}" data-byline="${escHtml(a ? ('By ' + (a.author || '')) : '')}" data-excerpt="${escHtml(a ? (a.excerpt || '') : '')}">
                         ${thumbImg}
                         <div class="yc-thumb-text">
                             <span class="yc-thumb-tag">${escHtml(a ? a.tag : '')}</span>
@@ -1091,65 +1091,6 @@ function buildHomepageComp(all) {
 
     </div>`;
 
-    // JSON data for carousel switcher
-    const carouselData = JSON.stringify(featured5.map(a => ({
-        href:   a ? ('./' + a.id + '.html') : '#',
-        img:    a ? (a.cardImage || '') : '',
-        tag:    a ? (a.tag || '') : '',
-        title:  a ? (a.title || '') : '',
-        byline: a ? ('By ' + (a.author || '')) : '',
-        excerpt: a ? (a.excerpt || '') : ''
-    })));
-
-    const script = `<script>
-(function() {
-    var data = ${carouselData};
-    var active = 0;
-    function switchTo(idx) {
-        if (idx === active) return;
-        var d = data[idx];
-        if (!d) return;
-        var lnk = document.getElementById('yc-main-link'); if(lnk) lnk.href = d.href;
-        var mi = document.getElementById('yc-main-img'); if(mi){if(d.img)mi.src=d.img;mi.alt=d.title;}
-        var mt = document.getElementById('yc-main-tag'); if(mt) mt.textContent = d.tag;
-        var mh = document.getElementById('yc-main-title'); if(mh) mh.textContent = d.title;
-        var mb = document.getElementById('yc-main-byline'); if(mb) mb.textContent = d.byline;
-        var me = document.getElementById('yc-main-excerpt'); if(me) me.textContent = d.excerpt;
-        document.querySelectorAll('.yc-thumb').forEach(function(el,i){ el.classList.toggle('active', i===idx); });
-        active = idx;
-    }
-    setTimeout(function() {
-        document.querySelectorAll('.yc-thumb').forEach(function(el, i) {
-            el.addEventListener('mouseenter', function(){ switchTo(i); });
-            el.addEventListener('click', function(){ if(data[i]) window.location.href = data[i].href; });
-        });
-    }, 0);
-
-    // Weather
-    var DN = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
-    function wd(c){if(c===0)return'Clear';if(c<=3)return'Partly Cloudy';if(c<=48)return'Foggy';if(c<=57)return'Drizzle';if(c<=67)return'Rain';if(c<=77)return'Snow';if(c<=82)return'Showers';return'Thunderstorm';}
-    fetch('https://api.open-meteo.com/v1/forecast?latitude=34.1567&longitude=-118.3513&current=temperature_2m,weather_code,windspeed_10m&daily=temperature_2m_max,temperature_2m_min,weather_code&temperature_unit=fahrenheit&timezone=America%2FLos_Angeles&forecast_days=7')
-        .then(function(r){return r.json();}).then(function(d){
-            var cur=d.current,daily=d.daily,temp=Math.round(cur.temperature_2m),wind=Math.round(cur.windspeed_10m),code=(cur.weather_code||cur.weathercode);
-            var h='<div class="weather-current"><div class="weather-main"><span class="weather-temp">'+temp+'</span><span class="weather-unit">&deg;F</span></div><div class="weather-desc">'+wd(code)+'</div><div class="weather-wind">Wind '+wind+' mph</div><div class="weather-location">Toluca Lake, CA</div></div><div class="weather-forecast">';
-            for(var i=0;i<Math.min(7,daily.time.length);i++){var dt=new Date(daily.time[i]+'T12:00:00'),dn=i===0?'Today':DN[dt.getDay()],hi=Math.round(daily.temperature_2m_max[i]),lo=Math.round(daily.temperature_2m_min[i]);h+='<div class="weather-forecast-row"><span class="wf-day">'+dn+'</span><span class="wf-desc">'+wd((daily.weather_code||daily.weathercode)[i])+'</span><span class="wf-temps"><strong>'+hi+'&deg;</strong> <span class="wf-low">'+lo+'&deg;</span></span></div>';}
-            h+='</div>';
-            var el=document.getElementById('hp-weather');if(el)el.innerHTML=h;
-        }).catch(function(){var el=document.getElementById('hp-weather');if(el)el.innerHTML='<div class="weather-desc" style="color:#bbb;">Weather unavailable</div>';});
-
-    // Config (ad + events + spotlight)
-    fetch('./data/config.json?t='+Date.now()).then(function(r){return r.json();}).then(function(cfg){
-        var ab=document.getElementById('hp-ad-box');if(ab&&cfg.ad&&cfg.ad.image){var img='<img src="'+cfg.ad.image+'" alt="'+(cfg.ad.alt||'Advertisement')+'" style="width:100%;display:block;">';ab.innerHTML=cfg.ad.link?'<a href="'+cfg.ad.link+'" target="_blank" rel="noopener">'+img+'<\/a>':img;ab.style.padding='0';ab.style.border='none';ab.style.background='none';ab.style.minHeight='auto';}
-        function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
-        var evEl=document.getElementById('hp-events-list-el');
-        if(evEl&&cfg.events&&cfg.events.length){evEl.innerHTML=cfg.events.map(function(e){return'<li><span class="hp-event-date">'+esc(e.date)+'<\/span><span class="hp-event-title">'+esc(e.title)+'<\/span><\/li>';}).join('');}
-        var spn=document.getElementById('hp-spotlight-name-el');var spt=document.getElementById('hp-spotlight-text-el');
-        if(spn&&cfg.spotlight)spn.textContent=cfg.spotlight.name||'';
-        if(spt&&cfg.spotlight)spt.textContent=cfg.spotlight.text||'';
-    }).catch(function(){});
-}());
-<\/script>`;
-
     return `${ycStyles}
 <div class="news-wrapper">
 
@@ -1187,7 +1128,7 @@ ${thumbsHtml}
     </div>${moreSection}
 
 </div>
-${script}`;
+`;
 }
 
 // ── Ad Settings ───────────────────────────────────────────────────────────────

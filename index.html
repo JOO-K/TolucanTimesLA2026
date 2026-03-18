@@ -44,6 +44,69 @@
 
     <script type="text/javascript" src="./partloader.js"></script>
 
+    <script>
+    // ── Carousel (event delegation — works on dynamically injected content) ──────
+    $(document).on('mouseenter', '.yc-thumb', function() {
+        var $t = $(this);
+        if ($t.hasClass('active')) return;
+        var href = $t.data('href') || '#';
+        var img  = $t.data('img')  || '';
+        var tag  = $t.data('tag')  || '';
+        var ttl  = $t.data('title')   || '';
+        var byl  = $t.data('byline')  || '';
+        var exc  = $t.data('excerpt') || '';
+        $('#yc-main-link').attr('href', href);
+        if (img) $('#yc-main-img').attr({ src: img, alt: ttl });
+        $('#yc-main-tag').text(tag);
+        $('#yc-main-title').text(ttl);
+        $('#yc-main-byline').text(byl);
+        $('#yc-main-excerpt').text(exc);
+        $('.yc-thumb').removeClass('active');
+        $t.addClass('active');
+    });
+    $(document).on('click', '.yc-thumb', function() {
+        var href = $(this).data('href');
+        if (href && href !== '#') window.location.href = href;
+    });
+
+    // ── Weather + config (fires after homepageboxnavComp finishes loading) ───────
+    var hpDN = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+    function hpWd(c){if(c===0)return'Clear';if(c<=3)return'Partly Cloudy';if(c<=48)return'Foggy';if(c<=57)return'Drizzle';if(c<=67)return'Rain';if(c<=77)return'Snow';if(c<=82)return'Showers';return'Thunderstorm';}
+    function hpEsc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+    function initHomepageComp() {
+        fetch('https://api.open-meteo.com/v1/forecast?latitude=34.1567&longitude=-118.3513&current=temperature_2m,weather_code,windspeed_10m&daily=temperature_2m_max,temperature_2m_min,weather_code&temperature_unit=fahrenheit&timezone=America%2FLos_Angeles&forecast_days=7')
+            .then(function(r){return r.json();})
+            .then(function(d){
+                var c=d.current,dy=d.daily,tmp=Math.round(c.temperature_2m),wnd=Math.round(c.windspeed_10m),code=c.weather_code||c.weathercode;
+                var h='<div class="weather-current"><div class="weather-main"><span class="weather-temp">'+tmp+'</span><span class="weather-unit">&deg;F</span></div><div class="weather-desc">'+hpWd(code)+'</div><div class="weather-wind">Wind '+wnd+' mph</div><div class="weather-location">Toluca Lake, CA</div></div><div class="weather-forecast">';
+                for(var i=0;i<Math.min(7,dy.time.length);i++){var dt=new Date(dy.time[i]+'T12:00:00'),dn=i===0?'Today':hpDN[dt.getDay()],hi=Math.round(dy.temperature_2m_max[i]),lo=Math.round(dy.temperature_2m_min[i]);h+='<div class="weather-forecast-row"><span class="wf-day">'+dn+'</span><span class="wf-desc">'+hpWd((dy.weather_code||dy.weathercode)[i])+'</span><span class="wf-temps"><strong>'+hi+'&deg;</strong> <span class="wf-low">'+lo+'&deg;</span></span></div>';}
+                h+='</div>';
+                var el=document.getElementById('hp-weather');if(el)el.innerHTML=h;
+            })
+            .catch(function(){var el=document.getElementById('hp-weather');if(el)el.innerHTML='<div class="weather-desc" style="color:#bbb;">Weather unavailable</div>';});
+
+        fetch('./data/config.json?t='+Date.now())
+            .then(function(r){return r.json();})
+            .then(function(cfg){
+                var ab=document.getElementById('hp-ad-box');
+                if(ab&&cfg.ad&&cfg.ad.image){var img='<img src="'+cfg.ad.image+'" alt="'+(cfg.ad.alt||'Advertisement')+'" style="width:100%;display:block;">';ab.innerHTML=cfg.ad.link?'<a href="'+cfg.ad.link+'" target="_blank" rel="noopener">'+img+'</a>':img;ab.style.padding='0';ab.style.border='none';ab.style.background='none';ab.style.minHeight='auto';}
+                var evEl=document.getElementById('hp-events-list-el');
+                if(evEl&&cfg.events&&cfg.events.length){evEl.innerHTML=cfg.events.map(function(e){return'<li><span class="hp-event-date">'+hpEsc(e.date)+'</span><span class="hp-event-title">'+hpEsc(e.title)+'</span></li>';}).join('');}
+                var spn=document.getElementById('hp-spotlight-name-el');var spt=document.getElementById('hp-spotlight-text-el');
+                if(spn&&cfg.spotlight)spn.textContent=cfg.spotlight.name||'';
+                if(spt&&cfg.spotlight)spt.textContent=cfg.spotlight.text||'';
+            })
+            .catch(function(){});
+    }
+
+    $(document).ajaxComplete(function(event, xhr, settings) {
+        if (settings.url && settings.url.indexOf('homepageboxnavComp') !== -1) {
+            initHomepageComp();
+        }
+    });
+    </script>
+
 </body>
 
 </html>

@@ -36,11 +36,11 @@
                     </a>
                 </div>
                 <div class="yc-thumbs">
-                    <div class="yc-thumb active" style="cursor:pointer;"><div class="yc-thumb-placeholder"></div><div class="yc-thumb-text"><span class="yc-thumb-tag">Feature</span><strong>818 Files: Hello Girls in a Flood</strong><span class="yc-thumb-by">By Jeremy Oberstein</span></div></div>
-                    <div class="yc-thumb" style="cursor:pointer;"><div class="yc-thumb-placeholder"></div><div class="yc-thumb-text"><span class="yc-thumb-tag">Interview</span><strong>The Magic Box</strong><span class="yc-thumb-by">By Johnny Campanella</span></div></div>
-                    <div class="yc-thumb" style="cursor:pointer;"><div class="yc-thumb-placeholder"></div><div class="yc-thumb-text"><span class="yc-thumb-tag">Interview</span><strong>The Man, The myth, Your Neighbor: Kato Kaelin</strong><span class="yc-thumb-by">By Gino Renzulli</span></div></div>
-                    <div class="yc-thumb" style="cursor:pointer;"><div class="yc-thumb-placeholder"></div><div class="yc-thumb-text"><span class="yc-thumb-tag">Community</span><strong>The New Toluca Lake Farmers Market</strong><span class="yc-thumb-by">By James T. Bartlett</span></div></div>
-                    <div class="yc-thumb" style="cursor:pointer;"><img src="./images/Frontpage_02.png" alt="Dan Carlin, A Hardcore Tolucan"><div class="yc-thumb-text"><span class="yc-thumb-tag">Interview</span><strong>Dan Carlin, A Hardcore Tolucan</strong><span class="yc-thumb-by">By Gino Renzulli</span></div></div>
+                    <div class="yc-thumb active" data-href="./article_07.html" data-img="" data-tag="Feature" data-title="818 Files: Hello Girls in a Flood" data-byline="By Jeremy Oberstein" data-excerpt="The Night the Dam Gave Way"><div class="yc-thumb-placeholder"></div><div class="yc-thumb-text"><span class="yc-thumb-tag">Feature</span><strong>818 Files: Hello Girls in a Flood</strong><span class="yc-thumb-by">By Jeremy Oberstein</span></div></div>
+                    <div class="yc-thumb" data-href="./article_09.html" data-img="" data-tag="Interview" data-title="The Magic Box" data-byline="By Johnny Campanella" data-excerpt="Brian Nowac&#x27;s Mobile LED Superstudios Empower Movie &amp; TV Productions"><div class="yc-thumb-placeholder"></div><div class="yc-thumb-text"><span class="yc-thumb-tag">Interview</span><strong>The Magic Box</strong><span class="yc-thumb-by">By Johnny Campanella</span></div></div>
+                    <div class="yc-thumb" data-href="./article_06.html" data-img="" data-tag="Interview" data-title="The Man, The myth, Your Neighbor: Kato Kaelin" data-byline="By Gino Renzulli" data-excerpt="Never Has a Man Done So Little To Be Recognized By So Many"><div class="yc-thumb-placeholder"></div><div class="yc-thumb-text"><span class="yc-thumb-tag">Interview</span><strong>The Man, The myth, Your Neighbor: Kato Kaelin</strong><span class="yc-thumb-by">By Gino Renzulli</span></div></div>
+                    <div class="yc-thumb" data-href="./article_10.html" data-img="" data-tag="Community" data-title="The New Toluca Lake Farmers Market" data-byline="By James T. Bartlett" data-excerpt="Toluca Lake&#x27;s Farmers Market is Back and Better Than Ever"><div class="yc-thumb-placeholder"></div><div class="yc-thumb-text"><span class="yc-thumb-tag">Community</span><strong>The New Toluca Lake Farmers Market</strong><span class="yc-thumb-by">By James T. Bartlett</span></div></div>
+                    <div class="yc-thumb" data-href="./article_01.html" data-img="./images/Frontpage_02.png" data-tag="Interview" data-title="Dan Carlin, A Hardcore Tolucan" data-byline="By Gino Renzulli" data-excerpt="Dan Carlin, creator of Hardcore History, grew up right here in Toluca Lake &mdash; and he had a lot to say about the neighborhood he still calls his foundational place."><img src="./images/Frontpage_02.png" alt="Dan Carlin, A Hardcore Tolucan"><div class="yc-thumb-text"><span class="yc-thumb-tag">Interview</span><strong>Dan Carlin, A Hardcore Tolucan</strong><span class="yc-thumb-by">By Gino Renzulli</span></div></div>
                 </div>
             </div>
         </div>
@@ -86,56 +86,3 @@
 
 
 </div>
-<script>
-var ycData = [{"href": "./article_07.html", "img": "", "tag": "Feature", "title": "818 Files: Hello Girls in a Flood", "byline": "By Jeremy Oberstein", "excerpt": "The Night the Dam Gave Way"}, {"href": "./article_09.html", "img": "", "tag": "Interview", "title": "The Magic Box", "byline": "By Johnny Campanella", "excerpt": "Brian Nowac\u2019s Mobile LED Superstudios Empower Movie & TV Productions"}, {"href": "./article_06.html", "img": "", "tag": "Interview", "title": "The Man, The myth, Your Neighbor: Kato Kaelin", "byline": "By Gino Renzulli", "excerpt": "Never Has a Man Done So Little To Be Recognized By So Many"}, {"href": "./article_10.html", "img": "", "tag": "Community", "title": "The New Toluca Lake Farmers Market", "byline": "By James T. Bartlett", "excerpt": "Toluca Lake\u2019s Farmers Market is Back and Better Than Ever"}, {"href": "./article_01.html", "img": "./images/Frontpage_02.png", "tag": "Interview", "title": "Dan Carlin, A Hardcore Tolucan", "byline": "By Gino Renzulli", "excerpt": "Dan Carlin, creator of Hardcore History, grew up right here in Toluca Lake \u2014 and he had a lot to say about the neighborhood he still calls his foundational place."}];
-var ycActive = 0;
-function ycSwitch(i) {
-    if (i === ycActive) return;
-    var d = ycData[i];
-    var l = document.getElementById('yc-main-link'); if(l) l.href = d.href;
-    var m = document.getElementById('yc-main-img'); if(m){ if(d.img) m.src = d.img; m.alt = d.title; }
-    var t = document.getElementById('yc-main-tag'); if(t) t.textContent = d.tag;
-    var h = document.getElementById('yc-main-title'); if(h) h.textContent = d.title;
-    var b = document.getElementById('yc-main-byline'); if(b) b.textContent = d.byline;
-    var x = document.getElementById('yc-main-excerpt'); if(x) x.textContent = d.excerpt;
-    document.querySelectorAll('.yc-thumb').forEach(function(el,j){ el.classList.toggle('active', j===i); });
-    ycActive = i;
-}
-setTimeout(function() {
-    document.querySelectorAll('.yc-thumb').forEach(function(el, i) {
-        el.addEventListener('mouseenter', function() { ycSwitch(i); });
-        el.addEventListener('click', function() { if(ycData[i]) window.location.href = ycData[i].href; });
-    });
-}, 0);
-(function(){
-    var DN=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
-    function wd(c){if(c===0)return'Clear';if(c<=3)return'Partly Cloudy';if(c<=48)return'Foggy';if(c<=57)return'Drizzle';if(c<=67)return'Rain';if(c<=77)return'Snow';if(c<=82)return'Showers';return'Thunderstorm';}
-    fetch('https://api.open-meteo.com/v1/forecast?latitude=34.1567&longitude=-118.3513&current=temperature_2m,weather_code,windspeed_10m&daily=temperature_2m_max,temperature_2m_min,weather_code&temperature_unit=fahrenheit&timezone=America%2FLos_Angeles&forecast_days=7')
-        .then(function(r){return r.json();}).then(function(d){
-            var c=d.current,dy=d.daily,tmp=Math.round(c.temperature_2m),wnd=Math.round(c.windspeed_10m),code=(c.weather_code||c.weathercode);
-            var h='<div class="weather-current"><div class="weather-main"><span class="weather-temp">'+tmp+'<\/span><span class="weather-unit">&deg;F<\/span><\/div><div class="weather-desc">'+wd(code)+'<\/div><div class="weather-wind">Wind '+wnd+' mph<\/div><div class="weather-location">Toluca Lake, CA<\/div><\/div><div class="weather-forecast">';
-            for(var i=0;i<Math.min(7,dy.time.length);i++){var dt=new Date(dy.time[i]+'T12:00:00'),dn=i===0?'Today':DN[dt.getDay()],hi=Math.round(dy.temperature_2m_max[i]),lo=Math.round(dy.temperature_2m_min[i]);h+='<div class="weather-forecast-row"><span class="wf-day">'+dn+'<\/span><span class="wf-desc">'+wd((dy.weather_code||dy.weathercode)[i])+'<\/span><span class="wf-temps"><strong>'+hi+'&deg;<\/strong> <span class="wf-low">'+lo+'&deg;<\/span><\/span><\/div>';}
-            h+='<\/div>';
-            var el=document.getElementById('hp-weather');if(el)el.innerHTML=h;
-        }).catch(function(){var el=document.getElementById('hp-weather');if(el)el.innerHTML='<div class="weather-desc" style="color:#bbb;">Weather unavailable<\/div>';});
-    fetch('./data/config.json?t='+Date.now()).then(function(r){return r.json();}).then(function(cfg){
-        var ab=document.getElementById('hp-ad-box');
-        if(ab&&cfg.ad&&cfg.ad.image){
-            var img='<img src="'+cfg.ad.image+'" alt="'+(cfg.ad.alt||'Advertisement')+'" style="width:100%;display:block;">';
-            ab.innerHTML=cfg.ad.link?'<a href="'+cfg.ad.link+'" target="_blank" rel="noopener">'+img+'<\/a>':img;
-            ab.style.padding='0';ab.style.border='none';ab.style.background='none';ab.style.minHeight='auto';
-        }
-        function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
-        var evEl=document.getElementById('hp-events-list-el');
-        if(evEl&&cfg.events&&cfg.events.length){
-            evEl.innerHTML=cfg.events.map(function(e){
-                return '<li><span class="hp-event-date">'+esc(e.date)+'<\/span><span class="hp-event-title">'+esc(e.title)+'<\/span><\/li>';
-            }).join('');
-        }
-        var spn=document.getElementById('hp-spotlight-name-el');
-        var spt=document.getElementById('hp-spotlight-text-el');
-        if(spn&&cfg.spotlight) spn.textContent=cfg.spotlight.name||'';
-        if(spt&&cfg.spotlight) spt.textContent=cfg.spotlight.text||'';
-    }).catch(function(){});
-}());
-<\/script>
