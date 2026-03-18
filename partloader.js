@@ -1,8 +1,10 @@
 // Only fetch a component if its placeholder exists on this page
+// Uses .html() instead of .replaceWith() so jQuery properly executes
+// any <script> tags inside the loaded component.
 function loadPart(file, id) {
     if (!document.getElementById(id)) return;
     $.get(file, function(data) {
-        $("#" + id).replaceWith(data);
+        $("#" + id).html(data);
     });
 }
 

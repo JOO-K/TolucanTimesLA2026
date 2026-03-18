@@ -1118,10 +1118,12 @@ function buildHomepageComp(all) {
         document.querySelectorAll('.yc-thumb').forEach(function(el,i){ el.classList.toggle('active', i===idx); });
         active = idx;
     }
-    document.querySelectorAll('.yc-thumb').forEach(function(el, i) {
-        el.addEventListener('mouseenter', function(){ switchTo(i); });
-        el.addEventListener('click', function(){ if(data[i]) window.location.href = data[i].href; });
-    });
+    setTimeout(function() {
+        document.querySelectorAll('.yc-thumb').forEach(function(el, i) {
+            el.addEventListener('mouseenter', function(){ switchTo(i); });
+            el.addEventListener('click', function(){ if(data[i]) window.location.href = data[i].href; });
+        });
+    }, 0);
 
     // Weather
     var DN = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];

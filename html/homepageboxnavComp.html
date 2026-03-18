@@ -101,10 +101,12 @@ function ycSwitch(i) {
     document.querySelectorAll('.yc-thumb').forEach(function(el,j){ el.classList.toggle('active', j===i); });
     ycActive = i;
 }
-document.querySelectorAll('.yc-thumb').forEach(function(el, i) {
-    el.addEventListener('mouseenter', function() { ycSwitch(i); });
-    el.addEventListener('click', function() { if(ycData[i]) window.location.href = ycData[i].href; });
-});
+setTimeout(function() {
+    document.querySelectorAll('.yc-thumb').forEach(function(el, i) {
+        el.addEventListener('mouseenter', function() { ycSwitch(i); });
+        el.addEventListener('click', function() { if(ycData[i]) window.location.href = ycData[i].href; });
+    });
+}, 0);
 (function(){
     var DN=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
     function wd(c){if(c===0)return'Clear';if(c<=3)return'Partly Cloudy';if(c<=48)return'Foggy';if(c<=57)return'Drizzle';if(c<=67)return'Rain';if(c<=77)return'Snow';if(c<=82)return'Showers';return'Thunderstorm';}
