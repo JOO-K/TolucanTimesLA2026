@@ -199,8 +199,8 @@
                         </div>
                     </div>
 
-                    <!-- Meta fields row 2: tag + date -->
-                    <div class="form-row">
+                    <!-- Meta fields row 2: tag + date + issue -->
+                    <div class="form-row-3">
                         <div class="form-group">
                             <label>Category Tag</label>
                             <select name="tag">
@@ -220,6 +220,10 @@
                         <div class="form-group">
                             <label>Date <span>(shown on article page)</span></label>
                             <input type="text" name="date" placeholder="e.g. March 2025">
+                        </div>
+                        <div class="form-group">
+                            <label>Issue <span>(publication issue)</span></label>
+                            <input type="text" name="issue" placeholder="e.g. Spring 2025">
                         </div>
                     </div>
 
@@ -515,7 +519,7 @@ function renderList() {
                 <div class="article-row-left">
                     <div class="article-row-tag">${escHtml(a.tag)}</div>
                     <div class="article-row-title">${escHtml(a.title)}${starBadge}${dirty}</div>
-                    <div class="article-row-meta">By ${escHtml(a.author)} &nbsp;·&nbsp; ${a.id}.html</div>
+                    <div class="article-row-meta">By ${escHtml(a.author)}${a.issue ? ' &nbsp;·&nbsp; <span style="color:#de8c35;">' + escHtml(a.issue) + '</span>' : ''}${a.date ? ' &nbsp;·&nbsp; ' + escHtml(a.date) : ''}</div>
                 </div>
                 <div class="article-row-actions">
                     <button class="btn btn-primary btn-sm" onclick="showEditor(${i})">Edit</button>
@@ -534,7 +538,7 @@ function renderList() {
                 <div class="article-row-left">
                     <div class="article-row-tag">${escHtml(a.tag)}</div>
                     <div class="article-row-title">${escHtml(a.title)}</div>
-                    <div class="article-row-meta">By ${escHtml(a.author)} &nbsp;·&nbsp; ${a.id}.html</div>
+                    <div class="article-row-meta">By ${escHtml(a.author)}${a.issue ? ' &nbsp;·&nbsp; <span style="color:#de8c35;">' + escHtml(a.issue) + '</span>' : ''}${a.date ? ' &nbsp;·&nbsp; ' + escHtml(a.date) : ''}</div>
                 </div>
                 <div class="article-row-actions">
                     <button class="btn btn-primary btn-sm" onclick="showEditor(${i})">Edit</button>
@@ -731,7 +735,8 @@ function showEditor(index) {
         form.title.value     = a.title;
         form.author.value    = a.author;
         form.tag.value       = a.tag;
-        form.date.value      = a.date || '';
+        form.date.value      = a.date  || '';
+        form.issue.value     = a.issue || '';
         form.cardImage.value = a.cardImage || '';
         form.excerpt.value   = a.excerpt   || '';
         if (a.blocks && a.blocks.length) {
@@ -768,6 +773,7 @@ async function saveArticle(e) {
         author:    form.author.value.trim(),
         tag:       form.tag.value,
         date:      form.date.value.trim(),
+        issue:     form.issue.value.trim(),
         cardImage: form.cardImage.value.trim(),
         excerpt:   form.excerpt.value.trim(),
         blocks:    blocks.filter(b => b.type === 'image' ? b.src.trim() : b.content.trim())
