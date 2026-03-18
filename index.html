@@ -78,7 +78,7 @@
         fetch('https://api.open-meteo.com/v1/forecast?latitude=34.1567&longitude=-118.3513&current=temperature_2m,weather_code,windspeed_10m&daily=temperature_2m_max,temperature_2m_min,weather_code&temperature_unit=fahrenheit&timezone=America%2FLos_Angeles&forecast_days=7')
             .then(function(r){return r.json();})
             .then(function(d){
-                var c=d.current,dy=d.daily,tmp=Math.round(c.temperature_2m),wnd=Math.round(c.windspeed_10m),code=c.weather_code||c.weathercode;
+                var c=d.current,dy=d.daily,tmp=Math.round(c.temperature_2m),wnd=Math.round(c.windspeed_10m),code=(c.weather_code!=null?c.weather_code:c.weathercode);
                 var h='<div class="weather-current"><div class="weather-main"><span class="weather-temp">'+tmp+'</span><span class="weather-unit">&deg;F</span></div><div class="weather-desc">'+hpWd(code)+'</div><div class="weather-wind">Wind '+wnd+' mph</div><div class="weather-location">Toluca Lake, CA</div></div><div class="weather-forecast">';
                 for(var i=0;i<Math.min(7,dy.time.length);i++){var dt=new Date(dy.time[i]+'T12:00:00'),dn=i===0?'Today':hpDN[dt.getDay()],hi=Math.round(dy.temperature_2m_max[i]),lo=Math.round(dy.temperature_2m_min[i]);h+='<div class="weather-forecast-row"><span class="wf-day">'+dn+'</span><span class="wf-desc">'+hpWd((dy.weather_code||dy.weathercode)[i])+'</span><span class="wf-temps"><strong>'+hi+'&deg;</strong> <span class="wf-low">'+lo+'&deg;</span></span></div>';}
                 h+='</div>';
