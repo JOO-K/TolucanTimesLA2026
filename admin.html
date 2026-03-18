@@ -319,6 +319,38 @@
                 </div>
             </div>
 
+            <!-- Upcoming Events -->
+            <div class="right-section">
+                <div class="section-title">
+                    <span>Upcoming Events</span>
+                    <button class="btn btn-primary btn-sm" onclick="addEvent()">+ Add Event</button>
+                </div>
+                <div class="right-inner">
+                    <div id="events-list"></div>
+                    <div style="display:flex;gap:10px;align-items:center;margin-top:12px;">
+                        <button class="btn btn-success btn-sm" onclick="saveEventsAndSpotlight()">Save Events &amp; Spotlight</button>
+                    </div>
+                    <p class="slots-hint" style="margin-top:8px;">Events and Spotlight appear on the homepage below the carousel.</p>
+                </div>
+            </div>
+
+            <!-- Community Spotlight -->
+            <div class="right-section">
+                <div class="section-title">
+                    <span>Community Spotlight</span>
+                </div>
+                <div class="right-inner">
+                    <div class="form-group" style="margin-bottom:12px;">
+                        <label>Name / Headline</label>
+                        <input type="text" id="spotlight-name-input" placeholder="e.g. Jane Smith">
+                    </div>
+                    <div class="form-group" style="margin-bottom:0;">
+                        <label>Body Text</label>
+                        <textarea id="spotlight-text-input" rows="3" style="min-height:0;"></textarea>
+                    </div>
+                </div>
+            </div>
+
             <!-- Advertisement -->
             <div class="right-section">
                 <div class="section-title">
@@ -379,6 +411,8 @@ let sloganLocal = '';
 let featuredIds = [null, null, null, null, null];
 let issues = [];           // ordered array of issue name strings
 let collapsedIssues = {};  // { issueName: true } for collapsed state
+let events   = [];         // [{date, title}]
+let spotlight = { name: '', text: '' };
 
 // ── Auth ──────────────────────────────────────────────────────────────────────
 
@@ -1034,19 +1068,14 @@ function buildHomepageComp(all) {
 
         <div class="hp-info-cell">
             <span class="hp-info-cell-label">Upcoming Events</span>
-            <ul class="hp-events-list">
-                <li><span class="hp-event-date">Apr 5</span><span class="hp-event-title">Toluca Lake Farmers Market</span></li>
-                <li><span class="hp-event-date">Apr 12</span><span class="hp-event-title">Gary Marshall Theatre &mdash; Opening Night</span></li>
-                <li><span class="hp-event-date">Apr 19</span><span class="hp-event-title">TL Neighborhood Association Meeting</span></li>
-                <li><span class="hp-event-date">Apr 26</span><span class="hp-event-title">Riverside Drive Community Cleanup</span></li>
-            </ul>
+            <ul class="hp-events-list" id="hp-events-list-el"></ul>
             <a href="./localevents.html" class="hp-info-more">See All Events &rarr;</a>
         </div>
 
         <div class="hp-info-cell">
             <span class="hp-info-cell-label">Community Spotlight</span>
-            <div class="hp-spotlight-name">Your Neighbor</div>
-            <p class="hp-spotlight-text">Every issue we highlight someone doing something wonderful in our community. Know someone who deserves the spotlight? Let us know.</p>
+            <div class="hp-spotlight-name" id="hp-spotlight-name-el"></div>
+            <p class="hp-spotlight-text" id="hp-spotlight-text-el"></p>
             <a href="./contactus.html" class="hp-info-more">Submit a Name &rarr;</a>
         </div>
 
@@ -1106,9 +1135,15 @@ function buildHomepageComp(all) {
             var el=document.getElementById('hp-weather');if(el)el.innerHTML=h;
         }).catch(function(){var el=document.getElementById('hp-weather');if(el)el.innerHTML='<div class="weather-desc" style="color:#bbb;">Weather unavailable</div>';});
 
-    // Ad
+    // Config (ad + events + spotlight)
     fetch('./data/config.json?t='+Date.now()).then(function(r){return r.json();}).then(function(cfg){
         var ab=document.getElementById('hp-ad-box');if(ab&&cfg.ad&&cfg.ad.image){var img='<img src="'+cfg.ad.image+'" alt="'+(cfg.ad.alt||'Advertisement')+'" style="width:100%;display:block;">';ab.innerHTML=cfg.ad.link?'<a href="'+cfg.ad.link+'" target="_blank" rel="noopener">'+img+'<\/a>':img;ab.style.padding='0';ab.style.border='none';ab.style.background='none';ab.style.minHeight='auto';}
+        function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+        var evEl=document.getElementById('hp-events-list-el');
+        if(evEl&&cfg.events&&cfg.events.length){evEl.innerHTML=cfg.events.map(function(e){return'<li><span class="hp-event-date">'+esc(e.date)+'<\/span><span class="hp-event-title">'+esc(e.title)+'<\/span><\/li>';}).join('');}
+        var spn=document.getElementById('hp-spotlight-name-el');var spt=document.getElementById('hp-spotlight-text-el');
+        if(spn&&cfg.spotlight)spn.textContent=cfg.spotlight.name||'';
+        if(spt&&cfg.spotlight)spt.textContent=cfg.spotlight.text||'';
     }).catch(function(){});
 }());
 <\/script>`;
@@ -1165,7 +1200,14 @@ async function loadAdConfig() {
             sloganLocal = cfg.slogan || '';
             featuredIds = (cfg.featuredIds || []).slice(0, 5);
             while (featuredIds.length < 5) featuredIds.push(null);
-            issues = cfg.issues || defaultIssues();
+            issues   = cfg.issues   || defaultIssues();
+            events   = cfg.events   || [];
+            spotlight = cfg.spotlight || { name: '', text: '' };
+            renderEventsList();
+            const spnEl = document.getElementById('spotlight-name-input');
+            const sptEl = document.getElementById('spotlight-text-input');
+            if (spnEl) spnEl.value = spotlight.name || '';
+            if (sptEl) sptEl.value = spotlight.text || '';
             const imgEl = document.getElementById('ad-image-input');
             const lnkEl = document.getElementById('ad-link-input');
             const altEl = document.getElementById('ad-alt-input');
@@ -1232,6 +1274,50 @@ function clearSlogan() {
     if (st) st.textContent = 'Slogan cleared — publish to go live.';
 }
 
+// ── Events & Spotlight ────────────────────────────────────────────────────────
+
+function renderEventsList() {
+    const el = document.getElementById('events-list');
+    if (!el) return;
+    if (!events.length) {
+        el.innerHTML = '<p style="font-family:sans-serif;font-size:12px;color:#bbb;font-style:italic;margin:0;">No events yet — click + Add Event.</p>';
+        return;
+    }
+    el.innerHTML = events.map(function(ev, i) {
+        return '<div style="display:flex;gap:8px;align-items:center;margin-bottom:8px;">' +
+            '<input type="text" placeholder="Date" value="' + escHtml(ev.date) + '" ' +
+            'oninput="events[' + i + '].date=this.value" ' +
+            'style="width:72px;padding:6px 8px;border:1px solid #ccc;font-size:13px;font-family:Georgia,serif;flex-shrink:0;">' +
+            '<input type="text" placeholder="Event title" value="' + escHtml(ev.title) + '" ' +
+            'oninput="events[' + i + '].title=this.value" ' +
+            'style="flex:1;padding:6px 8px;border:1px solid #ccc;font-size:13px;font-family:Georgia,serif;">' +
+            '<button class="btn btn-danger btn-sm" onclick="removeEvent(' + i + ')">✕</button>' +
+            '</div>';
+    }).join('');
+}
+
+function addEvent() {
+    events.push({ date: '', title: '' });
+    configDirty = true; homepageDirty = true;
+    markPending(); renderEventsList();
+}
+
+function removeEvent(i) {
+    events.splice(i, 1);
+    configDirty = true; homepageDirty = true;
+    markPending(); renderEventsList();
+}
+
+function saveEventsAndSpotlight() {
+    spotlight = {
+        name: (document.getElementById('spotlight-name-input').value || '').trim(),
+        text: (document.getElementById('spotlight-text-input').value || '').trim()
+    };
+    configDirty = true; homepageDirty = true;
+    markPending();
+    showStatus('Events & Spotlight saved locally — click "Publish to Site" to go live.', 'success');
+}
+
 // ── Pending changes ───────────────────────────────────────────────────────────
 
 function markPending() {
@@ -1294,7 +1380,7 @@ async function publishAll() {
         if (configDirty) {
             const existing = await getFile(AD_CONFIG);
             const jr = await putFile(AD_CONFIG,
-                JSON.stringify({ ad: adConfig, slogan: sloganLocal, featuredIds: featuredIds.filter(Boolean), issues: issues }, null, 2),
+                JSON.stringify({ ad: adConfig, slogan: sloganLocal, featuredIds: featuredIds.filter(Boolean), issues: issues, events: events, spotlight: spotlight }, null, 2),
                 existing ? existing.sha : null, 'Update site config');
             adConfigSha = jr.content.sha;
             configDirty = false;

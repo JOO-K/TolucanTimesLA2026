@@ -61,19 +61,14 @@
 
         <div class="hp-info-cell">
             <span class="hp-info-cell-label">Upcoming Events</span>
-            <ul class="hp-events-list">
-                <li><span class="hp-event-date">Apr 5</span><span class="hp-event-title">Toluca Lake Farmers Market</span></li>
-                <li><span class="hp-event-date">Apr 12</span><span class="hp-event-title">Gary Marshall Theatre &mdash; Opening Night</span></li>
-                <li><span class="hp-event-date">Apr 19</span><span class="hp-event-title">TL Neighborhood Association Meeting</span></li>
-                <li><span class="hp-event-date">Apr 26</span><span class="hp-event-title">Riverside Drive Community Cleanup</span></li>
-            </ul>
+            <ul class="hp-events-list" id="hp-events-list-el"></ul>
             <a href="./localevents.html" class="hp-info-more">See All Events &rarr;</a>
         </div>
 
         <div class="hp-info-cell">
             <span class="hp-info-cell-label">Community Spotlight</span>
-            <div class="hp-spotlight-name">Your Neighbor</div>
-            <p class="hp-spotlight-text">Every issue we highlight someone doing something wonderful in our community. Know someone who deserves the spotlight? Let us know.</p>
+            <div class="hp-spotlight-name" id="hp-spotlight-name-el"></div>
+            <p class="hp-spotlight-text" id="hp-spotlight-text-el"></p>
             <a href="./contactus.html" class="hp-info-more">Submit a Name &rarr;</a>
         </div>
 
@@ -124,6 +119,17 @@ function ycSwitch(i) {
             ab.innerHTML=cfg.ad.link?'<a href="'+cfg.ad.link+'" target="_blank" rel="noopener">'+img+'<\/a>':img;
             ab.style.padding='0';ab.style.border='none';ab.style.background='none';ab.style.minHeight='auto';
         }
+        function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+        var evEl=document.getElementById('hp-events-list-el');
+        if(evEl&&cfg.events&&cfg.events.length){
+            evEl.innerHTML=cfg.events.map(function(e){
+                return '<li><span class="hp-event-date">'+esc(e.date)+'<\/span><span class="hp-event-title">'+esc(e.title)+'<\/span><\/li>';
+            }).join('');
+        }
+        var spn=document.getElementById('hp-spotlight-name-el');
+        var spt=document.getElementById('hp-spotlight-text-el');
+        if(spn&&cfg.spotlight) spn.textContent=cfg.spotlight.name||'';
+        if(spt&&cfg.spotlight) spt.textContent=cfg.spotlight.text||'';
     }).catch(function(){});
 }());
 <\/script>
