@@ -45,7 +45,7 @@
     <script type="text/javascript" src="./partloader.js"></script>
 
     <script>
-    // ── Carousel (event delegation — works on dynamically injected content) ──────
+    // ── Carousel ─────────────────────────────────────────────────────────────────
     $(document).on('mouseenter', '.yc-thumb', function() {
         var $t = $(this);
         if ($t.hasClass('active')) return;
@@ -69,23 +69,94 @@
         if (href && href !== '#') window.location.href = href;
     });
 
-    // ── Weather + config (fires after homepageboxnavComp finishes loading) ───────
+    // ── Weather helpers ───────────────────────────────────────────────────────────
     var hpDN = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
-    function hpWd(c){if(c===0)return'Clear';if(c<=3)return'Partly Cloudy';if(c<=48)return'Foggy';if(c<=57)return'Drizzle';if(c<=67)return'Rain';if(c<=77)return'Snow';if(c<=82)return'Showers';return'Thunderstorm';}
+    function hpWd(c){if(c===0)return'Clear';if(c<=3)return'Partly Cloudy';if(c<=48)return'Foggy';if(c<=57)return'Drizzle';if(c<=67)return'Rain';if(c<=77)return'Snow';if(c<=82)return'Showers';if(c<=99)return'Thunderstorm';return'Unknown';}
     function hpEsc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+    function windDir(d){if(d==null)return'';return['N','NE','E','SE','S','SW','W','NW'][Math.round(d/45)%8];}
+    function uvDesc(u){if(u<=2)return'Low';if(u<=5)return'Moderate';if(u<=7)return'High';if(u<=10)return'Very High';return'Extreme';}
+    function aqiInfo(a){if(a<=50)return{label:'Good',color:'#4caf50'};if(a<=100)return{label:'Moderate',color:'#e6a817'};if(a<=150)return{label:'Sensitive',color:'#ff7043'};if(a<=200)return{label:'Unhealthy',color:'#e53935'};if(a<=300)return{label:'Very Unhealthy',color:'#8e24aa'};return{label:'Hazardous',color:'#6a1fa2'};}
+    function fmtTime(iso){if(!iso)return'';var t=((iso.split('T')[1])||iso).split(':');var h=parseInt(t[0]),m=t[1],ap=h>=12?'PM':'AM';h=h%12||12;return h+':'+m+' '+ap;}
+    function moonPhase(){var d=new Date(),y=d.getFullYear(),mo=d.getMonth()+1,dy=d.getDate();if(mo<3){y--;mo+=12;}var a=Math.floor(y/100),b=2-a+Math.floor(a/4),jd=Math.floor(365.25*(y+4716))+Math.floor(30.6001*(mo+1))+dy+b-1524.5,ph=((jd-2451549.5)%29.53058867+29.53058867)%29.53058867;if(ph<1.85)return{e:'🌑',n:'New Moon'};if(ph<5.54)return{e:'🌒',n:'Waxing Crescent'};if(ph<9.22)return{e:'🌓',n:'First Quarter'};if(ph<12.91)return{e:'🌔',n:'Waxing Gibbous'};if(ph<16.61)return{e:'🌕',n:'Full Moon'};if(ph<20.30)return{e:'🌖',n:'Waning Gibbous'};if(ph<23.99)return{e:'🌗',n:'Last Quarter'};if(ph<27.68)return{e:'🌘',n:'Waning Crescent'};return{e:'🌑',n:'New Moon'};}
 
     function initHomepageComp() {
-        fetch('https://api.open-meteo.com/v1/forecast?latitude=34.1567&longitude=-118.3513&current=temperature_2m,weather_code,windspeed_10m&daily=temperature_2m_max,temperature_2m_min,weather_code&temperature_unit=fahrenheit&timezone=America%2FLos_Angeles&forecast_days=7')
+
+        // ── NWS Alerts (San Fernando Valley zone CAZ040) ──────────────────────────
+        fetch('https://api.weather.gov/alerts/active?zone=CAZ040', {headers:{'Accept':'application/geo+json'}})
             .then(function(r){return r.json();})
             .then(function(d){
-                var c=d.current,dy=d.daily,tmp=Math.round(c.temperature_2m),wnd=Math.round(c.windspeed_10m),code=(c.weather_code!=null?c.weather_code:c.weathercode);
-                var h='<div class="weather-current"><div class="weather-main"><span class="weather-temp">'+tmp+'</span><span class="weather-unit">&deg;F</span></div><div class="weather-desc">'+hpWd(code)+'</div><div class="weather-wind">Wind '+wnd+' mph</div><div class="weather-location">Toluca Lake, CA</div></div><div class="weather-forecast">';
-                for(var i=0;i<Math.min(7,dy.time.length);i++){var dt=new Date(dy.time[i]+'T12:00:00'),dn=i===0?'Today':hpDN[dt.getDay()],hi=Math.round(dy.temperature_2m_max[i]),lo=Math.round(dy.temperature_2m_min[i]);h+='<div class="weather-forecast-row"><span class="wf-day">'+dn+'</span><span class="wf-desc">'+hpWd((dy.weather_code||dy.weathercode)[i])+'</span><span class="wf-temps"><strong>'+hi+'&deg;</strong> <span class="wf-low">'+lo+'&deg;</span></span></div>';}
+                var alertEl = document.getElementById('hp-weather-alerts');
+                if (!alertEl) return;
+                var features = (d.features||[]).filter(function(f){return f.properties && f.properties.status !== 'Test';});
+                if (!features.length) { alertEl.innerHTML = ''; return; }
+                var h = '';
+                features.slice(0,3).forEach(function(f){
+                    var p = f.properties, sev = p.severity||'';
+                    var cls = (sev==='Extreme'||sev==='Severe') ? 'alert-severe' : 'alert-moderate';
+                    h += '<div class="weather-alert '+cls+'"><strong>&#9888; '+hpEsc(p.event)+'</strong><span>'+hpEsc((p.headline||p.description||'').split('.')[0])+'</span></div>';
+                });
+                alertEl.innerHTML = h;
+            })
+            .catch(function(){});
+
+        // ── Open-Meteo weather ────────────────────────────────────────────────────
+        fetch('https://api.open-meteo.com/v1/forecast?latitude=34.1567&longitude=-118.3513&current=temperature_2m,weather_code,windspeed_10m,wind_direction_10m,apparent_temperature,relative_humidity_2m,uv_index&daily=temperature_2m_max,temperature_2m_min,weather_code,precipitation_probability_max,sunrise,sunset&temperature_unit=fahrenheit&timezone=America%2FLos_Angeles&forecast_days=7')
+            .then(function(r){return r.json();})
+            .then(function(d){
+                var c=d.current, dy=d.daily;
+                var tmp=Math.round(c.temperature_2m), feels=Math.round(c.apparent_temperature);
+                var humidity=c.relative_humidity_2m, wnd=Math.round(c.windspeed_10m), dir=windDir(c.wind_direction_10m);
+                var uv=Math.round(c.uv_index||0), code=(c.weather_code!=null?c.weather_code:c.weathercode);
+                var sunrise=dy.sunrise?fmtTime(dy.sunrise[0]):'', sunset=dy.sunset?fmtTime(dy.sunset[0]):'';
+                var moon=moonPhase();
+                var h='<div class="weather-current">';
+                h+='<div class="weather-main"><span class="weather-temp">'+tmp+'</span><span class="weather-unit">&deg;F</span></div>';
+                h+='<div class="weather-desc">'+hpWd(code)+'</div>';
+                h+='<div class="weather-feels">Feels like '+feels+'&deg;F</div>';
+                h+='<div class="weather-details-grid">';
+                h+='<div class="weather-detail-item"><span class="wd-label">Humidity</span><span class="wd-val">'+humidity+'%</span></div>';
+                h+='<div class="weather-detail-item"><span class="wd-label">Wind</span><span class="wd-val">'+wnd+' mph '+dir+'</span></div>';
+                h+='<div class="weather-detail-item"><span class="wd-label">UV Index</span><span class="wd-val">'+uv+' &mdash; '+uvDesc(uv)+'</span></div>';
                 h+='</div>';
-                var el=document.getElementById('hp-weather');if(el)el.innerHTML=h;
+                if(sunrise)h+='<div class="weather-sun-row"><span>&#127749; '+sunrise+'</span><span>&#127751; '+sunset+'</span></div>';
+                h+='<div class="weather-moon">'+moon.e+' '+moon.n+'</div>';
+                h+='<div class="weather-location">Toluca Lake, CA</div></div>';
+                var dcArr=(dy.weather_code!=null?dy.weather_code:dy.weathercode)||[];
+                var ppArr=dy.precipitation_probability_max||[];
+                h+='<div class="weather-forecast">';
+                for(var i=0;i<Math.min(7,dy.time.length);i++){
+                    var dt=new Date(dy.time[i]+'T12:00:00'), dn=i===0?'Today':hpDN[dt.getDay()];
+                    var hi=Math.round(dy.temperature_2m_max[i]), lo=Math.round(dy.temperature_2m_min[i]);
+                    var pp=ppArr[i]!=null?ppArr[i]:null;
+                    h+='<div class="weather-forecast-row">';
+                    h+='<span class="wf-day">'+dn+'</span><span class="wf-desc">'+hpWd(dcArr[i])+'</span>';
+                    h+='<span class="wf-precip">'+(pp!=null&&pp>0?pp+'%':'')+'</span>';
+                    h+='<span class="wf-temps"><strong>'+hi+'&deg;</strong> <span class="wf-low">'+lo+'&deg;</span></span>';
+                    h+='</div>';
+                }
+                h+='</div>';
+                var el=document.getElementById('hp-weather'); if(el)el.innerHTML=h;
             })
             .catch(function(){var el=document.getElementById('hp-weather');if(el)el.innerHTML='<div class="weather-desc" style="color:#bbb;">Weather unavailable</div>';});
 
+        // ── Open-Meteo Air Quality ────────────────────────────────────────────────
+        fetch('https://air-quality-api.open-meteo.com/v1/air-quality?latitude=34.1567&longitude=-118.3513&current=us_aqi,pm2_5&timezone=America%2FLos_Angeles')
+            .then(function(r){return r.json();})
+            .then(function(d){
+                var aqiEl=document.getElementById('hp-aqi');
+                if(!aqiEl||!d.current)return;
+                var aqi=Math.round(d.current.us_aqi), pm=d.current.pm2_5!=null?Math.round(d.current.pm2_5*10)/10:null;
+                var info=aqiInfo(aqi);
+                var h='<div class="weather-aqi">';
+                h+='<div class="aqi-header"><span class="aqi-label-text">Air Quality Index</span><span class="aqi-badge" style="background:'+info.color+'">'+info.label+'</span></div>';
+                h+='<div class="aqi-number" style="color:'+info.color+'">'+aqi+' <span class="aqi-unit">AQI</span></div>';
+                if(pm!=null)h+='<div class="aqi-detail">PM2.5: '+pm+' &micro;g/m&sup3;</div>';
+                h+='</div>';
+                aqiEl.innerHTML=h;
+            })
+            .catch(function(){});
+
+        // ── config.json (ad, events, spotlight) ──────────────────────────────────
         fetch('./data/config.json?t='+Date.now())
             .then(function(r){return r.json();})
             .then(function(cfg){
@@ -93,7 +164,7 @@
                 if(ab&&cfg.ad&&cfg.ad.image){var img='<img src="'+cfg.ad.image+'" alt="'+(cfg.ad.alt||'Advertisement')+'" style="width:100%;display:block;">';ab.innerHTML=cfg.ad.link?'<a href="'+cfg.ad.link+'" target="_blank" rel="noopener">'+img+'</a>':img;ab.style.padding='0';ab.style.border='none';ab.style.background='none';ab.style.minHeight='auto';}
                 var evEl=document.getElementById('hp-events-list-el');
                 if(evEl&&cfg.events&&cfg.events.length){evEl.innerHTML=cfg.events.map(function(e){return'<li><span class="hp-event-date">'+hpEsc(e.date)+'</span><span class="hp-event-title">'+hpEsc(e.title)+'</span></li>';}).join('');}
-                var spn=document.getElementById('hp-spotlight-name-el');var spt=document.getElementById('hp-spotlight-text-el');
+                var spn=document.getElementById('hp-spotlight-name-el'); var spt=document.getElementById('hp-spotlight-text-el');
                 if(spn&&cfg.spotlight)spn.textContent=cfg.spotlight.name||'';
                 if(spt&&cfg.spotlight)spt.textContent=cfg.spotlight.text||'';
             })
