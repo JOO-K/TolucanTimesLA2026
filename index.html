@@ -77,7 +77,6 @@
     function uvDesc(u){if(u<=2)return'Low';if(u<=5)return'Moderate';if(u<=7)return'High';if(u<=10)return'Very High';return'Extreme';}
     function aqiInfo(a){if(a<=50)return{label:'Good',color:'#4caf50'};if(a<=100)return{label:'Moderate',color:'#e6a817'};if(a<=150)return{label:'Sensitive',color:'#ff7043'};if(a<=200)return{label:'Unhealthy',color:'#e53935'};if(a<=300)return{label:'Very Unhealthy',color:'#8e24aa'};return{label:'Hazardous',color:'#6a1fa2'};}
     function fmtTime(iso){if(!iso)return'';var t=((iso.split('T')[1])||iso).split(':');var h=parseInt(t[0]),m=t[1],ap=h>=12?'PM':'AM';h=h%12||12;return h+':'+m+' '+ap;}
-    function moonPhase(){var d=new Date(),y=d.getFullYear(),mo=d.getMonth()+1,dy=d.getDate();if(mo<3){y--;mo+=12;}var a=Math.floor(y/100),b=2-a+Math.floor(a/4),jd=Math.floor(365.25*(y+4716))+Math.floor(30.6001*(mo+1))+dy+b-1524.5,ph=((jd-2451549.5)%29.53058867+29.53058867)%29.53058867;if(ph<1.85)return{e:'🌑',n:'New Moon'};if(ph<5.54)return{e:'🌒',n:'Waxing Crescent'};if(ph<9.22)return{e:'🌓',n:'First Quarter'};if(ph<12.91)return{e:'🌔',n:'Waxing Gibbous'};if(ph<16.61)return{e:'🌕',n:'Full Moon'};if(ph<20.30)return{e:'🌖',n:'Waning Gibbous'};if(ph<23.99)return{e:'🌗',n:'Last Quarter'};if(ph<27.68)return{e:'🌘',n:'Waning Crescent'};return{e:'🌑',n:'New Moon'};}
 
     function initHomepageComp() {
 
@@ -108,7 +107,6 @@
                 var humidity=c.relative_humidity_2m, wnd=Math.round(c.windspeed_10m), dir=windDir(c.wind_direction_10m);
                 var uv=Math.round(c.uv_index||0), code=(c.weather_code!=null?c.weather_code:c.weathercode);
                 var sunrise=dy.sunrise?fmtTime(dy.sunrise[0]):'', sunset=dy.sunset?fmtTime(dy.sunset[0]):'';
-                var moon=moonPhase();
                 var h='<div class="weather-current">';
                 h+='<div class="weather-main"><span class="weather-temp">'+tmp+'</span><span class="weather-unit">&deg;F</span></div>';
                 h+='<div class="weather-desc">'+hpWd(code)+'</div>';
@@ -119,7 +117,6 @@
                 h+='<div class="weather-detail-item"><span class="wd-label">UV Index</span><span class="wd-val">'+uv+' &mdash; '+uvDesc(uv)+'</span></div>';
                 h+='</div>';
                 if(sunrise)h+='<div class="weather-sun-row"><span>&#127749; '+sunrise+'</span><span>&#127751; '+sunset+'</span></div>';
-                h+='<div class="weather-moon">'+moon.e+' '+moon.n+'</div>';
                 h+='<div class="weather-location">Toluca Lake, CA</div></div>';
                 var dcArr=(dy.weather_code!=null?dy.weather_code:dy.weathercode)||[];
                 var ppArr=dy.precipitation_probability_max||[];

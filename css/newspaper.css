@@ -54,6 +54,8 @@
     grid-area: main;
     border-right: 1px solid #ddd8ce;
     position: relative;
+    display: flex;
+    flex-direction: column;
 }
 
 .hp-info-area {
@@ -948,14 +950,6 @@
     padding: 4px 0;
 }
 
-.weather-moon {
-    font-family: Manrope, sans-serif;
-    font-size: 10px;
-    color: #777;
-    margin-bottom: 8px;
-    padding-bottom: 6px;
-    border-bottom: 1px solid #f0ece0;
-}
 
 .wf-precip {
     font-family: Manrope, sans-serif;
