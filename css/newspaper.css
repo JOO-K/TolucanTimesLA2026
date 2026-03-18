@@ -5,7 +5,7 @@
     background-color: #faf8f3;
     max-width: 1200px;
     margin: 0 auto;
-    padding-top: 110px;
+    padding-top: 130px;
     padding-bottom: 48px;
 }
 
@@ -729,5 +729,162 @@
         height: 48px;
         margin-bottom: 0;
         flex-shrink: 0;
+    }
+}
+
+/* ── Homepage info grid (Events / Spotlight / Map) ── */
+
+.hp-info-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    border-left: 1px solid #ddd8ce;
+    border-right: 1px solid #ddd8ce;
+    border-bottom: 1px solid #ddd8ce;
+}
+
+.hp-info-cell {
+    padding: 18px 16px;
+    border-right: 1px solid #ddd8ce;
+    background: #faf8f3;
+    box-sizing: border-box;
+}
+
+.hp-info-cell:last-child {
+    border-right: none;
+}
+
+.hp-info-cell-label {
+    font-family: Manrope, sans-serif;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: #1E90FF;
+    margin-bottom: 14px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #e8e4dc;
+    border-left: 3px solid #1E90FF;
+    padding-left: 8px;
+    display: block;
+}
+
+.hp-events-list {
+    list-style: none;
+    margin: 0 0 14px 0;
+    padding: 0;
+}
+
+.hp-events-list li {
+    padding: 7px 0;
+    border-bottom: 1px solid #f0ece0;
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+}
+
+.hp-events-list li:last-child {
+    border-bottom: none;
+}
+
+.hp-event-date {
+    font-family: Manrope, sans-serif;
+    font-size: 9px;
+    font-weight: 700;
+    color: #c54a2b;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    flex-shrink: 0;
+    width: 44px;
+    padding-top: 2px;
+}
+
+.hp-event-title {
+    font-family: Georgia, serif;
+    font-size: 13px;
+    line-height: 1.35;
+    color: #0d1b2a;
+}
+
+.hp-info-more {
+    display: inline-block;
+    font-family: Manrope, sans-serif;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: #1E90FF;
+    text-decoration: none;
+}
+
+.hp-info-more:hover {
+    text-decoration: underline;
+}
+
+.hp-spotlight-name {
+    font-family: Fraunces, serif;
+    font-size: 20px;
+    font-weight: 400;
+    color: #0d1b2a;
+    margin-bottom: 8px;
+    line-height: 1.2;
+}
+
+.hp-spotlight-text {
+    font-family: Georgia, serif;
+    font-size: 13px;
+    line-height: 1.65;
+    color: #555;
+    margin: 0 0 14px 0;
+}
+
+.hp-map-link {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+}
+
+.hp-map-thumb {
+    width: 100%;
+    height: 110px;
+    overflow: hidden;
+    border: 1px solid #ddd;
+    margin-bottom: 10px;
+    background: #eee;
+}
+
+.hp-map-thumb iframe {
+    width: 100%;
+    height: 180px;
+    border: none;
+    pointer-events: none;
+    display: block;
+    margin-top: -35px;
+}
+
+.hp-map-cta {
+    font-family: Manrope, sans-serif;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: #1E90FF;
+}
+
+.hp-map-link:hover .hp-map-cta {
+    text-decoration: underline;
+}
+
+@media (max-width: 900px) {
+    .hp-info-grid {
+        grid-template-columns: 1fr;
+        border-left: none;
+        border-right: none;
+    }
+    .hp-info-cell {
+        border-right: none;
+        border-bottom: 1px solid #ddd8ce;
+    }
+    .hp-info-cell:last-child {
+        border-bottom: none;
     }
 }

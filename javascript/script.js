@@ -24,11 +24,11 @@ setInterval(function () {
 // ── Weather fetch (Open-Meteo — free, no API key) ────────────────────────────
 // Toluca Lake, CA: lat 34.1567, lon -118.3513
 (function fetchNavWeather() {
-    fetch('https://api.open-meteo.com/v1/forecast?latitude=34.1567&longitude=-118.3513&current=temperature_2m,weathercode,windspeed_10m&temperature_unit=fahrenheit')
+    fetch('https://api.open-meteo.com/v1/forecast?latitude=34.1567&longitude=-118.3513&current=temperature_2m,weather_code,windspeed_10m&temperature_unit=fahrenheit')
         .then(function (r) { return r.json(); })
         .then(function (d) {
             var temp      = Math.round(d.current.temperature_2m);
-            var code      = d.current.weathercode;
+            var code      = (d.current.weather_code || d.current.weathercode);
             var desc      = getWeatherDesc(code);
             var stateClass = getWeatherClass(code);
 

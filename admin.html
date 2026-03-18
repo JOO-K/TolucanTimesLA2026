@@ -1028,19 +1028,39 @@ function buildHomepageComp(all) {
                     </div>`;
     }).join('\n');
 
-    // More Stories grid (articles outside featured 5)
-    const moreCards = moreArticles.slice(0, 6).map(a => `
-        <a class="article-card" href="./${a.id}.html">
-            ${a.cardImage ? `<img src="${escHtml(a.cardImage)}" alt="${escHtml(a.title)}">` : ''}
-            <span class="article-tag">${escHtml(a.tag)}</span>
-            <h2>${escHtml(a.title)}</h2>
-            <p class="byline">By ${escHtml(a.author)}</p>
-        </a>`).join('');
+    const moreSection = `
+    <div class="section-divider"><span>Around Toluca Lake</span></div>
+    <div class="hp-info-grid">
 
-    const moreSection = moreCards ? `
-    <div class="section-divider"><span>More Stories</span></div>
-    <div class="articles-grid-3">${moreCards}
-    </div>` : '';
+        <div class="hp-info-cell">
+            <span class="hp-info-cell-label">Upcoming Events</span>
+            <ul class="hp-events-list">
+                <li><span class="hp-event-date">Apr 5</span><span class="hp-event-title">Toluca Lake Farmers Market</span></li>
+                <li><span class="hp-event-date">Apr 12</span><span class="hp-event-title">Gary Marshall Theatre &mdash; Opening Night</span></li>
+                <li><span class="hp-event-date">Apr 19</span><span class="hp-event-title">TL Neighborhood Association Meeting</span></li>
+                <li><span class="hp-event-date">Apr 26</span><span class="hp-event-title">Riverside Drive Community Cleanup</span></li>
+            </ul>
+            <a href="./localevents.html" class="hp-info-more">See All Events &rarr;</a>
+        </div>
+
+        <div class="hp-info-cell">
+            <span class="hp-info-cell-label">Community Spotlight</span>
+            <div class="hp-spotlight-name">Your Neighbor</div>
+            <p class="hp-spotlight-text">Every issue we highlight someone doing something wonderful in our community. Know someone who deserves the spotlight? Let us know.</p>
+            <a href="./contactus.html" class="hp-info-more">Submit a Name &rarr;</a>
+        </div>
+
+        <div class="hp-info-cell">
+            <span class="hp-info-cell-label">Explore Toluca Lake</span>
+            <a href="./ourfriends.html" class="hp-map-link">
+                <div class="hp-map-thumb">
+                    <iframe src="https://www.google.com/maps/d/u/0/embed?mid=1rJc46yhCOXdmyDc7peLuQ5YtyBJP2KY&ehbc=2E312F&noprof=1" scrolling="no" tabindex="-1"></iframe>
+                </div>
+                <span class="hp-map-cta">View Our Business Directory &amp; Map &rarr;</span>
+            </a>
+        </div>
+
+    </div>`;
 
     // JSON data for carousel switcher
     const carouselData = JSON.stringify(featured5.map(a => ({
@@ -1061,7 +1081,7 @@ function buildHomepageComp(all) {
         var d = data[idx];
         if (!d) return;
         var lnk = document.getElementById('yc-main-link'); if(lnk) lnk.href = d.href;
-        var mi = document.getElementById('yc-main-img'); if(mi){mi.src=d.img;mi.alt=d.title;}
+        var mi = document.getElementById('yc-main-img'); if(mi){if(d.img)mi.src=d.img;mi.alt=d.title;}
         var mt = document.getElementById('yc-main-tag'); if(mt) mt.textContent = d.tag;
         var mh = document.getElementById('yc-main-title'); if(mh) mh.textContent = d.title;
         var mb = document.getElementById('yc-main-byline'); if(mb) mb.textContent = d.byline;
@@ -1077,11 +1097,11 @@ function buildHomepageComp(all) {
     // Weather
     var DN = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
     function wd(c){if(c===0)return'Clear';if(c<=3)return'Partly Cloudy';if(c<=48)return'Foggy';if(c<=57)return'Drizzle';if(c<=67)return'Rain';if(c<=77)return'Snow';if(c<=82)return'Showers';return'Thunderstorm';}
-    fetch('https://api.open-meteo.com/v1/forecast?latitude=34.1567&longitude=-118.3513&current=temperature_2m,weathercode,windspeed_10m&daily=temperature_2m_max,temperature_2m_min,weathercode&temperature_unit=fahrenheit&timezone=America%2FLos_Angeles&forecast_days=7')
+    fetch('https://api.open-meteo.com/v1/forecast?latitude=34.1567&longitude=-118.3513&current=temperature_2m,weather_code,windspeed_10m&daily=temperature_2m_max,temperature_2m_min,weather_code&temperature_unit=fahrenheit&timezone=America%2FLos_Angeles&forecast_days=7')
         .then(function(r){return r.json();}).then(function(d){
-            var cur=d.current,daily=d.daily,temp=Math.round(cur.temperature_2m),wind=Math.round(cur.windspeed_10m),code=cur.weathercode;
+            var cur=d.current,daily=d.daily,temp=Math.round(cur.temperature_2m),wind=Math.round(cur.windspeed_10m),code=(cur.weather_code||cur.weathercode);
             var h='<div class="weather-current"><div class="weather-main"><span class="weather-temp">'+temp+'</span><span class="weather-unit">&deg;F</span></div><div class="weather-desc">'+wd(code)+'</div><div class="weather-wind">Wind '+wind+' mph</div><div class="weather-location">Toluca Lake, CA</div></div><div class="weather-forecast">';
-            for(var i=0;i<Math.min(7,daily.time.length);i++){var dt=new Date(daily.time[i]+'T12:00:00'),dn=i===0?'Today':DN[dt.getDay()],hi=Math.round(daily.temperature_2m_max[i]),lo=Math.round(daily.temperature_2m_min[i]);h+='<div class="weather-forecast-row"><span class="wf-day">'+dn+'</span><span class="wf-desc">'+wd(daily.weathercode[i])+'</span><span class="wf-temps"><strong>'+hi+'&deg;</strong> <span class="wf-low">'+lo+'&deg;</span></span></div>';}
+            for(var i=0;i<Math.min(7,daily.time.length);i++){var dt=new Date(daily.time[i]+'T12:00:00'),dn=i===0?'Today':DN[dt.getDay()],hi=Math.round(daily.temperature_2m_max[i]),lo=Math.round(daily.temperature_2m_min[i]);h+='<div class="weather-forecast-row"><span class="wf-day">'+dn+'</span><span class="wf-desc">'+wd((daily.weather_code||daily.weathercode)[i])+'</span><span class="wf-temps"><strong>'+hi+'&deg;</strong> <span class="wf-low">'+lo+'&deg;</span></span></div>';}
             h+='</div>';
             var el=document.getElementById('hp-weather');if(el)el.innerHTML=h;
         }).catch(function(){var el=document.getElementById('hp-weather');if(el)el.innerHTML='<div class="weather-desc" style="color:#bbb;">Weather unavailable</div>';});
@@ -1128,26 +1148,6 @@ ${thumbsHtml}
             </div>
         </div>
     </div>${moreSection}
-
-    <div class="section-divider"><span>Explore</span></div>
-
-    <div class="hp-explore">
-        <a class="hp-explore-cell" href="./photogallery.html">
-            <img src="./images/TT_Swan_BacktoSchool.png" alt="Photo Gallery">
-            <strong>Photo Gallery</strong>
-            <span>Flicks of the Community</span>
-        </a>
-        <a class="hp-explore-cell" href="./horoscopes.html">
-            <img src="./images/TT_Swan_Horoscope.png" alt="Horoscopes">
-            <strong>Horoscopes</strong>
-            <span>What the stars say</span>
-        </a>
-        <a class="hp-explore-cell" href="./aboutus.html">
-            <img src="./images/TT_Swan_Aboutus.png" alt="About Us">
-            <strong>About Us</strong>
-            <span>Since 1937</span>
-        </a>
-    </div>
 
 </div>
 ${script}`;
