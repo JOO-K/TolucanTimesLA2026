@@ -5,7 +5,13 @@
     "alt": "realty group"
   },
   "slogan": "",
-  "featuredIds": [],
+  "featuredIds": [
+    "article_07",
+    "article_09",
+    "article_06",
+    "article_10",
+    "article_01"
+  ],
   "issues": [
     "April 2026",
     "March 2026",
