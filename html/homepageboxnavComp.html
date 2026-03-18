@@ -36,11 +36,11 @@
                     </a>
                 </div>
                 <div class="yc-thumbs">
-                    <div class="yc-thumb active" onmouseenter="ycSwitch(0)" onclick="location.href='./article_07.html'" style="cursor:pointer;"><div class="yc-thumb-placeholder"></div><div class="yc-thumb-text"><span class="yc-thumb-tag">Feature</span><strong>818 Files: Hello Girls in a Flood</strong><span class="yc-thumb-by">By Jeremy Oberstein</span></div></div>
-                    <div class="yc-thumb" onmouseenter="ycSwitch(1)" onclick="location.href='./article_09.html'" style="cursor:pointer;"><div class="yc-thumb-placeholder"></div><div class="yc-thumb-text"><span class="yc-thumb-tag">Interview</span><strong>The Magic Box</strong><span class="yc-thumb-by">By Johnny Campanella</span></div></div>
-                    <div class="yc-thumb" onmouseenter="ycSwitch(2)" onclick="location.href='./article_06.html'" style="cursor:pointer;"><div class="yc-thumb-placeholder"></div><div class="yc-thumb-text"><span class="yc-thumb-tag">Interview</span><strong>The Man, The myth, Your Neighbor: Kato Kaelin</strong><span class="yc-thumb-by">By Gino Renzulli</span></div></div>
-                    <div class="yc-thumb" onmouseenter="ycSwitch(3)" onclick="location.href='./article_10.html'" style="cursor:pointer;"><div class="yc-thumb-placeholder"></div><div class="yc-thumb-text"><span class="yc-thumb-tag">Community</span><strong>The New Toluca Lake Farmers Market</strong><span class="yc-thumb-by">By James T. Bartlett</span></div></div>
-                    <div class="yc-thumb" onmouseenter="ycSwitch(4)" onclick="location.href='./article_01.html'" style="cursor:pointer;"><img src="./images/Frontpage_02.png" alt="Dan Carlin, A Hardcore Tolucan"><div class="yc-thumb-text"><span class="yc-thumb-tag">Interview</span><strong>Dan Carlin, A Hardcore Tolucan</strong><span class="yc-thumb-by">By Gino Renzulli</span></div></div>
+                    <div class="yc-thumb active" style="cursor:pointer;"><div class="yc-thumb-placeholder"></div><div class="yc-thumb-text"><span class="yc-thumb-tag">Feature</span><strong>818 Files: Hello Girls in a Flood</strong><span class="yc-thumb-by">By Jeremy Oberstein</span></div></div>
+                    <div class="yc-thumb" style="cursor:pointer;"><div class="yc-thumb-placeholder"></div><div class="yc-thumb-text"><span class="yc-thumb-tag">Interview</span><strong>The Magic Box</strong><span class="yc-thumb-by">By Johnny Campanella</span></div></div>
+                    <div class="yc-thumb" style="cursor:pointer;"><div class="yc-thumb-placeholder"></div><div class="yc-thumb-text"><span class="yc-thumb-tag">Interview</span><strong>The Man, The myth, Your Neighbor: Kato Kaelin</strong><span class="yc-thumb-by">By Gino Renzulli</span></div></div>
+                    <div class="yc-thumb" style="cursor:pointer;"><div class="yc-thumb-placeholder"></div><div class="yc-thumb-text"><span class="yc-thumb-tag">Community</span><strong>The New Toluca Lake Farmers Market</strong><span class="yc-thumb-by">By James T. Bartlett</span></div></div>
+                    <div class="yc-thumb" style="cursor:pointer;"><img src="./images/Frontpage_02.png" alt="Dan Carlin, A Hardcore Tolucan"><div class="yc-thumb-text"><span class="yc-thumb-tag">Interview</span><strong>Dan Carlin, A Hardcore Tolucan</strong><span class="yc-thumb-by">By Gino Renzulli</span></div></div>
                 </div>
             </div>
         </div>
@@ -101,6 +101,10 @@ function ycSwitch(i) {
     document.querySelectorAll('.yc-thumb').forEach(function(el,j){ el.classList.toggle('active', j===i); });
     ycActive = i;
 }
+document.querySelectorAll('.yc-thumb').forEach(function(el, i) {
+    el.addEventListener('mouseenter', function() { ycSwitch(i); });
+    el.addEventListener('click', function() { if(ycData[i]) window.location.href = ycData[i].href; });
+});
 (function(){
     var DN=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
     function wd(c){if(c===0)return'Clear';if(c<=3)return'Partly Cloudy';if(c<=48)return'Foggy';if(c<=57)return'Drizzle';if(c<=67)return'Rain';if(c<=77)return'Snow';if(c<=82)return'Showers';return'Thunderstorm';}
