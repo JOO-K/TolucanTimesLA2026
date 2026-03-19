@@ -2,59 +2,47 @@
 
 <div class="section-divider"><span>Latest Issues</span></div>
 
-<div class="publications-container">
-
-    <div class="publications-box">
-        <a href="https://www.calameo.com/read/00770541397442adc1a8a">
-            <img
-                src="./images/covers/Publications_August2024_Cover.png">
-            <h1>August 2024 Issue</h1>
-            <h2>Artwork By<br>Andrew Tosh</h2>
-        </a>
-    </div>
-    <div class="publications-box">
-        <a href="https://www.calameo.com/read/007705413e321d0de8e33?page=1">
-            <img
-                src="./images/covers/Publications_June2024_Cover.png">
-            <h1>June 2024 Issue</h1>
-            <h2>Artwork By<br>Frankie Campanella</h2>
-        </a>
-    </div>
-    <div class="publications-box">
-        <a href="https://www.calameo.com/read/00770541392365e5b71eb?page=1">
-            <img
-                src="./images/covers/Publications_April2024_Cover.png">
-            <h1>April 2024 Issue</h1>
-            <h2>Artwork By<br>Frankie Campanella</h2>
-        </a>
-    </div>
-    <div class="publications-box">
-        <a href="https://www.calameo.com/read/007705413dc565bd0045a?page=1">
-            <img
-                src="./images/covers/Publications_March2024_Cover.png">
-            <h1>March 2024 Issue</h1>
-            <h2>Artwork By<br>Frankie Campanella</h2>
-        </a>
-    </div>
-    <div class="publications-box">
-
-        <a href="https://www.calameo.com/read/00770541394d6c8889604?page=1">
-            <img
-                src="./images/covers/Publications_Feb2024_Cover.png">
-            <h1>Feb 2024 Issue</h1>
-            <h2>Artwork By<br>Frankie Campanella</h2>
-        </a>
-
-    </div>
-    <div class="publications-box">
-        <a href="https://www.calameo.com/accounts/7705413">
-            <img
-                src="./images/covers/Cover_Plus.png">
-            <h1>More Issues →</h1>
-            <h2>Read all of our issues here</h2>
-        </a>
-    </div>
-
+<div class="publications-container" id="pub-cards-container">
+    <!-- Filled dynamically from data/config.json -->
 </div>
 
 </div>
+
+<script>
+(function() {
+    fetch('./data/config.json?_=' + Date.now())
+        .then(function(r) { return r.json(); })
+        .then(function(cfg) {
+            var pubs = cfg.publications || [];
+            var container = document.getElementById('pub-cards-container');
+            if (!container) return;
+
+            var html = '';
+            pubs.forEach(function(p) {
+                html += '<div class="publications-box">'
+                      +   '<a href="' + p.calameoUrl + '">'
+                      +     '<img src="' + p.coverImage + '" alt="' + p.title + '">'
+                      +     '<h1>' + p.title + '</h1>'
+                      +     (p.artist ? '<h2>Artwork By<br>' + p.artist + '</h2>' : '')
+                      +   '</a>'
+                      + '</div>';
+            });
+
+            // Always append the "More Issues" link at the end
+            html += '<div class="publications-box">'
+                  +   '<a href="https://www.calameo.com/accounts/7705413">'
+                  +     '<img src="./images/covers/Cover_Plus.png" alt="More Issues">'
+                  +     '<h1>More Issues &rarr;</h1>'
+                  +     '<h2>Read all of our issues here</h2>'
+                  +   '</a>'
+                  + '</div>';
+
+            container.innerHTML = html;
+        })
+        .catch(function() {
+            // Fallback: leave container empty, "More Issues" link still shows
+            var container = document.getElementById('pub-cards-container');
+            if (container) container.innerHTML = '<div class="publications-box"><a href="https://www.calameo.com/accounts/7705413"><img src="./images/covers/Cover_Plus.png"><h1>More Issues &rarr;</h1><h2>Read all of our issues here</h2></a></div>';
+        });
+})();
+</script>

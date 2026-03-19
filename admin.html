@@ -351,6 +351,18 @@
                 </div>
             </div>
 
+            <!-- Publications -->
+            <div class="right-section">
+                <div class="section-title">
+                    <span>Publications</span>
+                    <button class="btn btn-primary btn-sm" onclick="addPublication()">+ Add Issue</button>
+                </div>
+                <div class="right-inner">
+                    <div id="pub-list"></div>
+                    <p class="slots-hint" style="margin-top:8px;">Issues appear in the Latest Issues strip at the bottom of the homepage. Newest first.</p>
+                </div>
+            </div>
+
             <!-- Advertisement -->
             <div class="right-section">
                 <div class="section-title">
@@ -406,6 +418,7 @@ let dragSrcDisplayIdx = null;
 
 // ── Config ────────────────────────────────────────────────────────────────────
 let adConfig    = { image: '', link: '', alt: 'Advertisement' };
+let publicationsLocal = [];
 let adConfigSha = null;
 let sloganLocal = '';
 let featuredIds = [null, null, null, null, null];
@@ -1151,6 +1164,8 @@ async function loadAdConfig() {
             issues   = cfg.issues   || defaultIssues();
             events   = cfg.events   || [];
             spotlight = cfg.spotlight || { name: '', text: '' };
+            publicationsLocal = cfg.publications || [];
+            renderPublicationsList();
             renderEventsList();
             const spnEl = document.getElementById('spotlight-name-input');
             const sptEl = document.getElementById('spotlight-text-input');
@@ -1266,6 +1281,64 @@ function saveEventsAndSpotlight() {
     showStatus('Events & Spotlight saved locally — click "Publish to Site" to go live.', 'success');
 }
 
+// ── Publications ──────────────────────────────────────────────────────────────
+
+function renderPublicationsList() {
+    const el = document.getElementById('pub-list');
+    if (!el) return;
+    if (!publicationsLocal.length) {
+        el.innerHTML = '<p style="font-family:sans-serif;font-size:12px;color:#bbb;font-style:italic;margin:0;">No issues yet — click + Add Issue.</p>';
+        return;
+    }
+    el.innerHTML = publicationsLocal.map(function(p, i) {
+        return '<div style="display:flex;gap:8px;align-items:flex-start;margin-bottom:14px;padding-bottom:14px;border-bottom:1px solid #eee;">'
+            + (p.coverImage ? '<img src="' + escHtml(p.coverImage) + '" style="width:44px;height:60px;object-fit:cover;border:1px solid #ddd;flex-shrink:0;">' : '<div style="width:44px;height:60px;background:#eee;flex-shrink:0;"></div>')
+            + '<div style="flex:1;display:flex;flex-direction:column;gap:5px;">'
+                + '<input type="text" placeholder="Issue title (e.g. April 2026)" value="' + escHtml(p.title) + '" '
+                +   'oninput="publicationsLocal[' + i + '].title=this.value;configDirty=true;markPending();" '
+                +   'style="padding:5px 7px;border:1px solid #ccc;font-size:13px;font-family:Georgia,serif;width:100%;box-sizing:border-box;">'
+                + '<input type="text" placeholder="Calameo URL" value="' + escHtml(p.calameoUrl) + '" '
+                +   'oninput="publicationsLocal[' + i + '].calameoUrl=this.value;configDirty=true;markPending();" '
+                +   'style="padding:5px 7px;border:1px solid #ccc;font-size:11px;font-family:monospace;width:100%;box-sizing:border-box;">'
+                + '<input type="text" placeholder="Cover image URL or ./images/covers/..." value="' + escHtml(p.coverImage) + '" '
+                +   'oninput="publicationsLocal[' + i + '].coverImage=this.value;configDirty=true;markPending();renderPublicationsList();" '
+                +   'style="padding:5px 7px;border:1px solid #ccc;font-size:11px;font-family:monospace;width:100%;box-sizing:border-box;">'
+                + '<input type="text" placeholder="Artist name (optional)" value="' + escHtml(p.artist || '') + '" '
+                +   'oninput="publicationsLocal[' + i + '].artist=this.value;configDirty=true;markPending();" '
+                +   'style="padding:5px 7px;border:1px solid #ccc;font-size:12px;font-family:Georgia,serif;width:100%;box-sizing:border-box;">'
+            + '</div>'
+            + '<div style="display:flex;flex-direction:column;gap:4px;flex-shrink:0;">'
+                + (i > 0 ? '<button class="btn btn-secondary btn-sm" onclick="movePub(' + i + ',-1)" title="Move up">↑</button>' : '<button class="btn btn-secondary btn-sm" disabled style="opacity:0.3;">↑</button>')
+                + (i < publicationsLocal.length - 1 ? '<button class="btn btn-secondary btn-sm" onclick="movePub(' + i + ',1)" title="Move down">↓</button>' : '<button class="btn btn-secondary btn-sm" disabled style="opacity:0.3;">↓</button>')
+                + '<button class="btn btn-danger btn-sm" onclick="removePub(' + i + ')" title="Delete">✕</button>'
+            + '</div>'
+            + '</div>';
+    }).join('');
+}
+
+function addPublication() {
+    publicationsLocal.unshift({ title: '', calameoUrl: '', coverImage: '', artist: '' });
+    configDirty = true;
+    markPending(); renderPublicationsList();
+}
+
+function removePub(i) {
+    if (!confirm('Remove this issue from the publications list?')) return;
+    publicationsLocal.splice(i, 1);
+    configDirty = true;
+    markPending(); renderPublicationsList();
+}
+
+function movePub(i, dir) {
+    var j = i + dir;
+    if (j < 0 || j >= publicationsLocal.length) return;
+    var tmp = publicationsLocal[i];
+    publicationsLocal[i] = publicationsLocal[j];
+    publicationsLocal[j] = tmp;
+    configDirty = true;
+    markPending(); renderPublicationsList();
+}
+
 // ── Pending changes ───────────────────────────────────────────────────────────
 
 function markPending() {
@@ -1328,7 +1401,7 @@ async function publishAll() {
         if (configDirty) {
             const existing = await getFile(AD_CONFIG);
             const jr = await putFile(AD_CONFIG,
-                JSON.stringify({ ad: adConfig, slogan: sloganLocal, featuredIds: featuredIds.filter(Boolean), issues: issues, events: events, spotlight: spotlight }, null, 2),
+                JSON.stringify({ ad: adConfig, slogan: sloganLocal, featuredIds: featuredIds.filter(Boolean), issues: issues, events: events, spotlight: spotlight, publications: publicationsLocal }, null, 2),
                 existing ? existing.sha : null, 'Update site config');
             adConfigSha = jr.content.sha;
             configDirty = false;

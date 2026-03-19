@@ -39,5 +39,12 @@
   "spotlight": {
     "name": "Your Neighbor",
     "text": "Every issue we highlight someone doing something wonderful in our community. Know someone who deserves the spotlight? Let us know."
-  }
+  },
+  "publications": [
+    { "title": "August 2024 Issue", "calameoUrl": "https://www.calameo.com/read/00770541397442adc1a8a", "coverImage": "./images/covers/Publications_August2024_Cover.png", "artist": "Andrew Tosh" },
+    { "title": "June 2024 Issue",   "calameoUrl": "https://www.calameo.com/read/007705413e321d0de8e33?page=1", "coverImage": "./images/covers/Publications_June2024_Cover.png",   "artist": "Frankie Campanella" },
+    { "title": "April 2024 Issue",  "calameoUrl": "https://www.calameo.com/read/00770541392365e5b71eb?page=1", "coverImage": "./images/covers/Publications_April2024_Cover.png",  "artist": "Frankie Campanella" },
+    { "title": "March 2024 Issue",  "calameoUrl": "https://www.calameo.com/read/007705413dc565bd0045a?page=1", "coverImage": "./images/covers/Publications_March2024_Cover.png",  "artist": "Frankie Campanella" },
+    { "title": "Feb 2024 Issue",    "calameoUrl": "https://www.calameo.com/read/00770541394d6c8889604?page=1", "coverImage": "./images/covers/Publications_Feb2024_Cover.png",    "artist": "Frankie Campanella" }
+  ]
 }
