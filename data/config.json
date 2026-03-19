@@ -1,8 +1,8 @@
 {
   "ad": {
-    "image": "https://d1csarkz8obe9u.cloudfront.net/posterpreviews/real-estate-realtor-video-ad-template-design-96de30b59555234f8ce4c5d5447ad3bb_screen.jpg?ts=1629610218",
+    "image": "https://imgur.com/a/nwlPJSs",
     "link": "",
-    "alt": "realty group"
+    "alt": "covers"
   },
   "slogan": "",
   "featuredIds": [
@@ -19,10 +19,22 @@
     "January 2026"
   ],
   "events": [
-    { "date": "Apr 5", "title": "Toluca Lake Farmers Market" },
-    { "date": "Apr 12", "title": "Gary Marshall Theatre — Opening Night" },
-    { "date": "Apr 19", "title": "TL Neighborhood Association Meeting" },
-    { "date": "Apr 26", "title": "Riverside Drive Community Cleanup" }
+    {
+      "date": "Apr 5",
+      "title": "Toluca Lake Farmers Market"
+    },
+    {
+      "date": "Apr 12",
+      "title": "Gary Marshall Theatre — Opening Night"
+    },
+    {
+      "date": "Apr 19",
+      "title": "TL Neighborhood Association Meeting"
+    },
+    {
+      "date": "Apr 26",
+      "title": "Riverside Drive Community Cleanup"
+    }
   ],
   "spotlight": {
     "name": "Your Neighbor",
