@@ -29,8 +29,9 @@
             });
 
             // Always append the "More Issues" link at the end
+            var moreUrl = cfg.calameoAccountUrl || 'https://www.calameo.com/accounts/7705413';
             html += '<div class="publications-box">'
-                  +   '<a href="https://www.calameo.com/accounts/7705413">'
+                  +   '<a href="' + moreUrl + '">'
                   +     '<img src="./images/covers/Cover_Plus.png" alt="More Issues">'
                   +     '<h1>More Issues &rarr;</h1>'
                   +     '<h2>Read all of our issues here</h2>'
@@ -42,7 +43,7 @@
         .catch(function() {
             // Fallback: leave container empty, "More Issues" link still shows
             var container = document.getElementById('pub-cards-container');
-            if (container) container.innerHTML = '<div class="publications-box"><a href="https://www.calameo.com/accounts/7705413"><img src="./images/covers/Cover_Plus.png"><h1>More Issues &rarr;</h1><h2>Read all of our issues here</h2></a></div>';
+            if (container) container.innerHTML = '<div class="publications-box"><a href="https://www.calameo.com/accounts/7705413"><img src="./images/covers/Cover_Plus.png" alt="More Issues"><h1>More Issues &rarr;</h1><h2>Read all of our issues here</h2></a></div>';
         });
 })();
 </script>

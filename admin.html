@@ -358,6 +358,10 @@
                     <button class="btn btn-primary btn-sm" onclick="addPublication()">+ Add Issue</button>
                 </div>
                 <div class="right-inner">
+                    <div class="form-group" style="margin-bottom:14px;">
+                        <label>"More Issues" Link <span>(the "More Issues →" button at the end of the strip)</span></label>
+                        <input type="text" id="calameo-account-input" placeholder="https://www.calameo.com/accounts/..." oninput="calameoAccountUrl=this.value;configDirty=true;markPending();">
+                    </div>
                     <div id="pub-list"></div>
                     <p class="slots-hint" style="margin-top:8px;">Issues appear in the Latest Issues strip at the bottom of the homepage. Newest first.</p>
                 </div>
@@ -419,6 +423,7 @@ let dragSrcDisplayIdx = null;
 // ── Config ────────────────────────────────────────────────────────────────────
 let adConfig    = { image: '', link: '', alt: 'Advertisement' };
 let publicationsLocal = [];
+let calameoAccountUrl = 'https://www.calameo.com/accounts/7705413';
 let adConfigSha = null;
 let sloganLocal = '';
 let featuredIds = [null, null, null, null, null];
@@ -1165,7 +1170,10 @@ async function loadAdConfig() {
             events   = cfg.events   || [];
             spotlight = cfg.spotlight || { name: '', text: '' };
             publicationsLocal = cfg.publications || [];
+            calameoAccountUrl = cfg.calameoAccountUrl || 'https://www.calameo.com/accounts/7705413';
             renderPublicationsList();
+            const calEl = document.getElementById('calameo-account-input');
+            if (calEl) calEl.value = calameoAccountUrl;
             renderEventsList();
             const spnEl = document.getElementById('spotlight-name-input');
             const sptEl = document.getElementById('spotlight-text-input');
@@ -1401,7 +1409,7 @@ async function publishAll() {
         if (configDirty) {
             const existing = await getFile(AD_CONFIG);
             const jr = await putFile(AD_CONFIG,
-                JSON.stringify({ ad: adConfig, slogan: sloganLocal, featuredIds: featuredIds.filter(Boolean), issues: issues, events: events, spotlight: spotlight, publications: publicationsLocal }, null, 2),
+                JSON.stringify({ ad: adConfig, slogan: sloganLocal, featuredIds: featuredIds.filter(Boolean), issues: issues, events: events, spotlight: spotlight, publications: publicationsLocal, calameoAccountUrl: calameoAccountUrl }, null, 2),
                 existing ? existing.sha : null, 'Update site config');
             adConfigSha = jr.content.sha;
             configDirty = false;
