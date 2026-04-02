@@ -56,29 +56,6 @@
     "id": "article_07"
   },
   {
-    "title": "testing",
-    "author": "testing name",
-    "tag": "Community",
-    "cardImage": "https://static.wikia.nocookie.net/disney/images/a/ab/Donald_Duck_Disney_1.png/revision/latest/thumbnail/width/360/height/360?cb=20180828172632",
-    "excerpt": "donald duck testing co",
-    "blocks": [
-      {
-        "type": "text",
-        "content": "the duckster"
-      },
-      {
-        "type": "image",
-        "src": "https://static.wikia.nocookie.net/disney/images/a/ab/Donald_Duck_Disney_1.png/revision/latest/thumbnail/width/360/height/360?cb=20180828172632",
-        "caption": "ducky"
-      },
-      {
-        "type": "text",
-        "content": "strikes again"
-      }
-    ],
-    "id": "article_05"
-  },
-  {
     "title": "Local Fun: Warner Bros. Studio Tour",
     "author": "Francesca Domenica",
     "tag": "Local Fun",
