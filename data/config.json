@@ -42,34 +42,34 @@
   },
   "publications": [
     {
-      "title": "August 2024 Issue",
-      "calameoUrl": "https://www.calameo.com/read/00770541397442adc1a8a",
+      "title": "April 2026 Issue",
+      "calameoUrl": "https://www.calameo.com/read/0077054138837c7b3631c",
       "coverImage": "./images/covers/Publications_August2024_Cover.png",
-      "artist": "Andrew Tosh"
+      "artist": "Trina Hines"
     },
     {
-      "title": "June 2024 Issue",
-      "calameoUrl": "https://www.calameo.com/read/007705413e321d0de8e33?page=1",
-      "coverImage": "./images/covers/Publications_June2024_Cover.png",
-      "artist": "Frankie Campanella"
-    },
-    {
-      "title": "April 2024 Issue",
-      "calameoUrl": "https://www.calameo.com/read/00770541392365e5b71eb?page=1",
+      "title": "March 2026 Issue",
+      "calameoUrl": "https://www.calameo.com/read/0077054136029c367b8f5",
       "coverImage": "./images/covers/Publications_April2024_Cover.png",
-      "artist": "Frankie Campanella"
+      "artist": "Christopher Higginson"
     },
     {
-      "title": "March 2024 Issue",
-      "calameoUrl": "https://www.calameo.com/read/007705413dc565bd0045a?page=1",
+      "title": "February 2026 Issue",
+      "calameoUrl": "https://www.calameo.com/read/00770541324519ad1a30d",
       "coverImage": "./images/covers/Publications_March2024_Cover.png",
-      "artist": "Frankie Campanella"
+      "artist": "Artour Banjov"
     },
     {
-      "title": "Feb 2024 Issue",
-      "calameoUrl": "https://www.calameo.com/read/00770541394d6c8889604?page=1",
+      "title": "January 2026 Issue",
+      "calameoUrl": "https://www.calameo.com/read/007705413d18c7f8d9d3b",
       "coverImage": "./images/covers/Publications_Feb2024_Cover.png",
       "artist": "Frankie Campanella"
+    },
+    {
+      "title": "December 2025 Issue",
+      "calameoUrl": "https://www.calameo.com/read/007705413f9e16c9deecd",
+      "coverImage": "./images/covers/Publications_June2024_Cover.png",
+      "artist": "Artour Banjov"
     }
   ],
   "calameoAccountUrl": "https://www.calameo.com/accounts/7705413"
