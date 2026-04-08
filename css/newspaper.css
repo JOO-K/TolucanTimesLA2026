@@ -41,7 +41,7 @@
 .hp-layout {
     display: grid;
     grid-template-columns: 62% 38%;
-    grid-template-rows: auto auto;
+    grid-template-rows: 460px auto;
     grid-template-areas:
         "main sidebar"
         "info sidebar";
@@ -652,10 +652,11 @@
 
     .hp-layout {
         grid-template-columns: 1fr;
+        grid-template-rows: auto auto auto;
         grid-template-areas:
             "main"
-            "sidebar"
-            "info";
+            "info"
+            "sidebar";
         border-left: none;
         border-right: none;
     }

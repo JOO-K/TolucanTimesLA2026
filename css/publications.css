@@ -17,7 +17,7 @@
 }
 
 .publications-box {
-    width: 160px;
+    width: 130px;
     text-align: center;
     transition: transform 0.2s ease;
 }
@@ -32,7 +32,7 @@
         padding: 24px 16px 32px;
     }
     .publications-box {
-        width: 42vw;
+        width: 34vw;
     }
 }
 
