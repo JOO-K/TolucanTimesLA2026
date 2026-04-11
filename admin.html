@@ -128,6 +128,18 @@
         .slot-clear:hover { color: #c54a2b; }
         .slots-hint { font-family: sans-serif; font-size: 11px; color: #aaa; margin-top: 6px; }
 
+        /* ── Our Friends editor ── */
+        .friends-cat-block { margin-bottom: 8px; border: 1px solid #ddd; background: white; }
+        .friends-cat-header { display: flex; align-items: center; gap: 8px; padding: 9px 12px; background: #f0ece0; border-bottom: 1px solid #ddd; cursor: pointer; user-select: none; }
+        .friends-cat-header:hover { background: #ebe7d8; }
+        .friends-cat-body { padding: 12px; }
+        .friends-cat-body.collapsed { display: none; }
+        .friends-biz-row { display: flex; gap: 6px; align-items: flex-start; margin-bottom: 8px; padding-bottom: 8px; border-bottom: 1px solid #f0ece0; }
+        .friends-biz-row:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+        .friends-biz-inputs { flex: 1; display: flex; flex-direction: column; gap: 4px; }
+        .friends-biz-inputs input { padding: 5px 7px; border: 1px solid #ccc; font-size: 12px; font-family: Georgia, serif; width: 100%; box-sizing: border-box; }
+        .friends-biz-inputs input:focus { outline: 2px solid #1E90FF; border-color: #1E90FF; }
+
         @media (max-width: 600px) {
             .form-row { grid-template-columns: 1fr; }
             #delete-btn { margin-left: 0; }
@@ -396,6 +408,18 @@
                 </div>
             </div>
 
+            <!-- Our Friends -->
+            <div class="right-section">
+                <div class="section-title">
+                    <span>Our Friends</span>
+                    <button class="btn btn-primary btn-sm" onclick="addFriendCategory()">+ Add Category</button>
+                </div>
+                <div class="right-inner" style="padding:16px 18px;">
+                    <div id="friends-list"></div>
+                    <p class="slots-hint" style="margin-top:8px;">Business directory shown on the Our Friends page. Add a Google Maps URL to make a business name clickable.</p>
+                </div>
+            </div>
+
         </div><!-- end admin-right -->
     </div><!-- end admin-cols -->
 </div><!-- end admin-screen -->
@@ -431,6 +455,8 @@ let issues = [];           // ordered array of issue name strings
 let collapsedIssues = {};  // { issueName: true } for collapsed state
 let events   = [];         // [{date, title}]
 let spotlight = { name: '', text: '' };
+let friendsLocal = [];
+let collapsedFriendCats = {};
 
 // ── Auth ──────────────────────────────────────────────────────────────────────
 
@@ -1169,9 +1195,11 @@ async function loadAdConfig() {
             issues   = cfg.issues   || defaultIssues();
             events   = cfg.events   || [];
             spotlight = cfg.spotlight || { name: '', text: '' };
+            friendsLocal = cfg.friends || [];
             publicationsLocal = cfg.publications || [];
             calameoAccountUrl = cfg.calameoAccountUrl || 'https://www.calameo.com/accounts/7705413';
             renderPublicationsList();
+            renderFriendsList();
             const calEl = document.getElementById('calameo-account-input');
             if (calEl) calEl.value = calameoAccountUrl;
             renderEventsList();
@@ -1347,6 +1375,98 @@ function movePub(i, dir) {
     markPending(); renderPublicationsList();
 }
 
+// ── Our Friends ───────────────────────────────────────────────────────────────
+
+function renderFriendsList() {
+    const el = document.getElementById('friends-list');
+    if (!el) return;
+    if (!friendsLocal.length) {
+        el.innerHTML = '<p style="font-family:sans-serif;font-size:12px;color:#bbb;font-style:italic;">No categories yet — click + Add Category.</p>';
+        return;
+    }
+    el.innerHTML = friendsLocal.map(function(cat, ci) {
+        const collapsed = collapsedFriendCats[ci];
+        const bizRows = (cat.businesses || []).map(function(b, bi) {
+            return '<div class="friends-biz-row">'
+                + '<div class="friends-biz-inputs">'
+                    + '<input type="text" placeholder="Business name" value="' + escHtml(b.name || '') + '" oninput="friendsLocal[' + ci + '].businesses[' + bi + '].name=this.value;configDirty=true;markPending();">'
+                    + '<input type="text" placeholder="Address" value="' + escHtml(b.address || '') + '" oninput="friendsLocal[' + ci + '].businesses[' + bi + '].address=this.value;configDirty=true;markPending();">'
+                    + '<input type="text" placeholder="Phone" value="' + escHtml(b.phone || '') + '" oninput="friendsLocal[' + ci + '].businesses[' + bi + '].phone=this.value;configDirty=true;markPending();">'
+                    + '<input type="text" placeholder="Google Maps URL (optional — makes name clickable on site)" value="' + escHtml(b.mapsUrl || '') + '" oninput="friendsLocal[' + ci + '].businesses[' + bi + '].mapsUrl=this.value;configDirty=true;markPending();">'
+                + '</div>'
+                + '<button class="btn btn-danger btn-sm" onclick="removeFriendBiz(' + ci + ',' + bi + ')" title="Remove" style="flex-shrink:0;margin-top:2px;">✕</button>'
+                + '</div>';
+        }).join('');
+
+        const emptyBiz = (!cat.businesses || !cat.businesses.length)
+            ? '<p style="font-family:sans-serif;font-size:12px;color:#bbb;font-style:italic;margin:0 0 8px;">No businesses yet.</p>'
+            : '';
+
+        return '<div class="friends-cat-block">'
+            + '<div class="friends-cat-header" onclick="toggleFriendCat(' + ci + ')">'
+                + '<span class="issue-toggle">' + (collapsed ? '▶' : '▼') + '</span>'
+                + '<div style="flex:1;display:flex;align-items:center;gap:8px;" onclick="event.stopPropagation();">'
+                    + '<input type="text" placeholder="Category name" value="' + escHtml(cat.category || '') + '" '
+                    + 'oninput="friendsLocal[' + ci + '].category=this.value;configDirty=true;markPending();" '
+                    + 'style="flex:1;padding:4px 7px;border:1px solid #ccc;font-size:13px;font-family:sans-serif;font-weight:700;">'
+                    + '<input type="text" placeholder="Color (e.g. dodgerblue or #c54a2b)" value="' + escHtml(cat.color || '') + '" '
+                    + 'oninput="friendsLocal[' + ci + '].color=this.value;configDirty=true;markPending();" '
+                    + 'style="width:140px;padding:4px 7px;border:1px solid #ccc;font-size:11px;font-family:monospace;">'
+                + '</div>'
+                + '<button class="btn btn-danger btn-sm" onclick="removeFriendCategory(' + ci + ');event.stopPropagation();" title="Remove category" style="flex-shrink:0;">✕</button>'
+            + '</div>'
+            + '<div class="friends-cat-body' + (collapsed ? ' collapsed' : '') + '">'
+                + '<div class="form-group" style="margin-bottom:10px;">'
+                    + '<label>Header Image URL</label>'
+                    + '<input type="text" placeholder="https://... or ./images/..." value="' + escHtml(cat.headerImage || '') + '" '
+                    + 'oninput="friendsLocal[' + ci + '].headerImage=this.value;configDirty=true;markPending();" '
+                    + 'style="width:100%;padding:6px 8px;border:1px solid #ccc;font-size:12px;font-family:monospace;">'
+                + '</div>'
+                + '<div style="font-size:10px;font-family:sans-serif;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#666;margin-bottom:8px;">Businesses</div>'
+                + emptyBiz
+                + bizRows
+                + '<button class="btn btn-secondary btn-sm" onclick="addFriendBiz(' + ci + ')" style="margin-top:8px;">+ Add Business</button>'
+            + '</div>'
+        + '</div>';
+    }).join('');
+}
+
+function toggleFriendCat(ci) {
+    collapsedFriendCats[ci] = !collapsedFriendCats[ci];
+    renderFriendsList();
+}
+
+function addFriendCategory() {
+    friendsLocal.push({ category: 'New Category', color: '#888', headerImage: '', businesses: [] });
+    configDirty = true;
+    markPending();
+    renderFriendsList();
+}
+
+function removeFriendCategory(ci) {
+    if (!confirm('Remove category "' + (friendsLocal[ci].category || 'Unnamed') + '" and all its businesses?')) return;
+    friendsLocal.splice(ci, 1);
+    configDirty = true;
+    markPending();
+    renderFriendsList();
+}
+
+function addFriendBiz(ci) {
+    if (!friendsLocal[ci].businesses) friendsLocal[ci].businesses = [];
+    friendsLocal[ci].businesses.push({ name: '', address: '', phone: '', mapsUrl: '' });
+    collapsedFriendCats[ci] = false;
+    configDirty = true;
+    markPending();
+    renderFriendsList();
+}
+
+function removeFriendBiz(ci, bi) {
+    friendsLocal[ci].businesses.splice(bi, 1);
+    configDirty = true;
+    markPending();
+    renderFriendsList();
+}
+
 // ── Pending changes ───────────────────────────────────────────────────────────
 
 function markPending() {
@@ -1409,7 +1529,7 @@ async function publishAll() {
         if (configDirty) {
             const existing = await getFile(AD_CONFIG);
             const jr = await putFile(AD_CONFIG,
-                JSON.stringify({ ad: adConfig, slogan: sloganLocal, featuredIds: featuredIds.filter(Boolean), issues: issues, events: events, spotlight: spotlight, publications: publicationsLocal, calameoAccountUrl: calameoAccountUrl }, null, 2),
+                JSON.stringify({ ad: adConfig, slogan: sloganLocal, featuredIds: featuredIds.filter(Boolean), issues: issues, events: events, spotlight: spotlight, publications: publicationsLocal, calameoAccountUrl: calameoAccountUrl, friends: friendsLocal }, null, 2),
                 existing ? existing.sha : null, 'Update site config');
             adConfigSha = jr.content.sha;
             configDirty = false;
