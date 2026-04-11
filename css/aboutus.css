@@ -86,10 +86,20 @@
 .writer-box {
     flex: 1;
     min-width: 0;
+    min-height: 200px;
     background-color: whitesmoke;
-    padding: 28px 28px 28px 36px;
+    padding: 36px 32px 36px 40px;
     box-sizing: border-box;
     border-left: 4px solid #1a1a1a;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+@media all and (max-width: 800px) {
+    .writer-box {
+        min-height: 130px;
+    }
 }
 
 .writer-box h1 {
