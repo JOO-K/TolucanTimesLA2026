@@ -138,6 +138,15 @@
         #friends-screen { display: none; flex: 1; overflow-y: auto; padding: 28px 32px 100px; background: #faf8f3; }
         .friends-screen-inner { max-width: 860px; margin: 0 auto; }
 
+        /* ── About Us full-screen ── */
+        #aboutus-screen { display: none; flex: 1; overflow-y: auto; padding: 28px 32px 100px; background: #faf8f3; }
+        .aboutus-screen-inner { max-width: 860px; margin: 0 auto; }
+        .staff-card-row { display: flex; gap: 8px; align-items: flex-start; margin-bottom: 10px; padding-bottom: 10px; border-bottom: 1px solid #f0ece0; }
+        .staff-card-row:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+        .staff-card-inputs { flex: 1; display: flex; gap: 8px; flex-wrap: wrap; }
+        .staff-card-inputs input { flex: 1; min-width: 140px; padding: 6px 9px; border: 1px solid #ccc; font-size: 13px; font-family: Georgia, serif; }
+        .staff-card-inputs input:focus { outline: 2px solid #1E90FF; border-color: #1E90FF; }
+
         /* ── Our Friends editor ── */
         .friends-cat-block { margin-bottom: 8px; border: 1px solid #ddd; background: white; }
         .friends-cat-header { display: flex; align-items: center; gap: 8px; padding: 9px 12px; background: #f0ece0; border-bottom: 1px solid #ddd; cursor: pointer; user-select: none; }
@@ -208,6 +217,30 @@
     <div id="admin-tabs">
         <div class="admin-tab active" data-tab="articles" onclick="showTab('articles')">Articles</div>
         <div class="admin-tab" data-tab="friends" onclick="showTab('friends')">Our Friends</div>
+        <div class="admin-tab" data-tab="aboutus" onclick="showTab('aboutus')">About Us</div>
+    </div>
+
+    <div id="aboutus-screen">
+        <div class="aboutus-screen-inner">
+            <div class="section-title" style="margin-bottom:20px;">
+                <span>About Us</span>
+                <button class="btn btn-success btn-sm" onclick="saveAboutUs()">Save About Us</button>
+            </div>
+            <div class="right-inner" style="margin-bottom:24px;">
+                <div class="form-group" style="margin-bottom:0;">
+                    <label>Main Text <span>(blank lines between paragraphs)</span></label>
+                    <textarea id="aboutus-text-input" rows="14" style="width:100%;padding:10px;border:1px solid #ccc;font-size:14px;font-family:Georgia,serif;resize:vertical;line-height:1.7;" oninput="configDirty=true;markPending();"></textarea>
+                </div>
+            </div>
+            <div class="section-title" style="margin-bottom:16px;">
+                <span>Staff Cards</span>
+                <button class="btn btn-primary btn-sm" onclick="addStaffCard()">+ Add Card</button>
+            </div>
+            <div class="right-inner">
+                <div id="staff-cards-list"></div>
+                <p class="slots-hint" style="margin-top:8px;">Each card appears at the bottom of the About Us page. Name and Title are required; Bio is optional.</p>
+            </div>
+        </div>
     </div>
 
     <div id="friends-screen">
@@ -471,6 +504,7 @@ let events   = [];         // [{date, title}]
 let spotlight = { name: '', text: '' };
 let friendsLocal = [];
 let collapsedFriendCats = {};
+let aboutUsLocal = { text: '', staff: [] };
 
 // ── Auth ──────────────────────────────────────────────────────────────────────
 
@@ -518,13 +552,10 @@ function showTab(name) {
     });
     const cols    = document.querySelector('.admin-cols');
     const friends = document.getElementById('friends-screen');
-    if (name === 'friends') {
-        cols.style.display    = 'none';
-        friends.style.display = 'block';
-    } else {
-        cols.style.display    = 'flex';
-        friends.style.display = 'none';
-    }
+    const aboutus = document.getElementById('aboutus-screen');
+    cols.style.display    = name === 'articles' ? 'flex'  : 'none';
+    friends.style.display = name === 'friends'  ? 'block' : 'none';
+    aboutus.style.display = name === 'aboutus'  ? 'block' : 'none';
 }
 
 // ── GitHub helpers ────────────────────────────────────────────────────────────
@@ -1226,10 +1257,12 @@ async function loadAdConfig() {
             events   = cfg.events   || [];
             spotlight = cfg.spotlight || { name: '', text: '' };
             friendsLocal = cfg.friends || [];
+            aboutUsLocal = cfg.aboutUs || { text: '', staff: [] };
             publicationsLocal = cfg.publications || [];
             calameoAccountUrl = cfg.calameoAccountUrl || 'https://www.calameo.com/accounts/7705413';
             renderPublicationsList();
             renderFriendsList();
+            renderAboutUs();
             const calEl = document.getElementById('calameo-account-input');
             if (calEl) calEl.value = calameoAccountUrl;
             renderEventsList();
@@ -1405,6 +1438,56 @@ function movePub(i, dir) {
     markPending(); renderPublicationsList();
 }
 
+// ── About Us ──────────────────────────────────────────────────────────────────
+
+function renderAboutUs() {
+    const textEl = document.getElementById('aboutus-text-input');
+    if (textEl) textEl.value = aboutUsLocal.text || '';
+    renderStaffCards();
+}
+
+function renderStaffCards() {
+    const el = document.getElementById('staff-cards-list');
+    if (!el) return;
+    const staff = aboutUsLocal.staff || [];
+    if (!staff.length) {
+        el.innerHTML = '<p style="font-family:sans-serif;font-size:12px;color:#bbb;font-style:italic;">No cards yet — click + Add Card.</p>';
+        return;
+    }
+    el.innerHTML = staff.map(function(s, i) {
+        return '<div class="staff-card-row">'
+            + '<div class="staff-card-inputs">'
+                + '<input type="text" placeholder="Name" value="' + escHtml(s.name || '') + '" oninput="aboutUsLocal.staff[' + i + '].name=this.value;configDirty=true;markPending();">'
+                + '<input type="text" placeholder="Title" value="' + escHtml(s.title || '') + '" oninput="aboutUsLocal.staff[' + i + '].title=this.value;configDirty=true;markPending();">'
+                + '<input type="text" placeholder="Bio (optional)" value="' + escHtml(s.bio || '') + '" style="flex:2;" oninput="aboutUsLocal.staff[' + i + '].bio=this.value;configDirty=true;markPending();">'
+            + '</div>'
+            + '<button class="btn btn-danger btn-sm" onclick="removeStaffCard(' + i + ')" title="Remove" style="flex-shrink:0;">✕</button>'
+            + '</div>';
+    }).join('');
+}
+
+function saveAboutUs() {
+    const textEl = document.getElementById('aboutus-text-input');
+    if (textEl) aboutUsLocal.text = textEl.value;
+    configDirty = true;
+    markPending();
+    showStatus('About Us saved locally — click "Publish to Site" to go live.', 'success');
+}
+
+function addStaffCard() {
+    aboutUsLocal.staff.push({ name: '', title: '', bio: '' });
+    configDirty = true;
+    markPending();
+    renderStaffCards();
+}
+
+function removeStaffCard(i) {
+    aboutUsLocal.staff.splice(i, 1);
+    configDirty = true;
+    markPending();
+    renderStaffCards();
+}
+
 // ── Our Friends ───────────────────────────────────────────────────────────────
 
 function renderFriendsList() {
@@ -1559,7 +1642,7 @@ async function publishAll() {
         if (configDirty) {
             const existing = await getFile(AD_CONFIG);
             const jr = await putFile(AD_CONFIG,
-                JSON.stringify({ ad: adConfig, slogan: sloganLocal, featuredIds: featuredIds.filter(Boolean), issues: issues, events: events, spotlight: spotlight, publications: publicationsLocal, calameoAccountUrl: calameoAccountUrl, friends: friendsLocal }, null, 2),
+                JSON.stringify({ ad: adConfig, slogan: sloganLocal, featuredIds: featuredIds.filter(Boolean), issues: issues, events: events, spotlight: spotlight, publications: publicationsLocal, calameoAccountUrl: calameoAccountUrl, friends: friendsLocal, aboutUs: aboutUsLocal }, null, 2),
                 existing ? existing.sha : null, 'Update site config');
             adConfigSha = jr.content.sha;
             configDirty = false;

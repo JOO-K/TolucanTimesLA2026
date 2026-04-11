@@ -65,109 +65,87 @@
     margin-top: 50px;
 }
 
-.writer-container{
-    width: 100vw;
+.writer-container {
+    width: 100%;
     display: flex;
     flex-direction: row;
+    gap: 16px;
     padding: 20px;
     box-sizing: border-box;
-    margin-bottom: -30px;
+    margin-bottom: 40px;
 }
 
 @media all and (max-width: 800px) {
-    .writer-container{
-     height: auto;
+    .writer-container {
         flex-direction: column;
-        padding: 0px;
-        margin-bottom: 0px;
+        padding: 16px;
+        gap: 12px;
+        margin-bottom: 20px;
     }
 }
 
-
-.writer-box{
-    width: 50vw;
-    height: 20vw;
+.writer-box {
+    flex: 1;
+    min-width: 0;
+    min-height: 140px;
     background-color: whitesmoke;
-    padding: 10px;
-    margin: 10px;
+    padding: 24px 20px 24px 30px;
     box-sizing: border-box;
 }
 
 @media all and (max-width: 800px) {
-    .writer-box{
-        width: 100vw;
-        height: 70vw;
-        margin: 0px;
-        margin-bottom: 10px;
+    .writer-box {
+        width: 100%;
+        min-height: 110px;
     }
 }
 
-.writer-box h1{
+.writer-box h1 {
     font-family: Manrope;
-    font-size: 40px;
+    font-size: 36px;
     font-weight: 900;
-    position: relative;
-    padding: 0px;
-    margin: 20px 0px;
-    margin-bottom: -20px;
-    left: 30px;
-    z-index: 2;
+    margin: 0 0 8px 0;
+    padding: 0;
+    line-height: 1.2;
 }
 
 @media all and (max-width: 800px) {
-    .writer-box h1{
-        font-size: 30px;
-        line-height: 40px;
-        margin-bottom: -5px;
+    .writer-box h1 {
+        font-size: 26px;
     }
 }
 
-.writer-box h2{
+.writer-box h2 {
     font-family: Manrope;
-    font-size: 20px;
+    font-size: 18px;
     font-weight: 400;
-    position: relative;
-    left: 30px;
-    margin-bottom: 40px;
-    z-index: 2;
+    margin: 0 0 16px 0;
 }
-.writer-box h3{
+
+.writer-box h3 {
     font-family: Manrope;
     font-size: 13px;
     font-weight: 400;
-    position: relative;
-    left: 25px;
-    z-index: 2;
+    margin: 0;
 }
 
-@media all and (max-width: 800px) {
-    .writer-box h3{
-        font-size: 10px;
-    }
-}
-
-.writer-box h4{
+.writer-box h4 {
     font-family: Manrope;
     font-size: 13px;
-    position: relative;
-    left: 30px;
-    width: 300px;
-    z-index: 2;
+    font-weight: 400;
+    margin: 4px 0 0 0;
 }
 
 @media all and (max-width: 800px) {
-    .writer-box h4{
-        font-size: 10px;
-        width: 250px;
-        
+    .writer-box h3, .writer-box h4 {
+        font-size: 11px;
     }
 }
 
-.writer-box img{
-    position: relative;
-    top: -245px;
+.writer-box img {
     object-fit: contain;
     width: 100%;
-    height: 100%;
-    z-index: 1;
+    height: auto;
+    display: block;
+    margin-top: 12px;
 }
