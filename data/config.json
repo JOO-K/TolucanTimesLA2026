@@ -73,25 +73,48 @@
     }
   ],
   "calameoAccountUrl": "https://www.calameo.com/accounts/7705413",
-  "aboutUs": {
-    "text": "The Tolucan Times is Toluca Lake.\n\nThe heritage newspaper was founded in Toluca Lake in 1958 by Ellis Morcos. Years later, Morcos purchased The Canyon Crier, established in 1937, and the two newspapers eventually merged.\n\nIn 1972, Mardi Rustam became Publisher and Editor-in-Chief and changed the name to The Tolucan Times. The Tolucan Times office shuttered its doors in 2021, and went out of print for nearly 2 years. After decades at the helm, Rustam passed away in 2023.\n\nThe Tolucan Media Group purchased the newspaper from his daughters Sandra and Karima. As publishers, we're dedicated to highlighting the culture, current events, community, shopping, homes, landscape, history, entertainment, and local personalities that make Toluca Lake a place with long-standing heritage and family.\n\nIssues will be published every month along with regular web and social media updates. The Tolucan Times strives to produce an entertaining and community-oriented newspaper with the goal of being constructive not destructive, as it has been for over 75 years.",
-    "staff": [
-      { "name": "Gino Renzulli", "title": "Editor-In-Chief", "bio": "" },
-      { "name": "Michael Argento", "title": "Managing Editor", "bio": "" }
-    ]
-  },
   "friends": [
     {
       "category": "Restaurant/Food",
       "color": "dodgerblue",
       "headerImage": "https://mevell.com/cdn/shop/articles/Creative_Ways_to_Serve_Pizza_in_a_Party_2000x.jpg?v=1684415676",
       "businesses": [
-        { "name": "Kabosu Japanese Cuisine", "address": "10155 Riverside Dr. 91602", "phone": "(818) 623-4425", "mapsUrl": "" },
-        { "name": "Hungry Crowd", "address": "10140 Riverside Dr. 91602", "phone": "(818) 691-3888", "mapsUrl": "" },
-        { "name": "Red Maple Toluca Lake", "address": "10123 Riverside Dr. 91602", "phone": "(818) 691-3888", "mapsUrl": "" },
-        { "name": "Sushi Yuzu", "address": "10118 Riverside Dr. 91602", "phone": "(818) 763-8355", "mapsUrl": "" },
-        { "name": "Forman's Whiskey Tavern", "address": "10149 Riverside Dr. 91602", "phone": "(828) 760-6900", "mapsUrl": "" },
-        { "name": "Prosecco Trattoria", "address": "10144 Riverside Dr. 91602", "phone": "(818) 505-0930", "mapsUrl": "" }
+        {
+          "name": "Kabosu Japanese Cuisine",
+          "address": "10155 Riverside Dr. 91602",
+          "phone": "(818) 623-4425",
+          "mapsUrl": ""
+        },
+        {
+          "name": "Hungry Crowd",
+          "address": "10140 Riverside Dr. 91602",
+          "phone": "(818) 691-3888",
+          "mapsUrl": ""
+        },
+        {
+          "name": "Red Maple Toluca Lake",
+          "address": "10123 Riverside Dr. 91602",
+          "phone": "(818) 691-3888",
+          "mapsUrl": ""
+        },
+        {
+          "name": "Sushi Yuzu",
+          "address": "10118 Riverside Dr. 91602",
+          "phone": "(818) 763-8355",
+          "mapsUrl": ""
+        },
+        {
+          "name": "Forman's Whiskey Tavern",
+          "address": "10149 Riverside Dr. 91602",
+          "phone": "(828) 760-6900",
+          "mapsUrl": ""
+        },
+        {
+          "name": "Prosecco Trattoria",
+          "address": "10144 Riverside Dr. 91602",
+          "phone": "(818) 505-0930",
+          "mapsUrl": ""
+        }
       ]
     },
     {
@@ -99,12 +122,42 @@
       "color": "#de8c35",
       "headerImage": "https://streetviewpixels-pa.googleapis.com/v1/thumbnail?panoid=jEqDvltT-Fun0FpFjwjP1Q&cb_client=search.gws-prod.gps&w=408&h=240&yaw=79.095795&pitch=0&thumbfov=100",
       "businesses": [
-        { "name": "Mailbox Toluca Lake", "address": "10153 1/2 Riverside Dr. 91602", "phone": "(818) 505-9350", "mapsUrl": "" },
-        { "name": "The Rouge Cosmetics", "address": "45008 Forman Ave. 91602", "phone": "(925) 736-3900", "mapsUrl": "" },
-        { "name": "Generales & Generales Fine Jewellers", "address": "10141 Riverside Dr.", "phone": "(818) 763-9768", "mapsUrl": "" },
-        { "name": "Pergolina", "address": "10139 Riverside Dr.", "phone": "(818) 508-7708", "mapsUrl": "" },
-        { "name": "American Cancer Society Discovery Shop", "address": "10123 Riverside Dr. North Hollywood", "phone": "(818) 754-8185", "mapsUrl": "" },
-        { "name": "The UPS Store", "address": "4400 W Riverside Dr. #110 Burbank 91505", "phone": "(818) 506-4388", "mapsUrl": "" }
+        {
+          "name": "Mailbox Toluca Lake",
+          "address": "10153 1/2 Riverside Dr. 91602",
+          "phone": "(818) 505-9350",
+          "mapsUrl": ""
+        },
+        {
+          "name": "The Rouge Cosmetics",
+          "address": "45008 Forman Ave. 91602",
+          "phone": "(925) 736-3900",
+          "mapsUrl": ""
+        },
+        {
+          "name": "Generales & Generales Fine Jewellers",
+          "address": "10141 Riverside Dr.",
+          "phone": "(818) 763-9768",
+          "mapsUrl": ""
+        },
+        {
+          "name": "Pergolina",
+          "address": "10139 Riverside Dr.",
+          "phone": "(818) 508-7708",
+          "mapsUrl": ""
+        },
+        {
+          "name": "American Cancer Society Discovery Shop",
+          "address": "10123 Riverside Dr. North Hollywood",
+          "phone": "(818) 754-8185",
+          "mapsUrl": ""
+        },
+        {
+          "name": "The UPS Store",
+          "address": "4400 W Riverside Dr. #110 Burbank 91505",
+          "phone": "(818) 506-4388",
+          "mapsUrl": ""
+        }
       ]
     },
     {
@@ -112,11 +165,36 @@
       "color": "#dd6d2c",
       "headerImage": "https://media.istockphoto.com/id/624494724/photo/empty-wooden-bar-counter.jpg?s=612x612&w=0&k=20&c=FdTfgMT6A381px5HbG6GGKrtduFVUuAdCGBlVX36J5w=",
       "businesses": [
-        { "name": "Spin the Bottle Wine Studio", "address": "10149 Riverside Dr. 91602", "phone": "(818) 760-6900", "mapsUrl": "" },
-        { "name": "Gary Marshall Theatre", "address": "4252 W Riverside Dr. 91505", "phone": "(818) 955-8004", "mapsUrl": "" },
-        { "name": "El Portal Theater", "address": "5269 Lankershim Blvd. North Hollywood 91602", "phone": "(818) 508-0281", "mapsUrl": "" },
-        { "name": "The Group Rep at the Lonny Chapman Theatre", "address": "10900 Burbank Blvd. North Hollywood 91601", "phone": "(818) 763-5990", "mapsUrl": "" },
-        { "name": "Verse", "address": "4212 Lankershim Blvd. 91602", "phone": "(818) 747-2135", "mapsUrl": "" }
+        {
+          "name": "Spin the Bottle Wine Studio",
+          "address": "10149 Riverside Dr. 91602",
+          "phone": "(818) 760-6900",
+          "mapsUrl": ""
+        },
+        {
+          "name": "Gary Marshall Theatre",
+          "address": "4252 W Riverside Dr. 91505",
+          "phone": "(818) 955-8004",
+          "mapsUrl": ""
+        },
+        {
+          "name": "El Portal Theater",
+          "address": "5269 Lankershim Blvd. North Hollywood 91602",
+          "phone": "(818) 508-0281",
+          "mapsUrl": ""
+        },
+        {
+          "name": "The Group Rep at the Lonny Chapman Theatre",
+          "address": "10900 Burbank Blvd. North Hollywood 91601",
+          "phone": "(818) 763-5990",
+          "mapsUrl": ""
+        },
+        {
+          "name": "Verse",
+          "address": "4212 Lankershim Blvd. 91602",
+          "phone": "(818) 747-2135",
+          "mapsUrl": ""
+        }
       ]
     },
     {
@@ -124,10 +202,40 @@
       "color": "#c54a2b",
       "headerImage": "https://media.istockphoto.com/id/1409298953/photo/real-estate-agents-shake-hands-after-the-signing-of-the-contract-agreement-is-complete.jpg?s=612x612&w=0&k=20&c=SFybbpGMB0wIoI0tJotFqptzAYK_mICVITNdQIXqnyc=",
       "businesses": [
-        { "name": "Kevin Dees", "address": "10120 Riverside Dr. 91602", "phone": "(818) 414-3404", "mapsUrl": "" },
-        { "name": "Craig Strong Group", "address": "10154 Riverside Dr. 91602", "phone": "(818) 930-4050", "mapsUrl": "" },
-        { "name": "Toluca Lake Real Estate", "address": "4405 W Riverside Dr. Burbank 91505", "phone": "(626) 234-2106", "mapsUrl": "" }
+        {
+          "name": "Kevin Dees",
+          "address": "10120 Riverside Dr. 91602",
+          "phone": "(818) 414-3404",
+          "mapsUrl": ""
+        },
+        {
+          "name": "Craig Strong Group",
+          "address": "10154 Riverside Dr. 91602",
+          "phone": "(818) 930-4050",
+          "mapsUrl": ""
+        },
+        {
+          "name": "Toluca Lake Real Estate",
+          "address": "4405 W Riverside Dr. Burbank 91505",
+          "phone": "(626) 234-2106",
+          "mapsUrl": ""
+        }
       ]
     }
-  ]
+  ],
+  "aboutUs": {
+    "text": "The Tolucan Times is Toluca Lake.\n\nThe heritage newspaper was founded in Toluca Lake in 1958 by Ellis Morcos. Years later, Morcos purchased The Canyon Crier, established in 1937, and the two newspapers eventually merged.\n\nIn 1972, Mardi Rustam became Publisher and Editor-in-Chief and changed the name to The Tolucan Times. The Tolucan Times office shuttered its doors in 2021, and went out of print for nearly 2 years. After decades at the helm, Rustam passed away in 2023.\n\nThe Tolucan Media Group purchased the newspaper from his daughters Sandra and Karima. As publishers, we're dedicated to highlighting the culture, current events, community, shopping, homes, landscape, history, entertainment, and local personalities that make Toluca Lake a place with long-standing heritage and family.\n\nIssues will be published every month along with regular web and social media updates. The Tolucan Times strives to produce an entertaining and community-oriented newspaper with the goal of being constructive not destructive, as it has been for over 75 years.",
+    "staff": [
+      {
+        "name": "Gino Renzulli",
+        "title": "Editor-In-Chief",
+        "bio": ""
+      },
+      {
+        "name": "Michael Argento",
+        "title": "Director of Ad Sales",
+        "bio": ""
+      }
+    ]
+  }
 }
