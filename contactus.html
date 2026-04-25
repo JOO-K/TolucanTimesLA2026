@@ -42,7 +42,7 @@
             <br><br><h2 id="contactus"></h2>
         </div>
 
-        <form action="https://api.web3forms.com/submit" method="POST" class="form-container">
+        <form id="form" action="https://api.web3forms.com/submit" method="POST" class="form-container">
 
             <!-- Replace with your Access Key -->
             <input type="hidden" name="access_key" value="b51c5119-0c8f-49e2-9a0f-7ed5d6d16a8d">
@@ -89,51 +89,44 @@
 
 
     <script>
+        const form = document.getElementById('form');
+        const result = document.getElementById('result');
 
-        <script>
-            const form = document.getElementById('form');
-            const result = document.getElementById('result');
-
-            form.addEventListener('submit', function(e) {
-                e.preventDefault();
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
             const formData = new FormData(form);
             const object = Object.fromEntries(formData);
             const json = JSON.stringify(object);
-            result.innerHTML = "Please wait..."
+            result.innerHTML = "Please wait...";
 
             fetch('https://api.web3forms.com/submit', {
                 method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            'Accept': 'application/json'
-            },
-            body: json
-        })
-        .then(async (response) => {
-                let json = await response.json();
-            if (response.status == 200) {
-                result.innerHTML = json.message;
-            } else {
-                console.log(response);
-            result.innerHTML = json.message;
-            }
-        })
-        .catch(error => {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                body: json
+            })
+            .then(async (response) => {
+                let data = await response.json();
+                if (response.status == 200) {
+                    result.innerHTML = data.message;
+                    form.reset();
+                } else {
+                    result.innerHTML = data.message;
+                }
+            })
+            .catch(error => {
                 console.log(error);
-            result.innerHTML = "Something went wrong!";
-        })
-            .then(function() {
-                form.reset();
-            setTimeout(() => {
-                result.style.display = "none";
-            }, 3000);
+                result.innerHTML = "Something went wrong!";
+            })
+            .finally(() => {
+                setTimeout(() => {
+                    result.style.display = "none";
+                }, 3000);
+            });
         });
-});
-
     </script>
-
-
-        <script type="text/javascript" src="./partloader.js"></script>
 
 
 
