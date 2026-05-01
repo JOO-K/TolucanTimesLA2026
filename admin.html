@@ -542,8 +542,8 @@ async function openAdmin() {
     document.getElementById('login-screen').style.display = 'none';
     document.getElementById('admin-screen').style.display = 'flex';
     showTab('articles');
-    await loadArticles();
     await loadAdConfig();
+    await loadArticles();
 }
 
 function showTab(name) {
@@ -1637,6 +1637,16 @@ async function publishAll() {
                 hpFile ? hpFile.sha : null, 'Refresh homepage');
             homepageDirty = false;
         }
+
+        // Sync fields that aren't live-bound before writing config
+        const _aboutTextEl = document.getElementById('aboutus-text-input');
+        if (_aboutTextEl) aboutUsLocal.text = _aboutTextEl.value;
+        const _spnEl = document.getElementById('spotlight-name-input');
+        const _sptEl = document.getElementById('spotlight-text-input');
+        spotlight = {
+            name: (_spnEl ? _spnEl.value : spotlight.name || '').trim(),
+            text: (_sptEl ? _sptEl.value : spotlight.text || '').trim()
+        };
 
         // 5. Write config.json (ad + slogan + featuredIds)
         if (configDirty) {
