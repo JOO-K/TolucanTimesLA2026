@@ -13,6 +13,7 @@
     "article_01"
   ],
   "issues": [
+    "June 2026",
     "April 2026",
     "March 2026",
     "February 2026",
@@ -42,6 +43,18 @@
   },
   "publications": [
     {
+      "title": "June 2026 Issue",
+      "calameoUrl": "https://www.calameo.com/read/0077054137fcf3c357b97",
+      "coverImage": "https://i.imgur.com/kAEv6h9.jpeg",
+      "artist": "Artour Banjov"
+    },
+    {
+      "title": "May 2026 Issue",
+      "calameoUrl": "https://www.calameo.com/read/007705413422ef13411cb",
+      "coverImage": "https://i.imgur.com/a4o8xZI.png",
+      "artist": "Frankie Campanella"
+    },
+    {
       "title": "April 2026 Issue",
       "calameoUrl": "https://www.calameo.com/read/0077054138837c7b3631c",
       "coverImage": "https://i.imgur.com/aaDlzwx.jpeg",
@@ -57,18 +70,6 @@
       "title": "February 2026 Issue",
       "calameoUrl": "https://www.calameo.com/read/00770541324519ad1a30d",
       "coverImage": "https://i.imgur.com/hoVGRnb.jpeg",
-      "artist": "Artour Banjov"
-    },
-    {
-      "title": "January 2026 Issue",
-      "calameoUrl": "https://www.calameo.com/read/007705413d18c7f8d9d3b",
-      "coverImage": "https://i.imgur.com/0dkn8UP.png",
-      "artist": "Frankie Campanella"
-    },
-    {
-      "title": "December 2025 Issue",
-      "calameoUrl": "https://www.calameo.com/read/007705413f9e16c9deecd",
-      "coverImage": "https://i.imgur.com/H1C5z88.png",
       "artist": "Artour Banjov"
     }
   ],
