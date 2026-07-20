@@ -201,12 +201,12 @@
     "tag": "Announcement",
     "date": "July 2026",
     "issue": "July 2026",
-    "cardImage": "",
+    "cardImage": "https://i.imgur.com/L7gRFkr.png",
     "excerpt": "The Tolucan Times: Ethics and Corrections",
     "blocks": [
       {
         "type": "text",
-        "content": "Our publication is committed to accurate, fair, and responsible journalism. We strive to report the truth, verify our information, and present stories with honesty and integrity. As a local publication, we are dedicated to serving and uplifting our community by highlighting the people, businesses, organizations, and events that make it unique.\n\nDespite our best efforts, mistakes can happen. When we become aware of a factual error, we will correct it as promptly as possible. Corrections will be published in the following print issue and, when applicable, updated on our website or other online platforms.\n\nIf you believe we have published an error, please contact our editorial team with the relevant information so we can review the matter promptly."
+        "content": "The Tolucan Times is a publication committed to accurate, fair, and responsible community journalism. We strive to report the truth, verify our information, and present stories with honesty and integrity. As a local publication, we are dedicated to serving and uplifting our community by highlighting the people, businesses, organizations, and events that make Toluca Lake and Los Angeles at large special. \n\nDespite our best efforts, mistakes can happen. When we become aware of a factual error, we will correct it as promptly as possible. Corrections will be published in the following print issue and, when applicable, updated on our website or other online platforms.\n\nIf you believe we have published an error, please contact our editorial team at thetolucantimesla@gmail.com with the relevant information so we can review the matter promptly."
       }
     ],
     "id": "article_13"
